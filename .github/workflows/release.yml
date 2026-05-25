@@ -1,0 +1,85 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-lang-chinese
+
+      - name: Build PDF
+        run: |
+          pandoc docs/guide.md \
+            -o guide.pdf \
+            --pdf-engine=xelatex \
+            -V mainfont="Noto Sans" \
+            -V CJKmainfont="Noto Sans CJK SC" \
+            -V geometry:margin=1in \
+            -V title="AI Coding Agent 全平台安装指南" \
+            --toc --toc-depth=2 \
+            --metadata date="$(date '+%Y-%m-%d')"
+
+      - name: Validate Scripts
+        run: |
+          # 语法检查
+          bash -n scripts/install.sh
+          for f in scripts/lib/*.sh; do
+            echo "Checking $f ..."
+            bash -n "$f"
+          done
+          echo "All scripts pass syntax check."
+
+      - name: Create Release Package
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          mkdir -p release/agent-install-guide-${VERSION}
+          cp guide.pdf release/agent-install-guide-${VERSION}/
+          cp -r scripts release/agent-install-guide-${VERSION}/
+          cp docs/troubleshooting.md release/agent-install-guide-${VERSION}/
+          cp README.md release/agent-install-guide-${VERSION}/
+          cd release
+          zip -r agent-install-guide-${VERSION}.zip agent-install-guide-${VERSION}/
+          echo "Package: agent-install-guide-${VERSION}.zip"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Agent Install Guide ${{ github.ref_name }}"
+          body: |
+            ## AI Coding Agent 全平台安装指南 · ${{ github.ref_name }}
+
+            ### 包含内容
+            - 📄 `guide.pdf` — 完整安装手册
+            - 🔧 `scripts/` — 一键安装脚本（macOS / Linux / Windows）
+            - 🛠 `troubleshooting.md` — 常见问题排查
+
+            ### 快速使用
+            ```bash
+            # macOS / Linux
+            bash scripts/install.sh
+            ```
+            ```powershell
+            # Windows
+            .\scripts\install.ps1
+            ```
+
+            ### 更新日志
+            - 初始版本：Claude Code + Codex + OpenClaw 全平台安装支持
+          files: release/agent-install-guide-${{ github.ref_name }}.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
