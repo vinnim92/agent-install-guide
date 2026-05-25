@@ -35,13 +35,8 @@ jobs:
 
       - name: Validate Scripts
         run: |
-          # 语法检查
-          bash -n scripts/install.sh
-          for f in scripts/lib/*.sh; do
-            echo "Checking $f ..."
-            bash -n "$f"
-          done
-          echo "All scripts pass syntax check."
+          bash -n scripts/install.sh || exit 1
+          echo "install.sh: syntax OK"
 
       - name: Create Release Package
         run: |
@@ -58,27 +53,43 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "Agent Install Guide ${{ github.ref_name }}"
+          name: "AI 编程助手零基础安装指南 ${{ github.ref_name }}"
           body: |
-            ## AI Coding Agent 全平台安装指南 · ${{ github.ref_name }}
+            ## 🤖 AI 编程助手 · 零基础安装指南 ${{ github.ref_name }}
 
-            ### 包含内容
-            - 📄 `guide.pdf` — 完整安装手册
-            - 🔧 `scripts/` — 一键安装脚本（macOS / Linux / Windows）
-            - 🛠 `troubleshooting.md` — 常见问题排查
+            ### 会复制粘贴就会装
 
-            ### 快速使用
+            不需要懂任何技术。一键安装三款最火的 AI 编程助手：
+
+            - 🧠 **Claude Code** — Anthropic 出品，最聪明的 AI 程序员
+            - ⚡ **Codex** — OpenAI 出品，ChatGPT 用户首选
+            - 🦞 **OpenClaw** — 微软开源，有免费模型可白嫖
+
+            ### 📦 本压缩包包含
+
+            1. 📄 `guide.pdf` — 零基础图文手册（从"怎么打开终端"开始教）
+            2. 🔧 `scripts/install.sh` — Mac 一键安装脚本
+            3. 🔧 `scripts/install.ps1` — Windows 一键安装脚本
+            4. 🛠 `troubleshooting.md` — 7 个常见问题手把手解决
+
+            ### 🚀 快速开始
+
+            **Mac**：打开终端，粘贴运行：
             ```bash
-            # macOS / Linux
-            bash scripts/install.sh
-            ```
-            ```powershell
-            # Windows
-            .\scripts\install.ps1
+            curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
             ```
 
-            ### 更新日志
-            - 初始版本：Claude Code + Codex + OpenClaw 全平台安装支持
+            **Windows**：打开 PowerShell，粘贴运行：
+            ```powershell
+            iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
+            ```
+
+            剩下的全自动完成，你等着就行。
+
+            ### 📝 更新日志
+
+            - v2.0: 完全重写为零基础版，新增自动环境安装，去除所有技术术语
+            - v1.0: 初始版本
           files: release/agent-install-guide-${{ github.ref_name }}.zip
           generate_release_notes: true
         env:

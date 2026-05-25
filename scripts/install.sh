@@ -1,176 +1,332 @@
 #!/usr/bin/env bash
 # ============================================================
-# Agent 安装指南 · 一键安装器
-# 支持: Claude Code / Codex / OpenClaw
-# 平台: macOS / Linux（含 WSL）
-# 用法:
+# AI 编程助手 · 零基础一键安装器
+#
+# 用法（复制下面这行到终端回车）:
 #   curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
-#   或本地: bash install.sh
+#
+# 目标用户：完全不会命令行的普通人
+# 设计原则：不要求用户懂任何技术名词，每一步都自动完成
 # ============================================================
 
-set -euo pipefail
+set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/lib"
+# ==================== 颜色 ====================
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
+REPO="https://github.com/vinnim92/agent-install-guide"
 
-# 加载公共库
-source "$LIB_DIR/utils.sh"
-source "$LIB_DIR/check-prereqs.sh"
-source "$LIB_DIR/install-claude-code.sh"
-source "$LIB_DIR/install-codex.sh"
-source "$LIB_DIR/install-openclaw.sh"
+# ==================== 欢迎 ====================
+clear
+echo ""
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║       🤖  AI 编程助手 · 零基础一键安装器                ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║  本脚本将自动为你安装三款最火的 AI 编程助手：           ║${NC}"
+echo -e "${CYAN}║    🧠 Claude Code   — 最聪明的 AI 程序员               ║${NC}"
+echo -e "${CYAN}║    ⚡ Codex         — OpenAI 出品的编程利器            ║${NC}"
+echo -e "${CYAN}║    🦞 OpenClaw      — 微软开源，自带免费模型          ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║  你不用懂任何技术，脚本会自动处理一切。                 ║${NC}"
+echo -e "${CYAN}║  整个过程大约需要 5-10 分钟（取决于网速）。            ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+echo ""
 
-# ---------- 互动菜单 ----------
-show_menu() {
-    echo ""
-    echo -e "${BOLD}请选择要安装的 AI Coding Agent:${NC}"
-    echo ""
-    echo -e "  ${GREEN}1${NC}) ${BOLD}Claude Code${NC}    — Anthropic 出品，自带运行时，最省心"
-    echo -e "  ${GREEN}2${NC}) ${BOLD}Codex CLI${NC}      — OpenAI 出品，需 Node.js 22+，ChatGPT 账号"
-    echo -e "  ${GREEN}3${NC}) ${BOLD}OpenClaw${NC}       — 微软开源🦞，支持 75+ 模型，有免费模型"
-    echo -e "  ${GREEN}4${NC}) ${BOLD}全部安装${NC}      — 一键装齐三款"
-    echo -e "  ${GREEN}5${NC}) ${BOLD}查看对比${NC}      — 三款功能对比"
-    echo -e "  ${GREEN}0${NC}) 退出"
-    echo ""
-}
+# ==================== 系统检测 ====================
+OS="$(uname -s)"
+ARCH="$(uname -m)"
 
-# ---------- 功能对比 ----------
-show_comparison() {
-    echo ""
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${CYAN}  三款 Agent 功能对比${NC}"
-    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    echo -e "  ${BOLD}功能${NC}          ${BOLD}Claude Code${NC}    ${BOLD}Codex${NC}          ${BOLD}OpenClaw${NC}"
-    echo "  ──────────  ───────────  ────────────  ────────────"
-    echo "  开发商       Anthropic     OpenAI        微软(开源)"
-    echo "  免费可用     ✗ (需付费)   ✗ (Plus起步)  ✓ (免费模型)"
-    echo "  运行环境     自带运行时    Node.js 22+   Node.js 22+"
-    echo "  代码编辑     ✓            ✓             ✓"
-    echo "  终端操作     ✓            ✓             ✓"
-    echo "  Git 操作     ✓            ✓             ✓"
-    echo "  CI/CD 集成   ✓            ✓             ✓"
-    echo "  VS Code 插件 ✓            ✗             ✗"
-    echo "  桌面应用     ✓            ✗             ✓ (Beta)"
-    echo "  多模型支持   仅 Claude     仅 OpenAI      75+ 提供商"
-    echo "  中文支持     ✓            ✓             ✓"
-    echo "  渠道集成     ✗            ✗             微信/飞书/QQ等"
-    echo ""
-    echo -e "  ${BOLD}推荐选择:${NC}"
-    echo "    追求体验  → Claude Code（最省心）"
-    echo "    预算有限  → OpenClaw（有免费模型）"
-    echo "    OpenAI 用户 → Codex（ChatGPT 生态）"
-    echo ""
-    read -r -p "  按回车返回菜单..."
-}
+echo -e "${BLUE}━━━ 第一步：检测你的电脑 ━━━${NC}"
+echo ""
 
-# ---------- 安装单个 Agent ----------
-install_single() {
-    local choice="$1"
-    case "$choice" in
-        1) check_prereqs claude-code && install_claude_code ;;
-        2) check_prereqs codex      && install_codex ;;
-        3) check_prereqs openclaw   && install_openclaw ;;
-    esac
-}
+case "$OS" in
+    Darwin)
+        echo -e "  ✅ 检测到你的电脑是 ${GREEN}Mac（苹果电脑）${NC}"
+        OS_TYPE="mac"
+        ;;
+    Linux)
+        echo -e "  ✅ 检测到你的电脑是 ${GREEN}Linux 系统${NC}"
+        OS_TYPE="linux"
+        # 进一步判断发行版
+        if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            echo -e "     具体版本：${GREEN}${NAME:-Linux}${NC}"
+        fi
+        ;;
+    *)
+        echo -e "  ⚠️  抱歉，本脚本暂不支持当前操作系统。"
+        echo -e "     如果你是 Windows 用户，请使用我们提供的 Windows 版安装器。"
+        exit 1
+        ;;
+esac
 
-# ---------- 全部安装 ----------
-install_all() {
-    echo ""
-    echo -e "${YELLOW}将依次安装三款 Agent，过程中可随时 Ctrl+C 终止${NC}"
-    echo ""
+echo -e "  ✅ 处理器架构：${GREEN}${ARCH}${NC}"
+echo ""
 
-    # Claude Code（依赖最少，先装）
-    echo -e "${BOLD}[1/3] Claude Code${NC}"
-    check_prereqs claude-code && install_claude_code || {
-        print_warning "Claude Code 安装失败，继续安装 Codex..."
-    }
-    echo ""
+# ==================== 第二步：安装基础工具 ====================
+echo -e "${BLUE}━━━ 第二步：安装必要的系统工具 ━━━${NC}"
+echo -e "  （这些是电脑运行 AI 助手需要的基础组件，全部自动安装）"
+echo ""
 
-    # Codex
-    echo -e "${BOLD}[2/3] Codex CLI${NC}"
-    check_prereqs codex && install_codex || {
-        print_warning "Codex 安装失败，继续安装 OpenClaw..."
-    }
-    echo ""
-
-    # OpenClaw
-    echo -e "${BOLD}[3/3] OpenClaw${NC}"
-    check_prereqs openclaw && install_openclaw || {
-        print_warning "OpenClaw 安装失败"
-    }
-
-    echo ""
-    print_success "全部安装流程完成！"
-}
-
-# ---------- 主流程 ----------
-main() {
-    detect_os
-    print_header
-    check_network
-
-    # 处理命令行参数
-    case "${1:-}" in
-        --update)
-            print_step "更新脚本本身..."
-            local tmp_install="/tmp/agent-install-update.sh"
-            safe_download "${RAW_BASE}/scripts/install.sh" "$tmp_install"
-            if [ -f "$tmp_install" ]; then
-                cp "$tmp_install" "$SCRIPT_DIR/install.sh"
-                chmod +x "$SCRIPT_DIR/install.sh"
-                print_success "脚本已更新到最新版本"
+# ---- Git ----
+if command -v git &>/dev/null; then
+    echo -e "  ✅ Git 工具：${GREEN}已就绪${NC}（版本 $(git --version | awk '{print $3}')）"
+else
+    echo -e "  📦 正在安装 Git 工具（用于下载和管理文件）..."
+    case "$OS_TYPE" in
+        mac)
+            # macOS: 优先用 xcode-select，不行再装 brew
+            if ! xcode-select -p &>/dev/null; then
+                echo -e "      需要先安装苹果开发工具（大约需要 2 分钟）..."
+                xcode-select --install 2>/dev/null || true
+                echo -e "      ${YELLOW}⚠️  请在弹出的窗口中点击"安装"，完成后按回车继续...${NC}"
+                read -r
             fi
-            exit 0
+            if ! command -v git &>/dev/null; then
+                echo -e "      正在安装 Homebrew（Mac 软件管家）..."
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 2>/dev/null || true
+                if command -v brew &>/dev/null; then
+                    brew install git
+                fi
+            fi
             ;;
-        claude|claude-code)
-            check_prereqs claude-code && install_claude_code
-            exit $?
+        linux)
+            if command -v apt-get &>/dev/null; then
+                sudo apt-get update -qq && sudo apt-get install -y -qq git
+            elif command -v dnf &>/dev/null; then
+                sudo dnf install -y git
+            elif command -v pacman &>/dev/null; then
+                sudo pacman -S --noconfirm git
+            elif command -v apk &>/dev/null; then
+                sudo apk add git
+            else
+                echo -e "  ${YELLOW}⚠️  请手动安装 Git：https://git-scm.com/downloads${NC}"
+            fi
             ;;
-        codex)
-            check_prereqs codex && install_codex
-            exit $?
+    esac
+    if command -v git &>/dev/null; then
+        echo -e "  ✅ Git 安装成功！"
+    else
+        echo -e "  ${RED}❌ Git 安装失败，但我们继续尝试...${NC}"
+    fi
+fi
+
+# ---- Node.js ----
+NODE_OK=false
+if command -v node &>/dev/null; then
+    NODE_VER=$(node -v 2>/dev/null | sed 's/v//' | cut -d. -f1)
+    if [ "$NODE_VER" -ge 22 ] 2>/dev/null; then
+        echo -e "  ✅ Node.js 运行环境：${GREEN}已就绪${NC}（版本 $(node -v)）"
+        NODE_OK=true
+    else
+        echo -e "  ⚠️  Node.js 版本较旧（$(node -v)），需要升级到 v22 以上"
+    fi
+else
+    echo -e "  📦 Node.js 运行环境未安装"
+fi
+
+if [ "$NODE_OK" = false ]; then
+    echo -e "  📦 正在自动安装 Node.js 运行环境（一些 AI 助手需要它）..."
+    case "$OS_TYPE" in
+        mac)
+            # macOS: 用 brew 装
+            if ! command -v brew &>/dev/null; then
+                echo -e "      正在安装 Homebrew（Mac 上的软件管家，大约需要 2 分钟）..."
+                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" 2>/dev/null || true
+                # 添加到 PATH
+                if [ -f /opt/homebrew/bin/brew ]; then
+                    eval "$(/opt/homebrew/bin/brew shellenv)"
+                elif [ -f /usr/local/bin/brew ]; then
+                    eval "$(/usr/local/bin/brew shellenv)"
+                fi
+            fi
+            if command -v brew &>/dev/null; then
+                brew install node@22 2>/dev/null && NODE_OK=true
+                # 建立软链接
+                brew link --overwrite --force node@22 2>/dev/null || true
+            fi
             ;;
-        openclaw|opencode)
-            check_prereqs openclaw && install_openclaw
-            exit $?
-            ;;
-        --version|-v)
-            echo "Agent Install Guide $CURRENT_VERSION"
-            exit 0
-            ;;
-        --help|-h)
-            echo "用法: bash install.sh [选项]"
-            echo ""
-            echo "选项:"
-            echo "  无参数      互动菜单"
-            echo "  claude      直接安装 Claude Code"
-            echo "  codex       直接安装 Codex CLI"
-            echo "  openclaw    直接安装 OpenClaw"
-            echo "  --update    更新脚本本身"
-            echo "  --version   查看版本"
-            exit 0
+        linux)
+            # Linux: 用 NodeSource
+            if command -v apt-get &>/dev/null; then
+                curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - 2>/dev/null
+                sudo apt-get install -y -qq nodejs 2>/dev/null && NODE_OK=true
+            elif command -v dnf &>/dev/null; then
+                curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - 2>/dev/null
+                sudo dnf install -y nodejs 2>/dev/null && NODE_OK=true
+            elif command -v pacman &>/dev/null; then
+                sudo pacman -S --noconfirm nodejs npm 2>/dev/null && NODE_OK=true
+            fi
             ;;
     esac
 
-    check_self_update
+    if [ "$NODE_OK" = true ] && command -v node &>/dev/null; then
+        echo -e "  ✅ Node.js 安装成功！版本：$(node -v)"
+    else
+        echo -e "  ${YELLOW}⚠️  Node.js 自动安装失败，但 Claude Code 不受影响（它自带运行环境）${NC}"
+        echo -e "  ${YELLOW}   Codex 和 OpenClaw 需要 Node.js，你可以之后手动安装：${NC}"
+        echo -e "  ${YELLOW}   访问 https://nodejs.org 下载安装包（和装微信一样简单）${NC}"
+    fi
+fi
 
-    # 互动菜单循环
-    while true; do
-        show_menu
-        read -r -p "$(echo -e "${BLUE}[?]${NC} 请输入选项 [0-5]: ")" choice
+echo ""
 
-        case "$choice" in
-            1|2|3) install_single "$choice" ;;
-            4)     install_all ;;
-            5)     show_comparison ;;
-            0)     echo ""; echo -e "${GREEN}再见！如有问题请访问 ${REPO_URL}/issues${NC}"; exit 0 ;;
-            *)     print_warning "无效选项，请输入 0-5" ;;
-        esac
+# ==================== 第三步：安装 AI 助手 ====================
+echo -e "${BLUE}━━━ 第三步：安装 AI 编程助手 ━━━${NC}"
+echo -e "  （这是这次的主角——三款最火的 AI 编程助手）"
+echo ""
 
-        echo ""
-        read -r -p "  按回车返回菜单..."
-    done
-}
+INSTALLED_COUNT=0
 
-main "$@"
+# ---- Claude Code ----
+echo -e "${BOLD}  🧠 安装 Claude Code ...${NC}"
+if command -v claude &>/dev/null; then
+    echo -e "    ${GREEN}✅ Claude Code 已安装${NC}（$(claude --version 2>/dev/null | head -1 || echo '')）"
+    INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+else
+    if curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null; then
+        # 确保 PATH 包含 ~/.local/bin
+        export PATH="$HOME/.local/bin:$PATH"
+        if command -v claude &>/dev/null; then
+            echo -e "    ${GREEN}✅ Claude Code 安装成功！${NC}"
+            INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+        fi
+    else
+        echo -e "    ${YELLOW}⚠️  Claude Code 安装失败（可能是网络问题），请稍后重试${NC}"
+    fi
+fi
+
+# ---- Codex ----
+echo -e "${BOLD}  ⚡ 安装 Codex ...${NC}"
+if [ "$NODE_OK" = true ]; then
+    if command -v codex &>/dev/null; then
+        echo -e "    ${GREEN}✅ Codex 已安装${NC}（$(codex --version 2>/dev/null | head -1 || echo '')）"
+        INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    else
+        # 国内网络自动切镜像
+        if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
+            npm config set registry https://registry.npmmirror.com 2>/dev/null || true
+        fi
+        if npm install -g @openai/codex 2>/dev/null; then
+            echo -e "    ${GREEN}✅ Codex 安装成功！${NC}"
+            INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+        else
+            echo -e "    ${YELLOW}⚠️  Codex 安装失败（可能是网络问题），请稍后重试${NC}"
+        fi
+    fi
+else
+    echo -e "    ${YELLOW}⏭️  跳过（需要 Node.js，安装失败）${NC}"
+fi
+
+# ---- OpenClaw ----
+echo -e "${BOLD}  🦞 安装 OpenClaw ...${NC}"
+if command -v openclaw &>/dev/null; then
+    echo -e "    ${GREEN}✅ OpenClaw 已安装${NC}（$(openclaw --version 2>/dev/null | head -1 || echo '')）"
+    INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+elif command -v opencode &>/dev/null; then
+    echo -e "    ${GREEN}✅ OpenClaw 已安装${NC}（$(opencode --version 2>/dev/null | head -1 || echo '')）"
+    INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+else
+    case "$OS_TYPE" in
+        mac)
+            if command -v brew &>/dev/null; then
+                brew install opencode 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+            fi
+            ;;
+        linux)
+            curl -fsSL https://opencode.ai/install | bash 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+            ;;
+    esac
+    # npm 兜底
+    if [ "$NODE_OK" = true ] && ! command -v openclaw &>/dev/null && ! command -v opencode &>/dev/null; then
+        if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
+            npm config set registry https://registry.npmmirror.com 2>/dev/null || true
+        fi
+        npm install -g opencode-ai@latest 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    fi
+    if command -v openclaw &>/dev/null || command -v opencode &>/dev/null; then
+        echo -e "    ${GREEN}✅ OpenClaw 安装成功！${NC}"
+    else
+        echo -e "    ${YELLOW}⚠️  OpenClaw 安装失败，不影响前两个使用${NC}"
+    fi
+fi
+
+echo ""
+
+# ==================== 第四步：配置 PATH ====================
+echo -e "${BLUE}━━━ 第四步：收尾配置 ━━━${NC}"
+
+SHELL_RC=""
+case "$SHELL" in
+    */zsh)  SHELL_RC="$HOME/.zshrc" ;;
+    */bash) SHELL_RC="$HOME/.bashrc" ;;
+    *)      SHELL_RC="$HOME/.profile" ;;
+esac
+
+PATH_UPDATED=false
+if [ -d "$HOME/.local/bin" ] && ! echo "$PATH" | grep -q ".local/bin"; then
+    export PATH="$HOME/.local/bin:$PATH"
+    if ! grep -q ".local/bin" "$SHELL_RC" 2>/dev/null; then
+        echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+        PATH_UPDATED=true
+    fi
+fi
+
+NPM_PREFIX=$(npm prefix -g 2>/dev/null || echo "")
+if [ -n "$NPM_PREFIX" ] && [ -d "$NPM_PREFIX/bin" ]; then
+    export PATH="$NPM_PREFIX/bin:$PATH"
+fi
+
+if [ "$PATH_UPDATED" = true ]; then
+    echo -e "  ✅ 已将 AI 助手加入系统路径（重启终端后永久生效）"
+else
+    echo -e "  ✅ 路径配置完成"
+fi
+echo ""
+
+# ==================== 完成 ====================
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║                  🎉  安装完成！                          ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+
+if [ $INSTALLED_COUNT -eq 3 ]; then
+    echo -e "${CYAN}║       三款 AI 助手全部安装成功！                         ║${NC}"
+elif [ $INSTALLED_COUNT -ge 1 ]; then
+    echo -e "${CYAN}║       已安装 ${INSTALLED_COUNT} 款 AI 助手                        ║${NC}"
+else
+    echo -e "${CYAN}║       安装遇到一些问题，但别担心——                        ║${NC}"
+    echo -e "${CYAN}║       请将上面黄色部分的文字截图发给卖家帮你排查          ║${NC}"
+fi
+
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║   ${BOLD}📖 怎么开始使用？${NC}${CYAN}                                     ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+
+if command -v claude &>/dev/null; then
+    echo -e "${CYAN}║   Claude Code: 打开终端 → 输入 ${GREEN}claude${CYAN} → 回车            ║${NC}"
+fi
+if command -v codex &>/dev/null; then
+    echo -e "${CYAN}║   Codex:       打开终端 → 输入 ${GREEN}codex${CYAN} → 回车             ║${NC}"
+fi
+if command -v openclaw &>/dev/null || command -v opencode &>/dev/null; then
+    echo -e "${CYAN}║   OpenClaw:    打开终端 → 输入 ${GREEN}openclaw${CYAN} → 回车         ║${NC}"
+fi
+
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║   ${BOLD}❓ 常见问题${NC}${CYAN}                                          ║${NC}"
+echo -e "${CYAN}║   1. 输入命令提示"找不到" → 关掉终端重新打开即可         ║${NC}"
+echo -e "${CYAN}║   2. 网络慢装不上 → 换成手机热点试试                      ║${NC}"
+echo -e "${CYAN}║   3. 其他问题 → 截图发给卖家，24 小时内回复               ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║   ${BOLD}🔄 更新方法${NC}${CYAN}                                          ║${NC}"
+echo -e "${CYAN}║   再次运行安装脚本即可自动升级到最新版                     ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}║   仓库地址: ${REPO}                                        ║${NC}"
+echo -e "${CYAN}║                                                          ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${GREEN}感谢购买！如有问题请到仓库提 Issue 或直接联系卖家。${NC}"
+echo ""

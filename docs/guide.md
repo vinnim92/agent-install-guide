@@ -1,259 +1,229 @@
-# AI Coding Agent 全平台安装指南
+# AI 编程助手安装指南
 
-> 三款主流 AI 编程助手 · Windows / macOS / Linux · 从零到能用
-
----
-
-## 目录
-
-1. [总览：三款 Agent 怎么选](#总览)
-2. [Claude Code 安装](#一claude-code)
-3. [Codex CLI 安装](#二codex-cli)
-4. [OpenClaw 安装](#三openclaw)
-5. [常见问题速查](#四常见问题速查)
+> 会打字就会装 · 三款最火 AI 编程助手 · Mac / Windows 通用
 
 ---
 
-## 总览
+## 写在前面（请花 30 秒读完）
+
+这份指南写给**完全不懂电脑的人**。
+
+你不需要懂任何技术名词。你只需要会三件事：
+
+| 技能 | 难度 |
+|------|------|
+| 打开电脑 | ⭐ |
+| 复制粘贴 | ⭐ |
+| 按回车键 | ⭐ |
+
+**整个过程就像给手机安装一个 App。**
+
+如果中途遇到任何问题，截图发给卖家。不要慌，都能解决。
+
+---
+
+## 第一章：三款 AI 助手都是什么？
+
+想象一下：有一个 AI 朋友住在你的电脑里，你跟它说"帮我写个网页"，它就写好了。你让它"帮我查个 bug"，它就帮你查了。这就是 AI 编程助手。
+
+本指南包含三款最火的：
 
 | | Claude Code | Codex | OpenClaw |
 |---|---|---|---|
-| **开发商** | Anthropic | OpenAI | 微软（开源）|
-| **一句话** | 最省心 | OpenAI 原生 | 最灵活 |
-| **免费可用** | ✗（需付费） | ✗（Plus 起步） | ✓（有免费模型） |
-| **Node.js 要求** | 无（自带运行时） | ≥ v22 | ≥ v22 |
-| **适合谁** | 追求体验、预算充足 | ChatGPT 深度用户 | 想省钱、爱折腾 |
+| **谁做的** | Anthropic 公司 | OpenAI 公司（做 ChatGPT 的） | 微软（开源免费） |
+| **聪明程度** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **要不要钱** | 需要订阅 | 需要 ChatGPT Plus | 有免费模型 |
+| **一句话总结** | 最聪明的那个 | ChatGPT 用户首选 | 最省钱的选择 |
 
-**快速决策**：预算充足 → Claude Code / 有 ChatGPT Plus → Codex / 想免费体验 → OpenClaw
+**不知道选哪个？** 三个都装上，想用哪个用哪个。安装脚本一次全部搞定。
 
 ---
 
-## 一、Claude Code
+## 第二章：准备工作
 
-### 前置条件
+### 2.1 打开"终端"
 
-- **账号**：Claude Pro/Max/Team/Enterprise，或 Anthropic API Key
-- **系统**：macOS 13+ / Ubuntu 20.04+ / Windows 10/11（需 Git for Windows）
-- **Git**：必须安装（Windows 需 [Git for Windows](https://git-scm.com/download/win)）
+"终端"是电脑上一个黑底的窗口，你在里面输入命令，电脑就会执行。听起来吓人，但其实你只需要复制粘贴。
 
-### macOS 安装
+#### Mac 用户
 
-**方法一：官方脚本（推荐）**
-```bash
-curl -fsSL https://claude.ai/install.sh | bash
+1. 点击屏幕右上角的**放大镜图标**（搜索）
+2. 输入：`终端`
+3. 看到黑色的图标，点开它
+4. 你会看到一个**白字黑底**的窗口
+
+> （配图：Mac 打开终端的三步截图）
+
+#### Windows 用户
+
+1. 同时按下键盘上的 **⊞ 键** 和 **R 键**（⊞ 就是 Windows 图标那个键，一般在键盘左下角）
+2. 在弹出的框里输入：`powershell`
+3. 点"确定"
+4. 你会看到一个**蓝底白字**的窗口
+
+> （配图：Windows 打开 PowerShell 的三步截图）
+
+---
+
+## 第三章：一键安装（核心步骤）
+
+### 3.1 复制下面这行命令
+
+**Mac 用户**请复制这行：
+
+```
+curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
 ```
 
-**方法二：Homebrew**
-```bash
-brew install --cask claude-code
+**Windows 用户**请复制这行：
+
+```
+iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
 ```
 
-**验证**：
+### 3.2 粘贴到终端
+
+- **Mac**：在终端窗口里按 `Cmd + V`
+- **Windows**：在 PowerShell 窗口里按 `Ctrl + V`（或直接右键粘贴）
+
+### 3.3 按回车
+
+按下键盘上的 **Enter（回车键）**。你会看到屏幕上开始滚动文字——这是脚本在工作。
+
+### 3.4 等待完成
+
+整个过程大约 **5 到 10 分钟**，取决于你的网速。
+
+过程中你**完全不用操作**。脚本会自动：
+- 检查你的电脑是什么系统
+- 安装必需的工具
+- 逐个安装三款 AI 助手
+- 配置好一切
+
+**你唯一需要操作的时刻**：极少数情况下，Mac 会弹出一个小窗口问你要不要安装"开发者工具"——点**"安装"**就行。
+
+### 3.5 看到这个画面就是成功了
+
+脚本跑完后，你会看到：
+
+```
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║                  🎉  安装完成！                          ║
+║                                                          ║
+║       三款 AI 助手全部安装成功！                         ║
+║                                                          ║
+║   📖 怎么开始使用？                                     ║
+║                                                          ║
+║   Claude Code: 打开终端 → 输入 claude → 回车            ║
+║   Codex:       打开终端 → 输入 codex → 回车             ║
+║   OpenClaw:    打开终端 → 输入 openclaw → 回车          ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝
+```
+
+如果最后显示"三款全部安装成功"——恭喜，你完成了！
+
+如果显示"已安装 X 款"（少于 3 款）——也没关系，可能是网络问题。把那些黄色提示截图发给卖家帮你看看。
+
+---
+
+## 第四章：安装完成！怎么开始用？
+
+### 4.1 使用 Claude Code
+
+1. 打开终端（和之前一样的方法）
+2. 输入：`claude`
+3. 按回车
+4. 第一次使用会弹出浏览器让你登录 Claude 账号
+5. 登录完成后回到终端，就可以和 AI 对话了
+
+**举个例子**——你可以这样跟 Claude Code 说话：
+
+> "帮我做一个个人博客网站"
+
+然后它就会开始写代码。
+
+### 4.2 使用 Codex
+
+1. 打开终端，输入：`codex`
+2. 第一次使用弹出浏览器登录 ChatGPT 账号
+3. 登录完成，开始使用
+
+### 4.3 使用 OpenClaw
+
+1. 打开终端，输入：`openclaw gateway start`
+2. 让它在后台运行（保持窗口打开）
+3. 打开浏览器，访问：http://localhost:18789
+4. 在网页上选择和 AI 对话
+
+---
+
+## 第五章：常见问题
+
+### Q1：输入 claude 后提示"command not found"或"找不到"？
+
+**原因**：终端需要刷新一下。
+
+**解决**：
+1. 关掉终端窗口
+2. 重新打开终端（回到第二章的方法）
+3. 再试一次
+
+如果还不行，输入这行：
 ```bash
-claude --version
-# 如果提示 command not found:
 export PATH="$HOME/.local/bin:$PATH"
-source ~/.zshrc
 ```
+然后重试 `claude`。
 
-### Linux 安装（含 WSL2）
+### Q2：安装到一半网络错误怎么办？
+
+**可能原因**：你当前的网络访问国外网站较慢。
+
+**解决办法**：
+- 方法一：断开当前 WiFi，换成**手机热点**，重试
+- 方法二：如果你会用 VPN，开全局模式后重试
+
+### Q3：我不想用了，怎么卸载？
+
+打开终端，输入以下命令：
 
 ```bash
-curl -fsSL https://claude.ai/install.sh | bash
+# 卸载 Claude Code
+rm -rf ~/.local/bin/claude ~/.claude/
+
+# 卸载 Codex
+npm uninstall -g @openai/codex
+
+# 卸载 OpenClaw
+npm uninstall -g opencode-ai
 ```
 
-Alpine Linux 额外步骤：
-```bash
-apk add libgcc libstdc++ ripgrep
-```
+### Q4：怎么更新到最新版本？
 
-### Windows 安装
-
-**PowerShell（推荐）**：
-```powershell
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
-irm https://claude.ai/install.ps1 | iex
-```
-
-**CMD**：
-```cmd
-curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
-```
-
-**WinGet**：
-```powershell
-winget install Anthropic.ClaudeCode
-```
-
-### 首次启动
-
-```bash
-claude                # 弹出浏览器 → 登录 → 复制授权码 → 完成
-claude doctor         # 环境诊断
-```
+再运行一次安装命令即可，脚本会自动覆盖安装最新版本。
 
 ---
 
-## 二、Codex CLI
+## 第六章：三个 AI 助手怎么选择？
 
-### 前置条件
-
-- **Node.js ≥ v22**（硬性要求）
-- **账号**：ChatGPT Plus/Pro/Team，或 OpenAI API Key
-- **Windows 用户**：强烈推荐 WSL2
-
-### Step 1: 安装 Node.js 22
-
-**macOS**：
-```bash
-brew install node@22
-```
-
-**Ubuntu/Debian**：
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt install -y nodejs
-```
-
-**Windows**：访问 https://nodejs.org 下载 LTS 安装包。
-
-**使用 nvm（所有平台通用）**：
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc   # 或 ~/.zshrc
-nvm install 22
-nvm use 22
-nvm alias default 22
-```
-
-### Step 2: 安装 Codex
-
-```bash
-npm install -g @openai/codex
-codex --version
-```
-
-**国内用户**：先切镜像：
-```bash
-npm config set registry https://registry.npmmirror.com
-```
-
-### Step 3: 登录使用
-
-```bash
-codex                    # 弹浏览器登录 ChatGPT
-# 或 API Key:
-export OPENAI_API_KEY="sk-xxxxxxxx"
-codex login --with-api-key    # 输 API Key
-```
-
-### Windows 用户特别注意
-
-Codex 在 Windows 原生环境为实验性支持，**推荐在 WSL2 中安装**：
-
-```powershell
-# 管理员 PowerShell
-wsl --install                # 安装 WSL2
-```
-然后进入 WSL 终端，按 Linux 流程安装。
+| 你是什么情况 | 推荐用哪个 |
+|---|---|
+| 愿意付费，想要最好的体验 | **Claude Code** |
+| 已经有 ChatGPT Plus 会员 | **Codex** |
+| 不想花钱，想白嫖 | **OpenClaw**（有免费模型） |
+| 不确定，都试试 | **三个都装**，反正免费安装 |
 
 ---
 
-## 三、OpenClaw
+## 写在最后
 
-### 前置条件
+这份指南会持续更新。AI 助手版本更新后，你只需要重新运行一次安装命令，就能获得最新版。
 
-- **Node.js ≥ v22**（推荐 v24 LTS）
-- **账号**：无需！OpenClaw 内置免费模型，零成本上手
+有任何问题，请直接联系卖家（闲鱼消息 24 小时内回复），或者在 GitHub 上提 Issue：
 
-### macOS 安装
-
-```bash
-# 推荐
-brew install opencode
-
-# 或 GitHub 桌面版
-brew install --cask opencode-desktop
-```
-
-### Linux 安装
-
-```bash
-# 推荐
-curl -fsSL https://opencode.ai/install | bash
-
-# Arch Linux
-sudo pacman -S opencode
-
-# NixOS
-nix-env -iA nixpkgs.opencode
-```
-
-### Windows 安装
-
-```powershell
-# Scoop
-scoop install opencode
-
-# Chocolatey
-choco install opencode
-
-# npm
-npm install -g opencode-ai@latest
-```
-
-### 初始化（安装后必须）
-
-```bash
-# 配置本地模式
-openclaw config set gateway.mode local
-
-# 安装守护进程（开机自启）
-openclaw gateway install
-openclaw gateway start
-
-# 验证
-openclaw --version
-```
-
-访问 Web 控制台：http://localhost:18789
+**https://github.com/vinnim92/agent-install-guide/issues**
 
 ---
 
-## 四、常见问题速查
-
-### 网络相关
-
-| 问题 | 解决 |
-|------|------|
-| GitHub 连不上 | 开 VPN / 换手机热点 |
-| npm 下载慢 | `npm config set registry https://registry.npmmirror.com` |
-| 国内 Windows 用 OpenClaw | `iwr -useb https://clawd.org.cn/install.ps1 \| iex` |
-
-### 命令找不到
-
-```bash
-# Claude Code
-export PATH="$HOME/.local/bin:$PATH"
-
-# Codex / OpenClaw
-export PATH="$(npm prefix -g)/bin:$PATH"
-```
-
-### 版本不对
-
-```bash
-# 多版本冲突时，找到所有安装位置
-which -a claude    # Claude Code
-which -a codex     # Codex
-which -a openclaw  # OpenClaw
-```
-
-### 详细排查
-
-更多问题请参考随包附带的 `troubleshooting.md`，或提 Issue：
-https://github.com/vinnim92/agent-install-guide/issues
-
----
-
-> **版本**：v1.0.0 ｜ **更新日期**：2026-05-25 ｜ **来源**：https://github.com/vinnim92/agent-install-guide
+> 版本：v2.0 ｜ 2026-05-25 ｜ 永远保持更新

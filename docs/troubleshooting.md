@@ -1,202 +1,107 @@
-# Agent 安装指南 · 常见问题排查
+# 常见问题排查（零基础版）
 
-## 网络问题
+## 问题 1：提示"找不到命令"
 
-### GitHub 访问慢 / 连不上
+输入 `claude` 或 `codex` 后，提示 `command not found` 或"不是内部命令"。
 
-**现象**：安装脚本卡住、curl/wget 超时。
+**怎么办**：
 
-**解决方案**：
+1. 把终端窗口关掉
+2. 重新打开终端
+3. 再试一次
 
-| 系统 | 操作 |
-|------|------|
-| **通用** | 开全局代理/VPN |
-| **通用** | 换手机热点试试 |
-| **国内 Windows** | 使用镜像: `iwr -useb https://clawd.org.cn/install.ps1 \| iex` |
-| **国内 npm** | `npm config set registry https://registry.npmmirror.com` |
-
-### npm 安装时报 EACCES 权限错误
+如果还不行，在终端里输入这行：
 
 ```bash
-# 方法一：设置全局路径
-mkdir -p ~/.npm-global
-npm config set prefix '~/.npm-global'
-echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.zshrc
-source ~/.zshrc
+export PATH="$HOME/.local/bin:$PATH"
+```
 
-# 方法二：修改目录权限（不推荐）
-sudo chown -R $(whoami) /usr/local/lib/node_modules
+然后重试。
+
+---
+
+## 问题 2：安装脚本跑到一半卡住了
+
+**怎么办**：
+
+1. 按键盘 `Ctrl + C`（Mac 和 Windows 都是这个键）
+2. 重新运行安装命令
+
+---
+
+## 问题 3：安装时报网络错误
+
+比如提示 `curl: (7) Failed to connect` 或 `Connection refused`。
+
+**原因**：你当前的网络访问国外服务器较慢。
+
+**解决办法**：
+- 断开当前 WiFi
+- 打开手机热点
+- 电脑连上手机热点
+- 重新运行安装命令
+
+---
+
+## 问题 4：Mac 弹出"需要安装开发者工具"
+
+安装过程中可能会弹出一个小窗口：
+
+> "需要安装命令行开发者工具"
+
+点**"安装"**按钮。大约 2 分钟后装好，脚本会自动继续。
+
+---
+
+## 问题 5：Windows 提示"执行策略限制"
+
+运行 PowerShell 脚本时提示：
+
+> "无法加载文件，因为在此系统上禁止运行脚本"
+
+**怎么办**：先输入下面这行，回车，然后再运行安装命令：
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force
 ```
 
 ---
 
-## 安装后找不到命令
+## 问题 6：如何卸载
 
-### `claude: command not found`
+### Mac / Linux 用户
 
-```bash
-# Claude Code 安装在:
-# macOS/Linux:  ~/.local/bin/claude
-# Windows:       %USERPROFILE%\.local\bin\claude.exe
-
-# 修复:
-export PATH="$HOME/.local/bin:$PATH"    # 临时
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc  # 永久(macOS)
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc  # 永久(Linux)
-```
-
-### `codex: command not found`
+打开终端，输入：
 
 ```bash
-# 检查 npm 全局路径
-npm prefix -g
-# 应该显示类似 /usr/local 或 ~/.npm-global
-
-# 将 npm 全局 bin 加入 PATH:
-export PATH="$(npm prefix -g)/bin:$PATH"
-```
-
-### `openclaw: command not found`
-
-```bash
-# 同上，检查 npm 前缀
-npm prefix -g
-export PATH="$(npm prefix -g)/bin:$PATH"
-```
-
----
-
-## Claude Code 常见问题
-
-### macOS 安装后提示"无法验证开发者"
-
-**解决**：系统偏好设置 → 安全性与隐私 → 通用 → 点击"仍要打开"。
-
-### WSL2 中 OAuth 浏览器打不开
-
-```bash
-# 指定 Windows 浏览器路径
-export BROWSER="/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
-# 或按 c 键复制 URL，手动粘贴到浏览器
-```
-
-### Alpine Linux 报错
-
-```bash
-apk add libgcc libstdc++ ripgrep
-# 然后重试安装
-```
-
----
-
-## Codex 常见问题
-
-### `node -v` 版本低于 22
-
-```bash
-# 使用 nvm 升级（推荐）
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-source ~/.bashrc  # 或 ~/.zshrc
-nvm install 22
-nvm use 22
-nvm alias default 22
-
-# 验证
-node -v  # 应显示 v22.x.x
-```
-
-### Windows 原生沙盒报权限错误
-
-- 以管理员身份运行 PowerShell
-- 或改用 WSL2（强烈推荐）
-
-### WSL2 中 `/mnt/c/` 下项目运行慢
-
-**原因**：跨文件系统 IO 性能差。
-
-**解决**：把项目移到 Linux 文件系统：
-```bash
-mkdir -p ~/code
-cd ~/code
-# 把项目克隆到这里，不要放 /mnt/c/ 下
-```
-
----
-
-## OpenClaw 常见问题
-
-### Node.js 版本不兼容
-
-OpenClaw 需要 Node.js >= 22（推荐 v24 LTS）。升级方法同上 Codex 章节。
-
-### Linux 编译失败
-
-Ubuntu/Debian 缺少编译工具链：
-```bash
-sudo apt update
-sudo apt install -y gcc g++ make python3-venv libssl-dev
-```
-
-### Gateway 启动失败
-
-```bash
-# 检查端口是否被占用
-lsof -i :18789
-
-# 强制重启
-openclaw gateway stop
-openclaw gateway start
-
-# 查看日志
-openclaw gateway logs
-```
-
-### 首次启动没有模型
-
-OpenClaw 支持 75+ 提供商。无需 API Key 也有免费模型可用：
-```bash
-openclaw config set gateway.mode local
-openclaw gateway start
-# 访问 http://localhost:18789 在 Web 控制台选择免费模型
-```
-
----
-
-## 卸载方法
-
-### Claude Code
-```bash
-# macOS (Homebrew)
-brew uninstall --cask claude-code
-
-# macOS/Linux (官方安装)
+# 卸载 Claude Code
 rm -rf ~/.local/bin/claude ~/.claude/
-```
 
-### Codex
-```bash
+# 卸载 Codex
 npm uninstall -g @openai/codex
-rm -rf ~/.codex/
+
+# 卸载 OpenClaw
+npm uninstall -g opencode-ai
 ```
 
-### OpenClaw
-```bash
+### Windows 用户
+
+```powershell
+# 卸载 Claude Code
+winget uninstall Anthropic.ClaudeCode
+
+# 卸载 Codex
+npm uninstall -g @openai/codex
+
+# 卸载 OpenClaw
 npm uninstall -g opencode-ai
-# 或 (macOS)
-brew uninstall opencode
-# 清理
-openclaw gateway uninstall
-rm -rf ~/.openclaw
 ```
 
 ---
 
-## 通用排查步骤
+## 问题 7：都不是我的问题，怎么办？
 
-如果以上方法都无法解决，按以下顺序排查：
+把终端窗口里的文字截图，发给卖家。24 小时内回复。
 
-1. **重启终端** — 很多问题重启就能解决
-2. **检查 PATH** — `echo $PATH`，确认安装目录在路径中
-3. **检查权限** — `ls -la ~/.local/bin/` 看文件是否存在
-4. **查看系统日志** — macOS: `Console.app`，Linux: `journalctl`
-5. **提 Issue** — https://github.com/vinnim92/agent-install-guide/issues
+或者去这里提交问题（需要 GitHub 账号）：
+https://github.com/vinnim92/agent-install-guide/issues

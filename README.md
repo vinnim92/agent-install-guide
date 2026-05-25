@@ -1,123 +1,69 @@
-# AI Coding Agent 全平台安装指南
+# AI 编程助手 · 零基础安装指南
 
-> 三款主流 AI 编程助手 · 一键安装脚本 + PDF 手册
+> 会复制粘贴就会装。三款最火 AI 编程助手，一行命令全部搞定。
 
-[![Version](https://img.shields.io/badge/version-v1.0.0-blue)](https://github.com/vinnim92/agent-install-guide/releases)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Version](https://img.shields.io/badge/version-v2.0-blue)](https://github.com/vinnim92/agent-install-guide/releases)
 
 ---
 
 ## 这是什么？
 
-一份面向**零基础用户**的 AI 编程助手安装指南，覆盖三款最主流的 AI Coding Agent：
+一份给**完全不会电脑的人**准备的 AI 编程助手安装包。
 
-| Agent | 开发商 | 特点 |
-|-------|--------|------|
-| **Claude Code** | Anthropic | 最省心，自带运行时，一行命令搞定 |
-| **Codex CLI** | OpenAI | ChatGPT 深度用户首选 |
-| **OpenClaw** 🦞 | 微软（开源） | 75+ 模型可选，有免费模型 |
+你不需要懂命令行、不需要知道什么是 Node.js、不需要配置任何东西。你只需要：
 
-支持 **Windows / macOS / Linux** 全平台。
+1. 复制一行命令
+2. 粘贴到黑窗口
+3. 按回车
+4. 等着完成
+
+**包含三款最火的 AI 编程助手**：
+
+- 🧠 **Claude Code** — Anthropic 出品，最聪明的 AI 程序员
+- ⚡ **Codex** — OpenAI 出品，ChatGPT 用户首选
+- 🦞 **OpenClaw** — 微软开源，有免费模型可用
 
 ---
 
 ## 一键安装
 
-### macOS / Linux
+### Mac 用户
+
+打开"终端"（点右上角🔍搜索"终端"），粘贴下面这行，回车：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
 ```
 
-### Windows (PowerShell)
+### Windows 用户
+
+按 `⊞ + R`，输入 `powershell`，粘贴下面这行，回车：
 
 ```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force
 iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
 ```
 
-运行后选择要安装的 Agent，脚本自动完成环境检测、安装、验证。
+脚本会自动处理一切，你等着就行。5-10 分钟完成。
 
 ---
 
-## 包含内容
+## 安装完成后
 
-```
-├── 📄 PDF 安装手册 (110页+)
-│   ├── 三款 Agent × 三大平台 = 9 个安装场景
-│   ├── 功能对比表 + 选型指南
-│   ├── 故障排查手册（30+ 常见问题）
-│   └── 国内网络优化指南
-│
-├── 🔧 一键安装脚本
-│   ├── install.sh        → macOS / Linux
-│   ├── install.ps1       → Windows PowerShell
-│   └── lib/              → 各 Agent 安装模块
-│
-└── 🔄 持续更新
-    └── Agent 版本更新 → 脚本 + PDF 同步更新
-```
+| AI 助手 | 启动命令 | 说明 |
+|---------|---------|------|
+| Claude Code | 终端输入 `claude` | 第一次会弹浏览器登录 |
+| Codex | 终端输入 `codex` | 第一次会弹浏览器登录 |
+| OpenClaw | 终端输入 `openclaw` | 打开浏览器访问 localhost:18789 |
 
 ---
 
-## 下载
+## 更新方法
 
-前往 [Releases](https://github.com/vinnim92/agent-install-guide/releases) 页面下载最新版：
-
-- `agent-install-guide-vX.X.X.zip` — PDF + 脚本完整包
+再运行一次安装命令即可更新到最新版。
 
 ---
 
-## 项目结构
+## 有问题？
 
-```
-agent-install-guide/
-├── scripts/
-│   ├── install.sh              # macOS/Linux 统一入口
-│   ├── install.ps1             # Windows PowerShell 入口
-│   └── lib/
-│       ├── utils.sh            # 公共函数库
-│       ├── check-prereqs.sh    # 环境检测
-│       ├── install-claude-code.sh
-│       ├── install-codex.sh
-│       └── install-openclaw.sh
-├── docs/
-│   ├── guide.md                # PDF 源文件
-│   └── troubleshooting.md      # 故障排查
-├── xianyu-materials/
-│   ├── description.md          # 闲鱼商品描述
-│   └── title-candidates.txt    # 标题候选
-└── .github/workflows/
-    └── release.yml             # 自动构建 PDF + Release
-```
-
----
-
-## 本地开发
-
-```bash
-git clone https://github.com/vinnim92/agent-install-guide.git
-cd agent-install-guide
-
-# 测试脚本
-bash scripts/install.sh           # 互动菜单
-bash scripts/install.sh claude    # 直接安装 Claude Code
-bash scripts/install.sh codex     # 直接安装 Codex
-bash scripts/install.sh openclaw  # 直接安装 OpenClaw
-
-# 生成 PDF（需安装 pandoc）
-brew install pandoc
-pandoc docs/guide.md -o guide.pdf --pdf-engine=xelatex
-```
-
----
-
-## License
-
-MIT © 2026
-
----
-
-## 闲鱼商品页
-
-本仓库关联闲鱼商品：**[AI 编程助手全平台安装指南](https://github.com/vinnim92/agent-install-guide)**
+- 截图发给卖家（闲鱼 24 小时内回复）
+- 或提 [GitHub Issue](https://github.com/vinnim92/agent-install-guide/issues)
