@@ -24,6 +24,7 @@ jobs:
       - name: Build Per-Agent PDFs
         run: |
           mkdir -p release/pdf
+          TODAY=$(date '+%Y-%m-%d')
 
           pandoc docs/agents/claude-code.md \
             -o release/pdf/install-claude-code.pdf \
@@ -31,9 +32,8 @@ jobs:
             -V mainfont="Noto Sans" \
             -V CJKmainfont="Noto Sans CJK SC" \
             -V geometry:margin=0.8in \
-            -V title="安装 Claude Code" \
-            --metadata date="$(date '+%Y-%m-%d')"
-          echo "claude-code.pdf built"
+            -M date="$TODAY"
+          echo "OK: claude-code.pdf"
 
           pandoc docs/agents/codex.md \
             -o release/pdf/install-codex.pdf \
@@ -41,9 +41,8 @@ jobs:
             -V mainfont="Noto Sans" \
             -V CJKmainfont="Noto Sans CJK SC" \
             -V geometry:margin=0.8in \
-            -V title="安装 Codex" \
-            --metadata date="$(date '+%Y-%m-%d')"
-          echo "codex.pdf built"
+            -M date="$TODAY"
+          echo "OK: codex.pdf"
 
           pandoc docs/agents/openclaw.md \
             -o release/pdf/install-openclaw.pdf \
@@ -51,37 +50,26 @@ jobs:
             -V mainfont="Noto Sans" \
             -V CJKmainfont="Noto Sans CJK SC" \
             -V geometry:margin=0.8in \
-            -V title="安装 OpenClaw" \
-            --metadata date="$(date '+%Y-%m-%d')"
-          echo "openclaw.pdf built"
+            -M date="$TODAY"
+          echo "OK: openclaw.pdf"
 
       - name: Build Combined Guide PDF
         run: |
-          echo '---
-title: "AI 编程助手 · 零基础安装指南"
-date: "'$(date '+%Y-%m-%d')'"
----
-' > release/combined.md
+          TODAY=$(date '+%Y-%m-%d')
 
-          cat docs/guide.md >> release/combined.md
-          echo -e "\n\n\\newpage\n\n" >> release/combined.md
-          cat docs/agents/claude-code.md >> release/combined.md
-          echo -e "\n\n\\newpage\n\n" >> release/combined.md
-          cat docs/agents/codex.md >> release/combined.md
-          echo -e "\n\n\\newpage\n\n" >> release/combined.md
-          cat docs/agents/openclaw.md >> release/combined.md
-          echo -e "\n\n\\newpage\n\n" >> release/combined.md
-          cat docs/troubleshooting.md >> release/combined.md
-
-          pandoc release/combined.md \
+          pandoc docs/guide.md \
+            docs/agents/claude-code.md \
+            docs/agents/codex.md \
+            docs/agents/openclaw.md \
+            docs/troubleshooting.md \
             -o release/pdf/install-guide-full.pdf \
             --pdf-engine=xelatex \
             -V mainfont="Noto Sans" \
             -V CJKmainfont="Noto Sans CJK SC" \
             -V geometry:margin=1in \
-            --toc --toc-depth=1 \
-            --metadata date="$(date '+%Y-%m-%d')"
-          echo "full-guide.pdf built"
+            -M date="$TODAY" \
+            --toc --toc-depth=1
+          echo "OK: full-guide.pdf"
 
       - name: Validate Scripts
         run: |

@@ -100,6 +100,14 @@ esac
 echo -e "  ✅ 处理器架构：${GREEN}${ARCH}${NC}"
 echo ""
 
+# ---- 确定 Shell 配置文件（提前定义，后续步骤会用到）----
+SHELL_RC=""
+case "$SHELL" in
+    */zsh)  SHELL_RC="$HOME/.zshrc" ;;
+    */bash) SHELL_RC="$HOME/.bashrc" ;;
+    *)      SHELL_RC="$HOME/.profile" ;;
+esac
+
 # ==================== 第二步：安装基础工具 ====================
 echo -e "${BLUE}━━━ 第二步：安装必要的系统工具 ━━━${NC}"
 echo -e "  （这些是电脑运行 AI 助手需要的基础组件，全部自动安装）"
@@ -316,13 +324,6 @@ echo ""
 
 # ==================== 第四步：配置 PATH ====================
 echo -e "${BLUE}━━━ 第四步：收尾配置 ━━━${NC}"
-
-SHELL_RC=""
-case "$SHELL" in
-    */zsh)  SHELL_RC="$HOME/.zshrc" ;;
-    */bash) SHELL_RC="$HOME/.bashrc" ;;
-    *)      SHELL_RC="$HOME/.profile" ;;
-esac
 
 PATH_UPDATED=false
 if [ -d "$HOME/.local/bin" ] && ! echo "$PATH" | grep -q ".local/bin"; then
