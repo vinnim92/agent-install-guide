@@ -8,6 +8,7 @@
 # ============================================================
 
 $ErrorActionPreference = "Continue"
+Set-ExecutionPolicy Bypass -Scope Process -Force
 
 Clear-Host
 Write-Host ""
