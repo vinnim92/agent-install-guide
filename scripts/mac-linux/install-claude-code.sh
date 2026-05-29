@@ -3,7 +3,7 @@
 # Claude Code · Mac/Linux 一键安装器
 #
 # 用法（复制下面这行到终端回车）:
-#   curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/mac-linux/install-claude-code.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/mac-linux/install-claude-code.sh | bash
 # ============================================================
 
 set -e

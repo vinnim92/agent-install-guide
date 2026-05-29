@@ -36,7 +36,7 @@
 打开"终端"（点右上角🔍搜索"终端"），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.sh | bash
 ```
 
 ### Windows 用户
@@ -44,7 +44,7 @@ curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/s
 按 `⊞ + R`，输入 `powershell`，粘贴下面这行，回车：
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.ps1 | iex
 ```
 
 脚本会自动处理一切，你等着就行。5-10 分钟完成。

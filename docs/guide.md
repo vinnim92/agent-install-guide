@@ -43,13 +43,13 @@
 ### Mac
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.sh | bash
 ```
 
 ### Windows
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.ps1 | iex
 ```
 
 > ⏳ 10 分钟全部搞定。脚本自动检测系统、自动安装依赖、自动装好三款。

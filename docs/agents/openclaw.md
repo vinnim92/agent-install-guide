@@ -23,7 +23,7 @@
 打开「终端」（右上角🔍搜索"终端"），粘贴下面这行，按回车：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/mac-linux/install-openclaw.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/mac-linux/install-openclaw.sh | bash
 ```
 
 ### Windows 用户
@@ -31,7 +31,7 @@ curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/s
 按 `⊞ + R`，输入 `powershell`，粘贴下面这行，按回车：
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/windows/install-openclaw.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/windows/install-openclaw.ps1 | iex
 ```
 
 > ⏳ **等 3-5 分钟**。屏幕上会滚动文字——这是脚本在自动工作。

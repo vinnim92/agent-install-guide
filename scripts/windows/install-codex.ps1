@@ -4,7 +4,7 @@
 # 用法:
 #   1. 按 ⊞+R → 输入 powershell → 回车
 #   2. 粘贴下面这行 → 回车:
-#      iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/windows/install-codex.ps1 | iex
+#      iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/windows/install-codex.ps1 | iex
 # ============================================================
 
 Clear-Host

@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # ---------- 全局变量 ----------
 REPO_URL="https://github.com/vinnim92/agent-install-guide"
-RAW_BASE="https://raw.githubusercontent.com/vinnim92/agent-install-guide/main"
+RAW_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main"
 VERSION_URL="${RAW_BASE}/VERSION"
 CURRENT_VERSION="v2.0.0"
 OS_TYPE=""

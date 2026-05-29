@@ -3,7 +3,7 @@
 # AI 编程助手 · 零基础一键安装器
 #
 # 用法（复制下面这行到终端回车）:
-#   curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.sh | bash
 #
 # 目标用户：完全不会命令行的普通人
 # 设计原则：不要求用户懂任何技术名词，每一步都自动完成
