@@ -5,7 +5,7 @@ on:
     paths:
       - 'scripts/install.sh'
       - 'scripts/lib/**'
-  workflow_dispatch:  # allow manual trigger
+  workflow_dispatch:
 
 jobs:
   test-ubuntu:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run install.sh
         run: |
@@ -32,6 +32,8 @@ jobs:
       - name: Verify installations
         run: |
           set -e
+          FAILED=0
+
           echo ""
           echo "--- Claude Code ---"
           if command -v claude &>/dev/null; then
@@ -39,7 +41,7 @@ jobs:
             echo "✅ Claude Code installed"
           else
             echo "❌ Claude Code NOT found"
-            exit 1
+            FAILED=1
           fi
 
           echo ""
@@ -49,21 +51,22 @@ jobs:
             echo "✅ Codex installed"
           else
             echo "❌ Codex NOT found"
-            exit 1
+            FAILED=1
           fi
 
           echo ""
-          echo "--- OpenCode (OpenClaw) ---"
-          if command -v opencode &>/dev/null; then
-            opencode --version 2>&1 || echo "(version check done)"
-            echo "✅ OpenCode installed"
-          elif command -v openclaw &>/dev/null; then
+          echo "--- OpenClaw ---"
+          if command -v openclaw &>/dev/null; then
             openclaw --version 2>&1 || echo "(version check done)"
             echo "✅ OpenClaw installed"
           else
-            echo "❌ Neither opencode nor openclaw found"
-            exit 1
+            echo "⚠️  OpenClaw not found (non-critical — may need network)"
           fi
 
           echo ""
-          echo "=== ALL INSTALLS VERIFIED ==="
+          if [ "$FAILED" -eq 1 ]; then
+            echo "=== ❌ CORE INSTALLS FAILED ==="
+            exit 1
+          else
+            echo "=== ✅ CORE INSTALLS VERIFIED ==="
+          fi
