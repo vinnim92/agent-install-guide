@@ -292,28 +292,15 @@ echo -e "${BOLD}  🦞 安装 OpenClaw ...${NC}"
 if command -v openclaw &>/dev/null; then
     echo -e "    ${GREEN}✅ OpenClaw 已安装${NC}（$(openclaw --version 2>/dev/null | head -1 || echo '')）"
     INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
-elif command -v opencode &>/dev/null; then
-    echo -e "    ${GREEN}✅ OpenClaw 已安装${NC}（$(opencode --version 2>/dev/null | head -1 || echo '')）"
-    INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
 else
-    case "$OS_TYPE" in
-        mac)
-            if command -v brew &>/dev/null; then
-                brew install opencode 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
-            fi
-            ;;
-        linux)
-            curl -fsSL https://opencode.ai/install | bash 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
-            ;;
-    esac
-    # npm 兜底
-    if [ "$NODE_OK" = true ] && ! command -v openclaw &>/dev/null && ! command -v opencode &>/dev/null; then
-        if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-            npm config set registry https://registry.npmmirror.com 2>/dev/null || true
-        fi
-        npm install -g opencode-ai@latest 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    # 国内网络优化
+    if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
+        npm config set registry https://registry.npmmirror.com 2>/dev/null || true
     fi
-    if command -v openclaw &>/dev/null || command -v opencode &>/dev/null; then
+    if [ "$NODE_OK" = true ]; then
+        npm install -g openclaw@latest 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+    fi
+    if command -v openclaw &>/dev/null; then
         echo -e "    ${GREEN}✅ OpenClaw 安装成功！${NC}"
     else
         echo -e "    ${YELLOW}⚠️  OpenClaw 安装失败，不影响前两个使用${NC}"
@@ -371,7 +358,7 @@ fi
 if command -v codex &>/dev/null; then
     echo -e "${CYAN}║   Codex:       打开终端 → 输入 ${GREEN}codex${CYAN} → 回车             ║${NC}"
 fi
-if command -v openclaw &>/dev/null || command -v opencode &>/dev/null; then
+if command -v openclaw &>/dev/null; then
     echo -e "${CYAN}║   OpenClaw:    打开终端 → 输入 ${GREEN}openclaw${CYAN} → 回车         ║${NC}"
 fi
 

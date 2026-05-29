@@ -183,24 +183,18 @@ if (Get-Command codex -ErrorAction SilentlyContinue) {
 
 # ---- OpenClaw ----
 Write-Host "  🦞 安装 OpenClaw ..." -ForegroundColor White
-if ((Get-Command openclaw -ErrorAction SilentlyContinue) -or (Get-Command opencode -ErrorAction SilentlyContinue)) {
+if (Get-Command openclaw -ErrorAction SilentlyContinue) {
     Write-Host "    ✅ OpenClaw 已安装" -ForegroundColor Green
     $installed++
 } else {
-    try {
-        if ($hasWinget) { winget install SST.opencode --silent --accept-package-agreements 2>$null }
-        if ($hasScoop -and -not (Get-Command openclaw -ErrorAction SilentlyContinue)) { scoop install opencode 2>$null }
-        if ($hasNpm -and -not (Get-Command openclaw -ErrorAction SilentlyContinue) -and -not (Get-Command opencode -ErrorAction SilentlyContinue)) {
-            npm install -g opencode-ai@latest 2>$null
-        }
-        if ((Get-Command openclaw -ErrorAction SilentlyContinue) -or (Get-Command opencode -ErrorAction SilentlyContinue)) {
-            Write-Host "    ✅ OpenClaw 安装成功！" -ForegroundColor Green
-            $installed++
-        } else {
-            Write-Host "    ⚠️  OpenClaw 安装失败" -ForegroundColor Yellow
-        }
-    } catch {
-        Write-Host "    ⚠️  安装失败（可能是网络问题）" -ForegroundColor Yellow
+    if ($hasNpm) {
+        npm install -g openclaw@latest 2>$null
+    }
+    if (Get-Command openclaw -ErrorAction SilentlyContinue) {
+        Write-Host "    ✅ OpenClaw 安装成功！" -ForegroundColor Green
+        $installed++
+    } else {
+        Write-Host "    ⚠️  OpenClaw 安装失败" -ForegroundColor Yellow
     }
 }
 

@@ -195,33 +195,29 @@ body {
       </div>
     </div>
 
-    <!-- STEP 4: 启功 + 免费模型 -->
+    <!-- STEP 4: 启动 + 免费模型 -->
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <div class="step-title">启动 OpenClaw，选一个免费模型开始用</div>
+        <div class="step-title">第一次启动 —— 选择一个模型开始用</div>
         <div class="step-desc">
-          装好后，打开终端，输入下面这行启动 OpenClaw：
+          装好后，打开终端（或 PowerShell），在任意目录下输入：
         </div>
         <div class="cmd-block">
-          <div class="cmd-text">openclaw gateway start</div>
+          <div class="cmd-text">openclaw</div>
         </div>
         <div class="step-desc">
-          <strong>保持终端窗口开着</strong>（不要关掉）。然后打开浏览器，在地址栏输入：
-        </div>
-        <div class="cmd-block">
-          <div class="cmd-text">http://localhost:18789</div>
-        </div>
-        <div class="step-desc">
-          浏览器会打开 OpenClaw 的网页界面。在页面上<strong>选择一个免费模型</strong>（推荐 <strong>GPT-4o-mini</strong> 或其他标记"Free"的模型），就可以开始跟 AI 对话了。
+          第一次运行 OpenClaw 时，按照终端提示完成初始化设置。<br><br>
+          可以接入免费模型（如 Ollama 本地运行），或使用 DeepSeek / OpenAI 的 API Key。<br><br>
+          设置完成后就可以开始跟 AI 对话了——和 Claude Code 类似的体验，但有免费模型可选。
         </div>
         <div class="notice">
           <span class="icon">🆓</span>
-          <span><strong>不用设置 API Key，不用花一分钱。</strong>OpenClaw 自带多个免费模型，选"Free"标签的就行。日常写代码、写文档完全够用。想用更强的模型也可以后续接入付费 API。</span>
+          <span><strong>不花钱也能用。</strong>接入免费模型（如 Ollama 本地运行）即可免费使用，日常写代码、写文档完全够用。</span>
         </div>
         <div class="notice">
           <span class="icon">💡</span>
-          <span>每次使用前需要先运行 <code style="font-family:var(--mono);font-size:11px;background:rgba(var(--ink-rgb),.05);padding:1px 4px;">openclaw gateway start</code> 启动，然后打开浏览器访问 localhost:18789。</span>
+          <span>每次使用很简单：打开终端 → 输入 <code style="font-family:var(--mono);font-size:11px;background:rgba(var(--ink-rgb),.05);padding:1px 4px;">openclaw</code> → 回车 → 开始对话。</span>
         </div>
       </div>
     </div>
