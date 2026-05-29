@@ -298,7 +298,7 @@ else
         npm config set registry https://registry.npmmirror.com 2>/dev/null || true
     fi
     if [ "$NODE_OK" = true ]; then
-        npm install -g openclaw@latest 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+        npm install -g openclaw@latest 2>/dev/null && INSTALLED_COUNT=$((INSTALLED_COUNT + 1)) || true
     fi
     if command -v openclaw &>/dev/null; then
         echo -e "    ${GREEN}✅ OpenClaw 安装成功！${NC}"
