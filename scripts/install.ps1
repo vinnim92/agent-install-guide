@@ -111,7 +111,7 @@ if ($needNode) {
         Write-Host "      2. 点击绿色按钮"Download"下载安装包" -ForegroundColor Yellow
         Write-Host "      3. 双击安装（一直点"下一步"就行）" -ForegroundColor Yellow
         Write-Host "      4. 装好后关掉这个窗口重新打开，再运行安装脚本" -ForegroundColor Yellow
-        exit 1
+        Read-Host "按回车键退出"
     }
 }
 Write-Host ""

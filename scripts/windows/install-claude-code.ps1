@@ -65,7 +65,7 @@ if (-not $hasNpm) {
         Write-Host "      1. 浏览器访问 https://nodejs.org" -ForegroundColor Yellow
         Write-Host "      2. 下载安装包，一直点「下一步」" -ForegroundColor Yellow
         Write-Host "      3. 装好后关掉这个窗口重新打开，再运行此脚本" -ForegroundColor Yellow
-        exit 1
+        Read-Host "按回车键退出"
     }
     Write-Host ""
 }
@@ -80,7 +80,7 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
     Write-Host "  启动方法: 终端输入 claude" -ForegroundColor Cyan
     Write-Host "  更新方法: 重新运行此脚本" -ForegroundColor Cyan
     Write-Host ""
-    exit 0
+    Read-Host "按回车键退出"
 }
 
 try {
@@ -135,5 +135,5 @@ try {
     Write-Host "  手动安装: npm install -g @anthropic-ai/claude-code" -ForegroundColor Yellow
     Write-Host "  如有问题请截图联系卖家。" -ForegroundColor Yellow
     Write-Host ""
-    exit 1
+    Read-Host "按回车键退出"
 }

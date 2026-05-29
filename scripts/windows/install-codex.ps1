@@ -67,14 +67,14 @@ if ($needNode) {
         } else {
             Write-Host "  ⚠️  Node.js 已安装但需重启 PowerShell 后生效" -ForegroundColor Yellow
             Write-Host "      请关掉这个窗口重新打开后重试" -ForegroundColor Yellow
-            exit 1
+            Read-Host "按回车键退出"
         }
     } else {
         Write-Host "  ⚠️  请手动安装 Node.js：" -ForegroundColor Yellow
         Write-Host "      1. 浏览器访问 https://nodejs.org" -ForegroundColor Yellow
         Write-Host "      2. 下载安装包，一直点「下一步」" -ForegroundColor Yellow
         Write-Host "      3. 装好后重新运行此脚本" -ForegroundColor Yellow
-        exit 1
+        Read-Host "按回车键退出"
     }
     Write-Host ""
 }
@@ -91,13 +91,13 @@ if (Get-Command codex -ErrorAction SilentlyContinue) {
     Write-Host "  启动方法: 终端输入 codex" -ForegroundColor Cyan
     Write-Host "  更新方法: 重新运行此脚本" -ForegroundColor Cyan
     Write-Host ""
-    exit 0
+    Read-Host "按回车键退出"
 }
 
 if (-not $hasNpm) {
     Write-Host "  ❌ npm 未就绪，无法安装 Codex" -ForegroundColor Red
     Write-Host "  请确保 Node.js 已正确安装后重试" -ForegroundColor Yellow
-    exit 1
+    Read-Host "按回车键退出"
 }
 
 Write-Host "  📦 通过 npm 安装 @openai/codex ..." -ForegroundColor Cyan
@@ -142,5 +142,5 @@ try {
     Write-Host "  手动安装: npm install -g @openai/codex@latest" -ForegroundColor Yellow
     Write-Host "  如有问题请截图联系卖家。" -ForegroundColor Yellow
     Write-Host ""
-    exit 1
+    Read-Host "按回车键退出"
 }

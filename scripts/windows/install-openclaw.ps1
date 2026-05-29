@@ -66,15 +66,17 @@ if ($needNode) {
             Write-Host "  ✅ Node.js 安装成功！" -ForegroundColor Green
         } else {
             Write-Host "  ⚠️  Node.js 已安装但需重启 PowerShell 后生效" -ForegroundColor Yellow
-            Write-Host "      请关掉这个窗口重新打开后重试" -ForegroundColor Yellow
-            exit 1
+            Write-Host "      请关掉这个窗口，重新打开 PowerShell，再运行一次安装命令" -ForegroundColor Yellow
+            Write-Host ""
+            Read-Host "按回车键退出"
         }
     } else {
         Write-Host "  ⚠️  请手动安装 Node.js：" -ForegroundColor Yellow
         Write-Host "      1. 浏览器访问 https://nodejs.org" -ForegroundColor Yellow
         Write-Host "      2. 下载安装包，一直点「下一步」" -ForegroundColor Yellow
         Write-Host "      3. 装好后重新运行此脚本" -ForegroundColor Yellow
-        exit 1
+        Write-Host ""
+        Read-Host "按回车键退出"
     }
     Write-Host ""
 }
@@ -90,16 +92,17 @@ if ((Get-Command openclaw -ErrorAction SilentlyContinue) -or (Get-Command openco
     try { $ver = (opencode --version 2>$null) } catch { try { $ver = (openclaw --version 2>$null) } catch {} }
     Write-Host "  ✅ OpenClaw 已安装（$ver）" -ForegroundColor Green
     Write-Host ""
-    Write-Host "  启动方法: 终端输入 opencode" -ForegroundColor Cyan
+    Write-Host "  启动方法: PowerShell 输入 opencode 回车" -ForegroundColor Cyan
     Write-Host "  更新方法: 重新运行此脚本" -ForegroundColor Cyan
     Write-Host ""
-    exit 0
+    Read-Host "按回车键退出"
 }
 
 if (-not $hasNpm) {
     Write-Host "  ❌ npm 未就绪，无法安装 OpenClaw" -ForegroundColor Red
     Write-Host "  请确保 Node.js 已正确安装后重试" -ForegroundColor Yellow
-    exit 1
+    Write-Host ""
+    Read-Host "按回车键退出"
 }
 
 try {
@@ -146,6 +149,7 @@ try {
         Write-Host "║                                                          ║" -ForegroundColor Cyan
         Write-Host "╚══════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
         Write-Host ""
+        Read-Host "按回车键退出"
     } else {
         throw "所有安装方式均失败"
     }
@@ -155,5 +159,5 @@ try {
     Write-Host "  手动安装: npm install -g opencode-ai@latest" -ForegroundColor Yellow
     Write-Host "  如有问题请截图联系卖家。" -ForegroundColor Yellow
     Write-Host ""
-    exit 1
+    Read-Host "按回车键退出"
 }
