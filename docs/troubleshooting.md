@@ -1,8 +1,13 @@
 # 常见问题排查（零基础版）
 
+> 遇到问题不要慌。7 个最常见的情况，每个都有手把手的解决方案。
+> 还不行？截图发闲鱼卖家，24 小时内回复。
+
+---
+
 ## 问题 1：提示"找不到命令"
 
-输入 `claude` 或 `codex` 后，提示 `command not found` 或"不是内部命令"。
+输入 `claude` / `codex` / `openclaw` 后，提示 `command not found` 或"不是内部命令"。
 
 **怎么办**：
 
@@ -17,6 +22,8 @@ export PATH="$HOME/.local/bin:$PATH"
 ```
 
 然后重试。
+
+> Windows 用户：如果还不行，重启电脑一次就好了。
 
 ---
 
@@ -49,7 +56,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 > "需要安装命令行开发者工具"
 
-点**"安装"**按钮。大约 2 分钟后装好，脚本会自动继续。
+点 **"安装"** 按钮。大约 2 分钟后装好，脚本会自动继续。
 
 ---
 
@@ -69,39 +76,31 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 
 ## 问题 6：如何卸载
 
-### Mac / Linux 用户
+### Claude Code
 
-打开终端，输入：
+**Mac / Linux**：`rm -rf ~/.local/bin/claude ~/.claude/`
 
-```bash
-# 卸载 Claude Code
-rm -rf ~/.local/bin/claude ~/.claude/
+**Windows**：`winget uninstall Anthropic.ClaudeCode`
 
-# 卸载 Codex
-npm uninstall -g @openai/codex
+### Codex
 
-# 卸载 OpenClaw
-npm uninstall -g opencode-ai
-```
+**所有平台**：`npm uninstall -g @openai/codex`
 
-### Windows 用户
+### OpenClaw
 
-```powershell
-# 卸载 Claude Code
-winget uninstall Anthropic.ClaudeCode
+**Mac**：`brew uninstall opencode` 或 `npm uninstall -g opencode-ai`
 
-# 卸载 Codex
-npm uninstall -g @openai/codex
-
-# 卸载 OpenClaw
-npm uninstall -g opencode-ai
-```
+**Windows**：`winget uninstall SST.opencode` 或 `npm uninstall -g opencode-ai`
 
 ---
 
 ## 问题 7：都不是我的问题，怎么办？
 
-把终端窗口里的文字截图，发给卖家。24 小时内回复。
+把终端窗口里的文字**截图**，发给闲鱼卖家。24 小时内回复。
 
 或者去这里提交问题（需要 GitHub 账号）：
 https://github.com/vinnim92/agent-install-guide/issues
+
+---
+
+> 📖 **版本：v3.0 ｜ 永远保持更新**

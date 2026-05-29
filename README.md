@@ -2,7 +2,7 @@
 
 > 会复制粘贴就会装。三款最火 AI 编程助手，一行命令全部搞定。
 
-[![Version](https://img.shields.io/badge/version-v2.0-blue)](https://github.com/vinnim92/agent-install-guide/releases)
+[![Version](https://img.shields.io/badge/version-v3.0-blue)](https://github.com/vinnim92/agent-install-guide/releases)
 
 ---
 
@@ -19,13 +19,17 @@
 
 **包含三款最火的 AI 编程助手**：
 
-- 🧠 **Claude Code** — Anthropic 出品，最聪明的 AI 程序员
-- ⚡ **Codex** — OpenAI 出品，ChatGPT 用户首选
-- 🦞 **OpenClaw** — 微软开源，有免费模型可用
+| 助手 | 适合谁 | 安装指南 |
+|------|--------|---------|
+| 🧠 **Claude Code** | 追求最好体验的用户 | [→ 1 页安装指南](docs/agents/claude-code.md) |
+| ⚡ **Codex** | ChatGPT Plus 会员 | [→ 1 页安装指南](docs/agents/codex.md) |
+| 🦞 **OpenClaw** | 想用免费模型的用户 | [→ 1 页安装指南](docs/agents/openclaw.md) |
+
+> 🆕 v3.0：每个 Agent 有独立的 1 页安装指南，选你需要的看。装好之后还推荐了能立刻用的 Skill。
 
 ---
 
-## 一键安装
+## 一键安装（三个一起装）
 
 ### Mac 用户
 
@@ -47,13 +51,33 @@ iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/sc
 
 ---
 
+## 只装其中一个？
+
+每个 Agent 有独立的 1 页安装指南（含 Skill 推荐）：
+
+- [🧠 安装 Claude Code](docs/agents/claude-code.md) — 最聪明，装完推荐 PPT/Excel Skill
+- [⚡ 安装 Codex](docs/agents/codex.md) — ChatGPT 用户首选
+- [🦞 安装 OpenClaw](docs/agents/openclaw.md) — 有免费模型，不花钱
+
+---
+
 ## 安装完成后
 
 | AI 助手 | 启动命令 | 说明 |
 |---------|---------|------|
 | Claude Code | 终端输入 `claude` | 第一次会弹浏览器登录 |
 | Codex | 终端输入 `codex` | 第一次会弹浏览器登录 |
-| OpenClaw | 终端输入 `openclaw` | 打开浏览器访问 localhost:18789 |
+| OpenClaw | 终端输入 `openclaw gateway start` | 浏览器访问 localhost:18789 |
+
+---
+
+## 装好之后能干什么？
+
+AI 编程助手本身是"通用工具"。配上 **Skill 配置包**，它会变成某个领域的专家。闲鱼搜 **「AI Skill 工厂」**，看看已经有哪些 Skill：
+
+- 🎨 **AI 一键做 PPT** — 说话就能出专业演示稿
+- 📊 **AI 自动 Excel** — 报表周报一句话搞定
+- 🛠 更多持续更新中
 
 ---
 
@@ -65,5 +89,6 @@ iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/sc
 
 ## 有问题？
 
+- [常见问题排查](docs/troubleshooting.md) — 7 个常见问题手把手解决
 - 截图发给卖家（闲鱼 24 小时内回复）
 - 或提 [GitHub Issue](https://github.com/vinnim92/agent-install-guide/issues)

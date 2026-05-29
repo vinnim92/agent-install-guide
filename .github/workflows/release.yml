@@ -21,34 +21,103 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-lang-chinese fonts-noto fonts-noto-cjk
 
-      - name: Build PDF
+      - name: Build Per-Agent PDFs
         run: |
-          pandoc docs/guide.md \
-            -o guide.pdf \
+          mkdir -p release/pdf
+
+          pandoc docs/agents/claude-code.md \
+            -o release/pdf/install-claude-code.pdf \
+            --pdf-engine=xelatex \
+            -V mainfont="Noto Sans" \
+            -V CJKmainfont="Noto Sans CJK SC" \
+            -V geometry:margin=0.8in \
+            -V title="安装 Claude Code" \
+            --metadata date="$(date '+%Y-%m-%d')"
+          echo "claude-code.pdf built"
+
+          pandoc docs/agents/codex.md \
+            -o release/pdf/install-codex.pdf \
+            --pdf-engine=xelatex \
+            -V mainfont="Noto Sans" \
+            -V CJKmainfont="Noto Sans CJK SC" \
+            -V geometry:margin=0.8in \
+            -V title="安装 Codex" \
+            --metadata date="$(date '+%Y-%m-%d')"
+          echo "codex.pdf built"
+
+          pandoc docs/agents/openclaw.md \
+            -o release/pdf/install-openclaw.pdf \
+            --pdf-engine=xelatex \
+            -V mainfont="Noto Sans" \
+            -V CJKmainfont="Noto Sans CJK SC" \
+            -V geometry:margin=0.8in \
+            -V title="安装 OpenClaw" \
+            --metadata date="$(date '+%Y-%m-%d')"
+          echo "openclaw.pdf built"
+
+      - name: Build Combined Guide PDF
+        run: |
+          echo '---
+title: "AI 编程助手 · 零基础安装指南"
+date: "'$(date '+%Y-%m-%d')'"
+---
+' > release/combined.md
+
+          cat docs/guide.md >> release/combined.md
+          echo -e "\n\n\\newpage\n\n" >> release/combined.md
+          cat docs/agents/claude-code.md >> release/combined.md
+          echo -e "\n\n\\newpage\n\n" >> release/combined.md
+          cat docs/agents/codex.md >> release/combined.md
+          echo -e "\n\n\\newpage\n\n" >> release/combined.md
+          cat docs/agents/openclaw.md >> release/combined.md
+          echo -e "\n\n\\newpage\n\n" >> release/combined.md
+          cat docs/troubleshooting.md >> release/combined.md
+
+          pandoc release/combined.md \
+            -o release/pdf/install-guide-full.pdf \
             --pdf-engine=xelatex \
             -V mainfont="Noto Sans" \
             -V CJKmainfont="Noto Sans CJK SC" \
             -V geometry:margin=1in \
-            -V title="AI Coding Agent 全平台安装指南" \
-            --toc --toc-depth=2 \
+            --toc --toc-depth=1 \
             --metadata date="$(date '+%Y-%m-%d')"
+          echo "full-guide.pdf built"
 
       - name: Validate Scripts
         run: |
           bash -n scripts/install.sh || exit 1
           echo "install.sh: syntax OK"
+          for f in scripts/mac-linux/*.sh; do
+            bash -n "$f" || exit 1
+            echo "$f: syntax OK"
+          done
 
       - name: Create Release Package
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
-          mkdir -p release/agent-install-guide-${VERSION}
-          cp guide.pdf release/agent-install-guide-${VERSION}/
-          cp -r scripts release/agent-install-guide-${VERSION}/
-          cp docs/troubleshooting.md release/agent-install-guide-${VERSION}/
-          cp README.md release/agent-install-guide-${VERSION}/
+          PKG_DIR=release/agent-install-guide-${VERSION}
+
+          mkdir -p "${PKG_DIR}/单页安装指南"
+          mkdir -p "${PKG_DIR}/scripts"
+
+          cp release/pdf/install-claude-code.pdf "${PKG_DIR}/单页安装指南/"
+          cp release/pdf/install-codex.pdf "${PKG_DIR}/单页安装指南/"
+          cp release/pdf/install-openclaw.pdf "${PKG_DIR}/单页安装指南/"
+          cp release/pdf/install-guide-full.pdf "${PKG_DIR}/"
+
+          cp scripts/install.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install.ps1 "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp -r scripts/mac-linux "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp -r scripts/windows "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp -r scripts/lib "${PKG_DIR}/scripts/" 2>/dev/null || true
+
+          cp docs/troubleshooting.md "${PKG_DIR}/"
+          cp README.md "${PKG_DIR}/"
+
           cd release
           zip -r agent-install-guide-${VERSION}.zip agent-install-guide-${VERSION}/
           echo "Package: agent-install-guide-${VERSION}.zip"
+          ls -lh agent-install-guide-${VERSION}.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -57,38 +126,38 @@ jobs:
           body: |
             ## 🤖 AI 编程助手 · 零基础安装指南 ${{ github.ref_name }}
 
-            ### 会复制粘贴就会装
+            ### 🆕 v3.0 更新内容
 
-            不需要懂任何技术。一键安装三款最火的 AI 编程助手：
-
-            - 🧠 **Claude Code** — Anthropic 出品，最聪明的 AI 程序员
-            - ⚡ **Codex** — OpenAI 出品，ChatGPT 用户首选
-            - 🦞 **OpenClaw** — 微软开源，有免费模型可白嫖
+            - ✨ 每个 Agent 独立的 1 页安装指南：选中你要装的，1 条命令搞定
+            - 🛍 装完推荐 Skill：每个指南末尾推荐能立刻用的 AI Skill（PPT/Excel/更多）
+            - 📄 PDF 分包：3 份单页版 + 1 份完整版，按需下载
+            - 🎯 新手友好度翻倍：更少术语、更大字号、更清晰步骤
 
             ### 📦 本压缩包包含
 
-            1. 📄 `guide.pdf` — 零基础图文手册（从"怎么打开终端"开始教）
-            2. 🔧 `scripts/install.sh` — Mac 一键安装脚本
-            3. 🔧 `scripts/install.ps1` — Windows 一键安装脚本
-            4. 🛠 `troubleshooting.md` — 7 个常见问题手把手解决
+            1. 📄 单页安装指南/ — 每个 Agent 的 1 页安装卡（Claude Code / Codex / OpenClaw）
+            2. 📄 install-guide-full.pdf — 完整合订版（含目录和常见问题）
+            3. 🔧 scripts/ — 一键安装脚本（全平台）
+            4. 🛠 troubleshooting.md — 7 个常见问题手把手解决
 
             ### 🚀 快速开始
 
-            **Mac**：打开终端，粘贴运行：
+            Mac：打开终端，粘贴运行：
             ```bash
             curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
             ```
 
-            **Windows**：打开 PowerShell，粘贴运行：
+            Windows：打开 PowerShell，粘贴运行：
             ```powershell
             iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
             ```
 
-            剩下的全自动完成，你等着就行。
+            或只装其中一个：见对应单页指南。
 
             ### 📝 更新日志
 
-            - v2.0: 完全重写为零基础版，新增自动环境安装，去除所有技术术语
+            - v3.0: 每个 Agent 独立 1 页指南 + Skill 推荐 + 多 PDF 分包
+            - v2.0: 完全重写为零基础版，自动环境安装
             - v1.0: 初始版本
           files: release/agent-install-guide-${{ github.ref_name }}.zip
           generate_release_notes: true
