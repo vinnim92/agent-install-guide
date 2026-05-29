@@ -17,7 +17,7 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 REPO="https://github.com/vinnim92/agent-install-guide"
 
 # ==================== 欢迎 ====================
-clear
+[ -n "$TERM" ] && clear || true
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║                                                          ║${NC}"
