@@ -11,6 +11,25 @@
 
 set -e
 
+# ==================== 干运行模式 ====================
+DRY_RUN=false
+if [ "${1:-}" = "--dry-run" ]; then
+    DRY_RUN=true
+    echo ""
+    echo -e "${YELLOW}🔍 干运行模式 — 只检查环境，不实际安装${NC}"
+    echo ""
+fi
+
+# 干运行模式下，安装命令替换为空操作
+run_cmd() {
+    if [ "$DRY_RUN" = true ]; then
+        echo -e "      ${YELLOW}[DRY-RUN]${NC} 将执行: $*"
+        return 0
+    else
+        eval "$@"
+    fi
+}
+
 # ==================== 颜色 ====================
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
@@ -184,6 +203,22 @@ if [ "$NODE_OK" = false ]; then
         echo -e "  ${YELLOW}⚠️  Node.js 自动安装失败，但 Claude Code 不受影响（它自带运行环境）${NC}"
         echo -e "  ${YELLOW}   Codex 和 OpenClaw 需要 Node.js，你可以之后手动安装：${NC}"
         echo -e "  ${YELLOW}   访问 https://nodejs.org 下载安装包（和装微信一样简单）${NC}"
+    fi
+fi
+
+# ---- 修复 npm 权限（解决 EACCES 错误）----
+if command -v npm &>/dev/null; then
+    NPM_PREFIX=$(npm config get prefix 2>/dev/null || echo "")
+    if [ -n "$NPM_PREFIX" ] && [ ! -w "$NPM_PREFIX" ]; then
+        # 全局安装目录没写权限，切换到用户目录
+        NPM_GLOBAL_DIR="$HOME/.npm-global"
+        mkdir -p "$NPM_GLOBAL_DIR" 2>/dev/null || true
+        npm config set prefix "$NPM_GLOBAL_DIR" 2>/dev/null || true
+        export PATH="$NPM_GLOBAL_DIR/bin:$PATH"
+        if ! grep -q ".npm-global/bin" "$SHELL_RC" 2>/dev/null; then
+            echo "export PATH=\"\$HOME/.npm-global/bin:\$PATH\"" >> "$SHELL_RC"
+        fi
+        echo -e "  💡 已自动调整 npm 安装位置（避免权限问题）"
     fi
 fi
 
