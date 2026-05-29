@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安装 Claude Code · 零基础指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a1f3d; --ink-rgb: 10,31,61;
+  --paper: #f1f3f5; --paper-rgb: 241,243,245;
+  --paper-tint: #e4e8ec; --ink-tint: #152a4a;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --serif-en: "Playfair Display", "Source Serif 4", Georgia, serif;
+  --serif-body-en: "Source Serif 4", Georgia, serif;
+  --serif-zh: "Noto Serif SC", source-han-serif-sc, serif;
+  --sans-zh: "Noto Sans SC", source-han-sans-sc, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans-zh); background: #d8dce0; color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  display: flex; justify-content: center; padding: 20px;
+}
+.page { width: 210mm; min-height: 297mm; background: var(--paper); box-shadow: 0 2px 24px rgba(0,0,0,0.12); }
+
+/* ──── HERO ──── */
+.hero {
+  background: var(--ink); color: var(--paper);
+  padding: 34px 42px 30px; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 80% 20%, rgba(100,160,220,.12), transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(80,140,200,.08), transparent 50%);
+}
+.hero h1 {
+  font-family: var(--serif-en); font-weight: 700; font-size: 48px;
+  line-height: 1.06; letter-spacing: -.02em; margin-bottom: 6px;
+}
+.hero .sub {
+  font-family: var(--serif-body-en); font-size: 16px; font-weight: 400;
+  font-style: italic; opacity: .7; letter-spacing: .01em;
+}
+.hero .meta-row {
+  display: flex; gap: 3em; margin-top: 16px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .16em;
+  text-transform: uppercase; opacity: .4;
+}
+
+/* ──── CONTENT ──── */
+.content { padding: 28px 42px 32px; }
+
+.step { display: grid; grid-template-columns: 64px 1fr; gap: 20px; margin-bottom: 28px; align-items: start; }
+.step-num { font-family: var(--serif-en); font-weight: 800; font-size: 52px; line-height: .8; color: var(--ink); opacity: .2; text-align: right; }
+.step-body { display: grid; gap: 8px; }
+.step-title { font-family: var(--serif-zh); font-weight: 600; font-size: 17px; line-height: 1.3; color: var(--ink); padding-top: 4px; }
+.step-desc { font-family: var(--sans-zh); font-weight: 400; font-size: 13px; line-height: 1.7; color: rgba(var(--ink-rgb),.72); }
+
+/* ── Terminal Mockups ── */
+.term-mock {
+  margin: 6px 0; border: 1px solid rgba(var(--ink-rgb),.12); overflow: hidden;
+}
+.term-mock .titlebar {
+  display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  background: rgba(var(--ink-rgb),.04); border-bottom: 1px solid rgba(var(--ink-rgb),.08);
+}
+.term-mock .titlebar .dots { display: flex; gap: 6px; }
+.term-mock .titlebar .dots span { width: 10px; height: 10px; }
+.term-mock .titlebar .dots .r { background: #ED6A5E; }
+.term-mock .titlebar .dots .y { background: #F5BD4F; }
+.term-mock .titlebar .dots .g { background: #61C455; }
+.term-mock .titlebar .label { font-family: var(--mono); font-size: 10px; color: rgba(var(--ink-rgb),.4); letter-spacing: .06em; }
+.term-mock .body { padding: 14px 16px; font-family: var(--mono); font-size: 11px; line-height: 1.7; }
+.term-mock.mac .body { background: #1e1e1e; color: #e0e0e0; }
+.term-mock.mac .body .prompt { color: #6CCF6C; }
+.term-mock.mac .body .dir { color: #5BA4E5; }
+.term-mock.mac .body .cursor { display: inline-block; width: 7px; height: 14px; background: #e0e0e0; vertical-align: middle; margin-left: 2px; animation: blink 1s step-end infinite; }
+.term-mock.win .body { background: #012456; color: #ccc; }
+.term-mock.win .body .ps-prefix { color: #FFFF46; }
+.term-mock.win .body .ps-path { color: #FFF; }
+.term-mock.win .body .ps-prompt { color: #ccc; }
+.term-mock.win .body .cursor { display: inline-block; width: 7px; height: 14px; background: #ccc; vertical-align: middle; margin-left: 2px; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ── Soft Command Block ── */
+.cmd-block {
+  margin: 8px 0; background: #FFFDF5; border: 1px solid #E8E0C0;
+  padding: 14px 18px; font-family: var(--mono); font-size: 11px;
+  line-height: 1.65; color: #5C4B1F;
+}
+.cmd-block .cmd-label { font-family: var(--sans-zh); font-size: 10px; font-weight: 500; color: #A09060; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.cmd-block .cmd-text { color: #5C4B1F; }
+.cmd-block .cmd-url { color: #2A5F8A; }
+
+/* ── Notice ── */
+.notice {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; background: rgba(var(--ink-rgb),.04);
+  border-left: 3px solid rgba(var(--ink-rgb),.2);
+  font-size: 12px; line-height: 1.6; color: rgba(var(--ink-rgb),.65); margin: 10px 0;
+}
+.notice .icon { font-size: 16px; flex-shrink: 0; }
+
+/* ── API Step Cards ── */
+.api-choice {
+  display: grid; grid-template-columns: 1fr; gap: 12px; margin: 8px 0;
+}
+.api-card {
+  border: 1px solid rgba(var(--ink-rgb),.12); padding: 18px 20px;
+  display: grid; gap: 8px;
+}
+.api-card.recommended {
+  border-color: rgba(var(--ink-rgb),.4); border-width: 2px; position: relative;
+}
+.api-card .api-badge {
+  position: absolute; top: -10px; right: 12px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+  text-transform: uppercase; padding: 3px 10px;
+  background: var(--ink); color: var(--paper);
+}
+.api-card .api-name { font-family: var(--serif-zh); font-weight: 600; font-size: 16px; }
+.api-card .api-steps { font-size: 12px; line-height: 1.7; color: rgba(var(--ink-rgb),.65); }
+.api-card .api-steps strong { color: var(--ink); }
+.api-card .api-price { font-size: 11px; color: rgba(var(--ink-rgb),.4); margin-top: 2px; }
+
+/* ── Skills Intro ── */
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 6px; }
+.skill-card {
+  padding: 16px 18px; border: 1px solid rgba(var(--ink-rgb),.1);
+}
+.skill-card .s-icon { font-size: 22px; margin-bottom: 6px; }
+.skill-card .s-name { font-family: var(--serif-zh); font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.skill-card .s-desc { font-size: 11px; line-height: 1.6; color: rgba(var(--ink-rgb),.6); }
+
+/* ── Dividers ── */
+.section-rule { width: 100%; height: 1px; background: rgba(var(--ink-rgb),.1); margin: 16px 0 20px; }
+
+/* ── FAQ Link ── */
+.faq-link-block {
+  padding: 16px 20px; background: rgba(var(--ink-rgb),.03);
+  border: 1px solid rgba(var(--ink-rgb),.08); text-align: center;
+}
+.faq-link-block a {
+  font-family: var(--serif-zh); font-size: 15px; font-weight: 500;
+  color: var(--ink); text-decoration: none; border-bottom: 1px solid rgba(var(--ink-rgb),.2);
+}
+.faq-link-block a:hover { border-color: var(--ink); }
+.faq-link-block .faq-sub { font-size: 11px; color: rgba(var(--ink-rgb),.4); margin-top: 4px; }
+
+@media print { body { background: white; padding: 0; } .page { box-shadow: none; width: 100%; min-height: auto; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══ HERO ═══ -->
+  <div class="hero">
+    <h1>Install<br>Claude Code</h1>
+    <div class="sub">Anthropic 出品 · 最聪明的 AI 程序员 · Mac &amp; Windows 通用</div>
+    <div class="meta-row">
+      <span>会复制粘贴就会装</span>
+      <span>v3.0 · 2026</span>
+    </div>
+  </div>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content">
+
+    <!-- STEP 0 -->
+    <div class="step">
+      <div class="step-num">0</div>
+      <div class="step-body">
+        <div class="step-title">开始之前，确认三件事</div>
+        <div class="step-desc">
+          ❶ 你有一台电脑（Mac 或 Windows 都行）<br>
+          ❷ 电脑连着网<br>
+          ❸ 会复制粘贴
+        </div>
+        <div class="notice">
+          <span class="icon">💡</span>
+          <span>全程不需要懂任何技术名词。<strong>跟着做就行</strong>，每一步都写好了你该干什么。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 1: 打开终端 -->
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">打开你电脑上的「终端」</div>
+        <div class="step-desc">
+          <strong>Mac 用户</strong> — 点右上角🔍搜索图标，输入「终端」，看到黑色图标点开它。你会看到白字黑底的窗口：
+        </div>
+        <div class="term-mock mac">
+          <div class="titlebar">
+            <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+            <span class="label">终端 — zsh — 80×24</span>
+          </div>
+          <div class="body">
+            Last login: Thu May 29 14:32:11 on console<br>
+            <span class="prompt">~</span> <span class="dir">$</span> <span class="cursor"></span>
+          </div>
+        </div>
+        <div class="step-desc" style="margin-top:10px;">
+          <strong>Windows 用户</strong> — 同时按下 ⊞ 键和 R 键，输入 <code style="font-family:var(--mono);font-size:12px;background:rgba(var(--ink-rgb),.06);padding:1px 6px;">powershell</code>，点确定。你会看到蓝底白字的窗口：
+        </div>
+        <div class="term-mock win">
+          <div class="titlebar">
+            <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+            <span class="label">Windows PowerShell</span>
+          </div>
+          <div class="body">
+            Windows PowerShell<br>
+            版权所有 (C) Microsoft Corporation。保留所有权利。<br><br>
+            <span class="ps-prefix">PS</span> <span class="ps-path">C:\Users\你的用户名</span><span class="ps-prompt">&gt;</span> <span class="cursor"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: 命令 -->
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">复制下面这行命令，粘贴进去</div>
+        <div class="step-desc">
+          先看清你是 Mac 还是 Windows，选对那一行。<strong>全选 → 复制 → 粘贴到终端窗口里。</strong>
+        </div>
+        <div class="cmd-block">
+          <div class="cmd-label">🖥  Mac 用户 — 复制这行</div>
+          <div class="cmd-text">curl -fsSL <span class="cmd-url">https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/mac-linux/install-claude-code.sh</span> | bash</div>
+        </div>
+        <div class="cmd-block">
+          <div class="cmd-label">⊞  Windows 用户 — 复制这行</div>
+          <div class="cmd-text">iwr -useb <span class="cmd-url">https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/windows/install-claude-code.ps1</span> | iex</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: 回车等着 -->
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">按下回车键，然后等着</div>
+        <div class="step-desc">
+          按下键盘上的 <strong>Enter（回车键）</strong>。屏幕会开始滚动文字——这是脚本在自动工作。<br><br>
+          <strong>你什么都不用操作。</strong>脚本会自动检测系统、安装需要的工具、装好 Claude Code。<br><br>
+          大约 3-5 分钟后，看到屏幕出现 ✅ 和「安装完成」就装好了。
+        </div>
+        <div class="notice">
+          <span class="icon">⏳</span>
+          <span>如果 Mac 弹窗问你要不要装「开发者工具」——<strong>点「安装」</strong>，2 分钟后会自动继续。</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4: API 密钥设置 -->
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">设置 API 密钥（装好了，但离能用还差这一步）</div>
+        <div class="step-desc">
+          Claude Code 需要一个 <strong>API 密钥</strong> 才能连接 AI 服务器。就像手机需要 SIM 卡才能打电话一样。<br>
+          你有两个选择，<strong>推荐用 DeepSeek</strong>——对国内用户来说更容易获取、更便宜、不需要翻墙。
+        </div>
+
+        <div class="api-choice">
+          <!-- DeepSeek (Recommended) -->
+          <div class="api-card recommended">
+            <div class="api-badge">👈 推荐</div>
+            <div class="api-name">🟢 DeepSeek</div>
+            <div class="api-steps">
+              <strong>①</strong> 打开浏览器 → 访问 <strong>platform.deepseek.com</strong><br>
+              <strong>②</strong> 点右上角「注册」→ 用手机号注册（和注册微信一样）<br>
+              <strong>③</strong> 登录后点左侧菜单「API Keys」<br>
+              <strong>④</strong> 点「创建 API Key」→ 复制生成的密钥（以 <code style="font-family:var(--mono);font-size:10px;background:rgba(var(--ink-rgb),.05);padding:1px 4px;">sk-</code> 开头）<br>
+              <strong>⑤</strong> 打开终端，输入下面两行（换成你的密钥）：
+              <div class="cmd-block" style="margin-top:6px;margin-bottom:0;">
+                <div class="cmd-text">export ANTHROPIC_AUTH_TOKEN=<span class="cmd-url">sk-你的密钥</span><br>
+export ANTHROPIC_BASE_URL=<span class="cmd-url">https://api.deepseek.com/anthropic</span></div>
+              </div>
+              <strong>⑥</strong> 输入 <code style="font-family:var(--mono);font-size:10px;background:rgba(var(--ink-rgb),.05);padding:1px 4px;">claude</code> 回车 —— 开始用！
+            </div>
+            <div class="api-price">💰 费用：充值即用，¥1 起充，按量扣费，很便宜</div>
+          </div>
+
+          <!-- Anthropic -->
+          <div class="api-card recommended" style="border-color:rgba(var(--ink-rgb),.3);">
+            <div class="api-name">🔵 Anthropic 官方</div>
+            <div class="api-steps">
+              <strong>①</strong> 打开浏览器 → 访问 <strong>console.anthropic.com</strong><br>
+              <strong>②</strong> 注册 Anthropic 账号（需要邮箱 + 海外手机号验证）<br>
+              <strong>③</strong> 进入 API Keys 页面 → 创建密钥<br>
+              <strong>④</strong> 在终端输入：
+              <div class="cmd-block" style="margin-top:6px;margin-bottom:0;">
+                <div class="cmd-text">export ANTHROPIC_AUTH_TOKEN=<span class="cmd-url">sk-ant-你的密钥</span><br>
+export ANTHROPIC_BASE_URL=<span class="cmd-url">https://api.anthropic.com</span></div>
+              </div>
+            </div>
+            <div class="api-price">💰 费用：需要外币信用卡，月费 $20 起（Pro 版）</div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:10px;">
+          <span class="icon">🔑</span>
+          <span>API 密钥就像银行卡密码——<strong>妥善保管，不要泄露给他人</strong>。如果密钥不小心暴露了，马上去网站删除重建一个。</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-rule"></div>
+
+    <!-- ═══ SKILLS 介绍 ═══ -->
+    <div class="step">
+      <div class="step-num"></div>
+      <div class="step-body">
+        <div class="step-title">Claude Code 能干什么？—— Skill 让你的 AI 变身专家</div>
+        <div class="step-desc">
+          Claude Code 装好之后本身是一个「通用 AI 程序员」，你可以跟它聊天、让它写代码。<br>
+          但如果装上 <strong>Skill 配置包</strong>，它会变成某个领域的专家——你只需要说话，它帮你完成整个任务。
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card">
+            <div class="s-icon">🎨</div>
+            <div class="s-name">PPT 生成</div>
+            <div class="s-desc">「帮我做一份 8 页杂志风 PPT」→ 5 分钟后一份能上台讲的演示稿。自动排版、配色、配图。</div>
+          </div>
+          <div class="skill-card">
+            <div class="s-icon">📊</div>
+            <div class="s-name">Excel 自动化</div>
+            <div class="s-desc">「帮我把本月销售数据做成周报」→ 自动生成图表、透视表、格式化，告别手工活。</div>
+          </div>
+          <div class="skill-card">
+            <div class="s-icon">🛠</div>
+            <div class="s-name">更多场景</div>
+            <div class="s-desc">代码审查、项目脚手架、文档生成、数据处理……Skill 让 AI 从「能聊天」变成「能干活」。</div>
+          </div>
+        </div>
+        <div class="step-desc" style="margin-top:8px;">
+          每个 Skill 针对一个具体任务深度优化——你只需要用自然语言说出需求，AI 就会自动调用对应的 Skill 帮你完成。把你从「我要告诉 AI 怎么做」变成「我要告诉 AI 做什么」。
+        </div>
+      </div>
+    </div>
+
+    <div class="section-rule"></div>
+
+    <!-- ═══ FAQ LINK ═══ -->
+    <div class="faq-link-block">
+      <a href="faq.html" target="_blank">遇到问题了？→ 查看常见问题排查手册</a>
+      <div class="faq-sub">覆盖 10 个最常见安装与使用问题 · 每个都有手把手解决方案</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:12px;border-top:1px solid rgba(var(--ink-rgb),.08);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(var(--ink-rgb),.35);">
+      <span>版本 v3.0 · Claude Code 安装指南</span>
+      <span>有问题截图发卖家 · 24h 回复</span>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 常见问题 · 零基础排查手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a1f3d; --ink-rgb: 10,31,61;
+  --paper: #f1f3f5; --paper-rgb: 241,243,245;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --serif-en: "Playfair Display", "Source Serif 4", Georgia, serif;
+  --serif-body-en: "Source Serif 4", Georgia, serif;
+  --serif-zh: "Noto Serif SC", source-han-serif-sc, serif;
+  --sans-zh: "Noto Sans SC", source-han-sans-sc, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans-zh); background: #d8dce0; color: var(--ink);
+  -webkit-font-smoothing: antialiased; line-height: 1.7;
+}
+.container {
+  max-width: 800px; margin: 40px auto; background: var(--paper);
+  padding: 48px 52px; box-shadow: 0 2px 24px rgba(0,0,0,0.1);
+}
+h1 {
+  font-family: var(--serif-en); font-weight: 700; font-size: 36px;
+  letter-spacing: -.02em; margin-bottom: 4px;
+}
+h2 {
+  font-family: var(--serif-zh); font-weight: 600; font-size: 18px;
+  margin: 36px 0 12px; padding-top: 20px; border-top: 1px solid rgba(var(--ink-rgb),.08);
+}
+h2:first-of-type { margin-top: 20px; }
+.subtitle { font-size: 14px; color: rgba(var(--ink-rgb),.55); margin-bottom: 28px; font-style: italic; }
+
+.issue { margin-bottom: 28px; }
+.issue-title {
+  font-family: var(--serif-zh); font-weight: 600; font-size: 16px;
+  margin-bottom: 6px;
+}
+.issue-cause { font-size: 12px; color: rgba(var(--ink-rgb),.5); margin-bottom: 6px; }
+.issue-fix { font-size: 13px; line-height: 1.7; }
+code {
+  font-family: var(--mono); font-size: 11px;
+  background: rgba(var(--ink-rgb),.05); padding: 1px 6px;
+}
+pre {
+  background: #1a1f2a; color: #8AECD0; font-family: var(--mono);
+  font-size: 11px; line-height: 1.6; padding: 14px 18px;
+  margin: 8px 0; overflow-x: auto;
+}
+.back-link {
+  display: inline-block; margin-top: 32px; font-size: 13px; color: rgba(var(--ink-rgb),.5);
+  text-decoration: none; border-bottom: 1px solid rgba(var(--ink-rgb),.15);
+}
+.back-link:hover { color: var(--ink); }
+
+@media (max-width: 640px) {
+  .container { margin: 0; padding: 24px 20px; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>常见问题排查</h1>
+<p class="subtitle">Claude Code 安装与使用 · 10 个最常见问题 · 每个都有手把手解决方案</p>
+
+<div style="font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(var(--ink-rgb),.4);margin-bottom:20px;">🔧 遇到问题第一步：在终端运行 <code style="font-size:10px;">claude doctor</code> 自诊断</div>
+
+<!-- Q1 -->
+<h2>1. 输入 claude 提示「command not found」</h2>
+<div class="issue">
+  <div class="issue-cause">原因：安装目录不在系统 PATH 中，新终端未刷新环境变量。</div>
+  <div class="issue-fix">
+    <strong>Mac / Linux：</strong>关掉终端，重新打开，再试。如果还不行：
+    <pre>echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc</pre>
+    <strong>Windows：</strong>重启电脑一次。或将 <code>%USERPROFILE%\.local\bin</code> 添加到系统环境变量 PATH 中。
+  </div>
+</div>
+
+<!-- Q2 -->
+<h2>2. 安装时提示 EACCES 权限错误</h2>
+<div class="issue">
+  <div class="issue-cause">原因：用了 sudo 安装，或 npm 全局目录权限不对。</div>
+  <div class="issue-fix">
+    <strong>不要用 sudo。</strong>改为用我们的安装脚本（已自动处理权限）：
+    <pre>curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/mac-linux/install-claude-code.sh | bash</pre>
+  </div>
+</div>
+
+<!-- Q3 -->
+<h2>3. Node 版本太旧 / 启动后静默崩溃</h2>
+<div class="issue">
+  <div class="issue-cause">原因：Claude Code 需要 Node 18 或更高版本。</div>
+  <div class="issue-fix">
+    检查当前版本：<code>node -v</code><br>
+    如果低于 v18，安装最新版：
+    <pre># Mac
+brew install node@22
+
+# 或访问 https://nodejs.org 下载安装包（和装微信一样简单）</pre>
+    我们的安装脚本已自动处理 Node.js 安装，优先使用脚本安装。
+  </div>
+</div>
+
+<!-- Q4 -->
+<h2>4. Windows PowerShell 安装失败 / 没有反应</h2>
+<div class="issue">
+  <div class="issue-cause">原因：PowerShell 执行策略限制，或 Windows 版安装器有已知兼容问题。</div>
+  <div class="issue-fix">
+    <strong>方法一：</strong>先解除策略限制，再运行安装命令：
+    <pre>Set-ExecutionPolicy Bypass -Scope Process -Force
+iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/windows/install-claude-code.ps1 | iex</pre>
+    <strong>方法二：</strong>如果 PowerShell 持续失败，用 CMD（命令提示符）代替。按 ⊞+R，输入 <code>cmd</code>，回车。
+  </div>
+</div>
+
+<!-- Q5 -->
+<h2>5. 公司 / 学校网络下安装卡住</h2>
+<div class="issue">
+  <div class="issue-cause">原因：企业防火墙或代理拦截了下载地址。</div>
+  <div class="issue-fix">
+    <strong>最简单的办法：</strong>断开公司 WiFi，用手机热点，重试。<br><br>
+    <strong>如果需要用代理：</strong>
+    <pre>export HTTPS_PROXY=http://你的代理地址:端口
+# 然后重新运行安装命令</pre>
+    Claude Code 不支持 SOCKS 代理和 NTLM/Kerberos 认证。
+  </div>
+</div>
+
+<!-- Q6 -->
+<h2>6. 登录时浏览器打开了但终端一直转圈「等待认证」</h2>
+<div class="issue">
+  <div class="issue-cause">原因：localhost 回调被拦截（远程桌面、虚拟机、部分防火墙）。</div>
+  <div class="issue-fix">
+    终端里按 <strong>C 键</strong>复制认证链接 → 粘贴到任意浏览器打开 → 完成登录 → 把浏览器显示的验证码粘贴回终端。
+  </div>
+</div>
+
+<!-- Q7 -->
+<h2>7. 设置 API Key 后仍提示「未认证」</h2>
+<div class="issue">
+  <div class="issue-cause">原因：密钥在当前终端未生效，或与 OAuth 登录冲突。</div>
+  <div class="issue-fix">
+    先检查：<code>echo $ANTHROPIC_AUTH_TOKEN</code> 是否有输出。<br>
+    如果为空，说明 export 只在另一个终端生效。在当前终端重新执行：
+    <pre>export ANTHROPIC_AUTH_TOKEN=你的密钥
+export ANTHROPIC_BASE_URL=你的API地址</pre>
+    如果之前用 <code>claude</code> 登录过（OAuth），旧的 ANTHROPIC_API_KEY 可能冲突：
+    <pre>unset ANTHROPIC_API_KEY
+# 并编辑 ~/.zshrc 删除旧的 export ANTHROPIC_API_KEY=... 行</pre>
+  </div>
+</div>
+
+<!-- Q8 -->
+<h2>8. 安装时提示网络超时 / Connection Refused</h2>
+<div class="issue">
+  <div class="issue-cause">原因：当前网络无法访问 GitHub / npm / Anthropic 服务器。</div>
+  <div class="issue-fix">
+    <strong>优先级从高到低：</strong><br>
+    ① 断开 WiFi，连手机热点，重试<br>
+    ② 如果开了 VPN，切换到全局模式<br>
+    ③ 如果是 Linux 服务器，检查 DNS：<code>ping github.com</code><br>
+    ④ npm 国内镜像：<code>npm config set registry https://registry.npmmirror.com</code>
+  </div>
+</div>
+
+<!-- Q9 -->
+<h2>9. 安装脚本跑着跑着不动了（卡死）</h2>
+<div class="issue">
+  <div class="issue-cause">原因：下载大文件时网络波动，或系统资源不足。</div>
+  <div class="issue-fix">
+    ① 按 <code>Ctrl + C</code> 中断<br>
+    ② 关闭终端，重新打开<br>
+    ③ 重新运行安装命令（安装脚本支持断点续传，已安装的部分不会重复下载）<br>
+    ④ 如果反复卡死，换手机热点网络重试
+  </div>
+</div>
+
+<!-- Q10 -->
+<h2>10. 403 错误 /「模型不可用」</h2>
+<div class="issue">
+  <div class="issue-cause">原因：账户没有该模型的访问权限，或 API 余额不足。</div>
+  <div class="issue-fix">
+    <strong>如果用 Anthropic 官方 API：</strong>登录 <a href="https://console.anthropic.com">console.anthropic.com</a> 检查账户余额和模型权限。<br><br>
+    <strong>如果用 DeepSeek：</strong>登录 <a href="https://platform.deepseek.com">platform.deepseek.com</a> 检查 API Key 是否有效、账户是否有余额。<br><br>
+    在 Claude Code 里运行 <code>/model</code> 查看和切换可用的模型。
+  </div>
+</div>
+
+<!-- General tip -->
+<div style="margin-top:36px;padding:20px 24px;background:rgba(var(--ink-rgb),.03);border-left:3px solid rgba(var(--ink-rgb),.2);">
+  <div style="font-family:var(--serif-zh);font-weight:600;font-size:15px;margin-bottom:6px;">🎯 还是不行？</div>
+  <div style="font-size:13px;color:rgba(var(--ink-rgb),.65);">
+    第一步：运行 <code>claude doctor</code> 自诊断（80% 的问题能被它发现）。<br>
+    第二步：把终端里的<strong>错误截图</strong>发给卖家，24 小时内回复。<br>
+    第三步：去 <a href="https://github.com/vinnim92/agent-install-guide/issues">GitHub Issues</a> 提交问题。
+  </div>
+</div>
+
+<a href="claude-code-guide.html" class="back-link">← 返回安装指南</a>
+
+</div>
+</body>
+</html>
