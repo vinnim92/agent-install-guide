@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 REPO_URL="https://github.com/vinnim92/agent-install-guide"
 RAW_BASE="https://raw.githubusercontent.com/vinnim92/agent-install-guide/main"
 VERSION_URL="${RAW_BASE}/VERSION"
-CURRENT_VERSION="v1.0.0"
+CURRENT_VERSION="v2.0.0"
 OS_TYPE=""
 OS_ARCH=""
 

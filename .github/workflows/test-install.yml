@@ -1,0 +1,69 @@
+name: Test install.sh
+
+on:
+  push:
+    paths:
+      - 'scripts/install.sh'
+      - 'scripts/lib/**'
+  workflow_dispatch:  # allow manual trigger
+
+jobs:
+  test-ubuntu:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run install.sh
+        run: |
+          echo "============================================"
+          echo "  Testing install.sh on ${{ matrix.os }}"
+          echo "  Date: $(date)"
+          echo "============================================"
+          bash scripts/install.sh 2>&1
+          echo ""
+          echo "============================================"
+          echo "  Verification"
+          echo "============================================"
+
+      - name: Verify installations
+        run: |
+          set -e
+          echo ""
+          echo "--- Claude Code ---"
+          if command -v claude &>/dev/null; then
+            claude --version 2>&1 | head -1 || echo "(version check done)"
+            echo "✅ Claude Code installed"
+          else
+            echo "❌ Claude Code NOT found"
+            exit 1
+          fi
+
+          echo ""
+          echo "--- Codex ---"
+          if command -v codex &>/dev/null; then
+            codex --version 2>&1 || echo "(version check done)"
+            echo "✅ Codex installed"
+          else
+            echo "❌ Codex NOT found"
+            exit 1
+          fi
+
+          echo ""
+          echo "--- OpenCode (OpenClaw) ---"
+          if command -v opencode &>/dev/null; then
+            opencode --version 2>&1 || echo "(version check done)"
+            echo "✅ OpenCode installed"
+          elif command -v openclaw &>/dev/null; then
+            openclaw --version 2>&1 || echo "(version check done)"
+            echo "✅ OpenClaw installed"
+          else
+            echo "❌ Neither opencode nor openclaw found"
+            exit 1
+          fi
+
+          echo ""
+          echo "=== ALL INSTALLS VERIFIED ==="

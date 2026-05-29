@@ -53,6 +53,22 @@ case "$OS" in
         if [ -f /etc/os-release ]; then
             . /etc/os-release
             echo -e "     具体版本：${GREEN}${NAME:-Linux}${NC}"
+            # Node.js 22 requires Ubuntu 20.04+ / Debian 11+
+            case "$ID" in
+                ubuntu)
+                    if [ "${VERSION_ID:-0}" = "18.04" ] || [ "$(echo "$VERSION_ID" | cut -d. -f1)" -lt 20 ] 2>/dev/null; then
+                        echo -e "  ${RED}Ubuntu ${VERSION_ID} too old, need 20.04+${NC}"
+                        echo -e "     Upgrade: https://ubuntu.com/download"
+                        exit 1
+                    fi
+                    ;;
+                debian)
+                    if [ "${VERSION_ID:-0}" -lt 11 ] 2>/dev/null; then
+                        echo -e "  ${RED}Debian ${VERSION_ID} too old, need 11+${NC}"
+                        exit 1
+                    fi
+                    ;;
+            esac
         fi
         ;;
     *)
@@ -186,18 +202,26 @@ if command -v claude &>/dev/null; then
     echo -e "    ${GREEN}✅ Claude Code 已安装${NC}（$(claude --version 2>/dev/null | head -1 || echo '')）"
     INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
 else
-    if curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null; then
-        # 确保 PATH 包含 ~/.local/bin
+    CLAUDE_OK=false
+    echo -e "    尝试官方脚本安装..."
+    if curl -fsSL --connect-timeout 30 https://claude.ai/install.sh 2>/dev/null | bash 2>/dev/null; then
         export PATH="$HOME/.local/bin:$PATH"
-        if command -v claude &>/dev/null; then
-            echo -e "    ${GREEN}✅ Claude Code 安装成功！${NC}"
-            INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
+        if command -v claude &>/dev/null; then CLAUDE_OK=true; fi
+    fi
+    if [ "$CLAUDE_OK" = false ] && command -v npm &>/dev/null; then
+        echo -e "    ${YELLOW}官方脚本不可用（地域限制），改用 npm 安装...${NC}"
+        if npm install -g @anthropic-ai/claude-code@latest 2>/dev/null; then
+            CLAUDE_OK=true
         fi
+    fi
+    if [ "$CLAUDE_OK" = true ]; then
+        echo -e "    ${GREEN}✅ Claude Code 安装成功！${NC}"
+        INSTALLED_COUNT=$((INSTALLED_COUNT + 1))
     else
-        echo -e "    ${YELLOW}⚠️  Claude Code 安装失败（可能是网络问题），请稍后重试${NC}"
+        echo -e "    ${YELLOW}⚠️  Claude Code 安装失败，请稍后重试${NC}"
+        echo -e "    ${YELLOW}手动安装: npm install -g @anthropic-ai/claude-code${NC}"
     fi
 fi
-
 # ---- Codex ----
 echo -e "${BOLD}  ⚡ 安装 Codex ...${NC}"
 if [ "$NODE_OK" = true ]; then

@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # AI 编程助手 · 零基础 Windows 一键安装器
 #
 # 用法:
@@ -89,9 +89,9 @@ if ($needNode) {
         winget install OpenJS.NodeJS.LTS --silent --accept-package-agreements 2>$null
         if ($LASTEXITCODE -eq 0) {
             Write-Host "  ✅ Node.js 安装成功！" -ForegroundColor Green
-            Write-Host "  ⚠️  请关掉这个窗口重新打开，然后重试安装" -ForegroundColor Yellow
-            Write-Host "      （Node.js 装完后需要重启 PowerShell 才能生效）" -ForegroundColor Yellow
-            exit 0
+            Write-Host "      正在刷新环境变量..." -ForegroundColor Cyan
+            $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+            if (Get-Command node -ErrorAction SilentlyContinue) { Write-Host "  ✅ Node.js 已生效，继续安装" -ForegroundColor Green } else { Write-Host "  ⚠️  Node.js 已安装但需重启后生效，继续尝试" -ForegroundColor Yellow }
         }
     }
 
@@ -129,24 +129,41 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
     $installed++
 } else {
     try {
-        if ($hasWinget) {
+        $claudeInstalled = $false
+        # 方法1: winget
+        if ($hasWinget -and -not $claudeInstalled) {
+            Write-Host "      尝试 winget 安装..." -ForegroundColor Cyan
             winget install Anthropic.ClaudeCode --silent --accept-package-agreements 2>$null
+            if (Get-Command claude -ErrorAction SilentlyContinue) { $claudeInstalled = $true }
         }
-        if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
-            Invoke-RestMethod -Uri "https://claude.ai/install.ps1" | Invoke-Expression
+        # 方法2: 官方脚本
+        if (-not $claudeInstalled) {
+            Write-Host "      尝试官方脚本安装..." -ForegroundColor Cyan
+            try {
+                Invoke-RestMethod -Uri "https://claude.ai/install.ps1" -TimeoutSec 30 | Invoke-Expression 2>$null
+                $env:Path = "$env:USERPROFILE\.localin;$env:Path"
+                if (Get-Command claude -ErrorAction SilentlyContinue) { $claudeInstalled = $true }
+            } catch {
+                Write-Host "      ⚠️  官方脚本不可用（地域限制或网络问题），改用 npm..." -ForegroundColor Yellow
+            }
         }
-        $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
-        if (Get-Command claude -ErrorAction SilentlyContinue) {
+        # 方法3: npm
+        if (-not $claudeInstalled -and $hasNpm) {
+            Write-Host "      通过 npm 安装 @anthropic-ai/claude-code ..." -ForegroundColor Cyan
+            npm install -g @anthropic-ai/claude-code@latest 2>$null
+            if (Get-Command claude -ErrorAction SilentlyContinue) { $claudeInstalled = $true }
+        }
+        if ($claudeInstalled) {
             Write-Host "    ✅ Claude Code 安装成功！" -ForegroundColor Green
             $installed++
         } else {
-            Write-Host "    ⚠️  安装可能未生效，请重启 PowerShell 后检查" -ForegroundColor Yellow
+            Write-Host "    ⚠️  安装失败，请稍后重试" -ForegroundColor Yellow
+            Write-Host "      手动安装: npm install -g @anthropic-ai/claude-code" -ForegroundColor Yellow
         }
     } catch {
         Write-Host "    ⚠️  安装失败（可能是网络问题）" -ForegroundColor Yellow
     }
 }
-
 # ---- Codex ----
 Write-Host "  ⚡ 安装 Codex ..." -ForegroundColor White
 if (Get-Command codex -ErrorAction SilentlyContinue) {
@@ -171,7 +188,7 @@ if ((Get-Command openclaw -ErrorAction SilentlyContinue) -or (Get-Command openco
     $installed++
 } else {
     try {
-        if ($hasWinget) { winget install Microsoft.OpenClaw --silent --accept-package-agreements 2>$null }
+        if ($hasWinget) { winget install SST.opencode --silent --accept-package-agreements 2>$null }
         if ($hasScoop -and -not (Get-Command openclaw -ErrorAction SilentlyContinue)) { scoop install opencode 2>$null }
         if ($hasNpm -and -not (Get-Command openclaw -ErrorAction SilentlyContinue) -and -not (Get-Command opencode -ErrorAction SilentlyContinue)) {
             npm install -g opencode-ai@latest 2>$null
