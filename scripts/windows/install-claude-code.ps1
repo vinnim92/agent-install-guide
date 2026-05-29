@@ -108,7 +108,7 @@ try {
     # 方法3: npm 安装（国内可用，无需代理）
     if (-not $installed -and $hasNpm) {
         Write-Host "  方法3: npm 安装 @anthropic-ai/claude-code ..." -ForegroundColor Cyan
-        npm install -g @anthropic-ai/claude-code@latest 2>$null
+        cmd /c "npm install -g @anthropic-ai/claude-code@latest" 2>$null
         if (Get-Command claude -ErrorAction SilentlyContinue) { $installed = $true; Write-Host "  ✅ npm 安装成功！" -ForegroundColor Green }
     }
 

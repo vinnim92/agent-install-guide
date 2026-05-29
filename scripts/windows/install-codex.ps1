@@ -109,7 +109,7 @@ if (-not (Test-Connection -ComputerName registry.npmjs.org -Count 1 -Quiet -Time
 }
 
 try {
-    npm install -g @openai/codex@latest 2>$null
+    cmd /c "npm install -g @openai/codex@latest" 2>$null
 
     if (Get-Command codex -ErrorAction SilentlyContinue) {
         Write-Host "  ✅ Codex 安装成功！" -ForegroundColor Green
@@ -129,7 +129,7 @@ try {
     } else {
         # 重试安装（处理可选平台依赖缺失的情况）
         Write-Host "  💡 首次安装后未检测到命令，重试安装平台依赖..." -ForegroundColor Cyan
-        npm install -g @openai/codex@latest 2>$null
+        cmd /c "npm install -g @openai/codex@latest" 2>$null
         if (Get-Command codex -ErrorAction SilentlyContinue) {
             Write-Host "  ✅ Codex 安装成功！" -ForegroundColor Green
         } else {

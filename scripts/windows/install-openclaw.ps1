@@ -125,7 +125,7 @@ Write-Host ""
 $installed = $false
 
 # 方法1: npm 安装（主方法）
-$npmOutput = npm install -g openclaw@latest 2>&1
+$npmOutput = cmd /c "npm install -g openclaw@latest" 2>&1
 if ($LASTEXITCODE -eq 0) {
     if (Get-Command openclaw -ErrorAction SilentlyContinue) {
         $installed = $true

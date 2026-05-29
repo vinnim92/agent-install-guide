@@ -150,7 +150,7 @@ if (Get-Command claude -ErrorAction SilentlyContinue) {
         # 方法3: npm
         if (-not $claudeInstalled -and $hasNpm) {
             Write-Host "      通过 npm 安装 @anthropic-ai/claude-code ..." -ForegroundColor Cyan
-            npm install -g @anthropic-ai/claude-code@latest 2>$null
+            cmd /c "npm install -g @anthropic-ai/claude-code@latest" 2>$null
             if (Get-Command claude -ErrorAction SilentlyContinue) { $claudeInstalled = $true }
         }
         if ($claudeInstalled) {
@@ -170,7 +170,7 @@ if (Get-Command codex -ErrorAction SilentlyContinue) {
     Write-Host "    ✅ Codex 已安装" -ForegroundColor Green
     $installed++
 } elseif ($hasNpm) {
-    npm install -g @openai/codex 2>$null
+    cmd /c "npm install -g @openai/codex" 2>$null
     if (Get-Command codex -ErrorAction SilentlyContinue) {
         Write-Host "    ✅ Codex 安装成功！" -ForegroundColor Green
         $installed++
@@ -188,7 +188,7 @@ if (Get-Command openclaw -ErrorAction SilentlyContinue) {
     $installed++
 } else {
     if ($hasNpm) {
-        npm install -g openclaw@latest 2>$null
+        cmd /c "npm install -g openclaw@latest" 2>$null
     }
     if (Get-Command openclaw -ErrorAction SilentlyContinue) {
         Write-Host "    ✅ OpenClaw 安装成功！" -ForegroundColor Green
