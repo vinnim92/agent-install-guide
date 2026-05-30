@@ -1,46 +1,67 @@
-# ⚡ 安装 Codex
+# Codex 小白安装教程
 
-> **OpenAI 出品 · ChatGPT 用户首选 · 1 条命令 · 5 分钟搞定**
-
----
-
-## 你需要准备
-
-| # | 东西 | 说明 |
-|---|------|------|
-| 1 | 电脑 | Mac 或 Windows 都行 |
-| 2 | 网络 | 能上网就行 |
-| 3 | ChatGPT 账号 | Plus 或 Pro 会员 |
-| 4 | 手 | 会复制粘贴 |
-
-**就这些。不需要懂任何技术。**
+> OpenAI 出品 · ChatGPT 用户首选 · 一条命令安装
 
 ---
 
-## 安装（复制 → 粘贴 → 回车）
+## 适合谁
 
-### Mac 用户
+Codex 适合 ChatGPT 用户，尤其是想把 OpenAI 能力接入本地开发流程的人。如果你已经是 ChatGPT Plus 会员，Codex 是最自然的选择。
 
-打开「终端」（右上角🔍搜索"终端"），粘贴下面这行，按回车：
+需要 ChatGPT Plus / Pro / Team 账号，或 OpenAI API Key。
+
+---
+
+## 安装前你需要知道什么
+
+- 会复制粘贴就够了
+- 脚本会自动安装 Node.js（如果你没有或版本不够）
+- 全程约 5 分钟
+
+---
+
+## macOS / Linux 安装
+
+打开终端（Mac 右上角 🔍 搜索「终端」），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/mac-linux/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
 ```
 
-### Windows 用户
-
-按 `⊞ + R`，输入 `powershell`，粘贴下面这行，按回车：
-
-```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/windows/install-codex.ps1 | iex
-```
-
-> ⏳ **等 3-5 分钟**。屏幕上会滚动文字——这是脚本在自动工作。
-> 你什么都不用操作。看到 `✅` 就是装好了。
+屏幕上会滚动文字——这是脚本在自动工作。看到 `✅` 就是装好了。
 
 ---
 
-## 开始使用
+## Windows 安装
+
+按 `⊞ + R`，输入 `powershell`，回车。粘贴下面这行，回车：
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+```
+
+---
+
+## dry-run 预演
+
+先看脚本会做什么，再决定是否安装：
+
+### macOS / Linux
+
+```bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash -s -- --dry-run
+```
+
+### Windows
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 -OutFile install-codex.ps1
+.\install-codex.ps1 -DryRun
+```
+
+---
+
+## 安装后启动
 
 打开终端，输入：
 
@@ -48,55 +69,48 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/
 codex
 ```
 
-按回车。第一次会弹出浏览器让你登录 ChatGPT 账号。
-
-> 💬 试试说：**"帮我写一个 Python 脚本，自动整理桌面文件"** —— 它会立刻开始写代码。
+回车。第一次会弹出浏览器让你登录 ChatGPT 账号。登录后回到终端，就可以和 Codex 对话了。
 
 ---
 
----
+## 第一次使用建议
 
-## 💡 装好之后，试试这些
+试试对它说：
 
-Codex 是 OpenAI 官方出品的终端 AI 助手，和 ChatGPT 深度打通。配上合适的 Skill 配置包，效率翻倍。
+> "帮我写一个 Python 脚本，自动整理桌面文件"
 
-| ⚡ Codex 效率工作流 | 📊 AI 自动 Excel 报表 |
-|---|---|
-| ChatGPT 用户专属优化工作流 | "帮我把本月数据做成报表" |
-| 更适合 OpenAI 生态的触发方式 | 自动生成图表 + 分析 |
-| **即将上线** | **闲鱼搜：Excel 自动化 Skill** |
-
-| 🎨 AI 一键做 PPT | 🛠 更多 Skill 合集 |
-|---|---|
-| "帮我做一份发布会风的 PPT" | 持续更新中 |
-| HTML 网页版 + PPTX 可编辑版 | 满足不同场景需求 |
-| **闲鱼搜：AI PPT Skill** | **闲鱼搜：AI Skill 工厂** |
-
-> 📩 **闲鱼搜「AI Skill 工厂」** → 查看全部可用 Skill。
+Codex 会立刻开始写代码，并在终端里展示运行结果。
 
 ---
 
-## ❓ 常见问题
+## 常见问题
 
-**Q: 输入 `codex` 后提示"找不到命令"？**
-→ 关掉终端窗口，重新打开，再试一次。
+**Q：输入 `codex` 后提示"找不到命令"？**
+A：关掉终端窗口，重新打开，再试一次。
 
-**Q: 安装过程中网络错误？**
-→ 断开当前 WiFi，换手机热点，重试。
+**Q：安装过程中网络错误？**
+A：断开当前 WiFi，换手机热点，重试。脚本在网络不佳时会自动切换国内 npm 镜像。
 
-**Q: 需要 ChatGPT Plus 吗？**
-→ 是的，Codex 需要 Plus（$20/月）或 Pro（$200/月）订阅。
+**Q：需要 ChatGPT Plus 吗？**
+A：是的，Codex 需要 Plus（$20/月）、Pro（$200/月）或 Team 订阅。也可以使用 OpenAI API Key（按量计费）。
 
-**Q: 怎么更新到最新版？**
-→ 重新运行一遍上面的安装命令即可，自动覆盖升级。
+**Q：怎么更新到最新版？**
+A：重新运行一遍安装命令即可，自动覆盖升级。
 
-**Q: 怎么卸载？**
-→ 打开终端，输入：`npm uninstall -g @openai/codex`
-
-**Q: 其他问题？**
-→ 截图发闲鱼卖家，24 小时内回复。
-→ 或提 GitHub Issue：https://github.com/vinnim92/agent-install-guide/issues
+**Q：怎么卸载？**
+A：终端输入：`npm uninstall -g @openai/codex`
 
 ---
 
-> 📖 **版本：v3.0 ｜ 会复制粘贴就会装 ｜ 永远保持更新**
+## 失败排查
+
+1. **"找不到命令"** → 关掉终端重新打开，再试 `codex`
+2. **网络错误** → 切换手机热点，重新运行安装命令
+3. **权限错误（EACCES）** → 脚本会自动检测并修复 npm 权限
+4. **Node.js 版本不够** → 脚本会自动安装 Node.js v22+
+5. **登录失败** → 确认 ChatGPT 订阅有效
+6. **其他问题** → 截图报错信息进行排查
+
+---
+
+> 📖 返回 [总教程](guide.md) · 查看 [常见问题排查](troubleshooting.md)

@@ -1,45 +1,67 @@
-# 🧠 安装 Claude Code
+# Claude Code 小白安装教程
 
-> **最聪明的 AI 程序员 · 1 条命令 · 5 分钟搞定**
-
----
-
-## 你需要准备
-
-| # | 东西 | 说明 |
-|---|------|------|
-| 1 | 电脑 | Mac 或 Windows 都行 |
-| 2 | 网络 | 能上网就行 |
-| 3 | 手 | 会复制粘贴 |
-
-**就这些。不需要懂任何技术。**
+> Anthropic 出品 · 综合能力最强 · 一条命令安装
 
 ---
 
-## 安装（复制 → 粘贴 → 回车）
+## 适合谁
 
-### Mac 用户
+Claude Code 适合想要稳定、成熟、强代码能力体验的用户。如果你想要一个聪明、可靠的 AI 编程助手，这是目前最好的选择之一。
 
-打开「终端」（右上角🔍搜索"终端"），粘贴下面这行，按回车：
+需要 Claude 账号（Pro / Max / Team / Enterprise）或 Anthropic API Key。
+
+---
+
+## 安装前你需要知道什么
+
+- 会复制粘贴就够了
+- 不需要手动安装 Node.js（Claude Code 自带运行环境）
+- 全程 3-5 分钟
+
+---
+
+## macOS / Linux 安装
+
+打开终端（Mac 右上角 🔍 搜索「终端」），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/mac-linux/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
 ```
 
-### Windows 用户
-
-按 `⊞ + R`，输入 `powershell`，粘贴下面这行，按回车：
-
-```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/windows/install-claude-code.ps1 | iex
-```
-
-> ⏳ **等 3-5 分钟**。屏幕上会滚动文字——这是脚本在自动工作。
-> 你什么都不用操作。看到 `✅` 就是装好了。
+屏幕上会滚动文字——这是脚本在自动工作。看到 `✅` 就是装好了。
 
 ---
 
-## 开始使用
+## Windows 安装
+
+按 `⊞ + R`，输入 `powershell`，回车。粘贴下面这行，回车：
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.ps1 | iex
+```
+
+---
+
+## dry-run 预演
+
+先看脚本会做什么，再决定是否安装：
+
+### macOS / Linux
+
+```bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash -s -- --dry-run
+```
+
+### Windows
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.ps1 -OutFile install-claude-code.ps1
+.\install-claude-code.ps1 -DryRun
+```
+
+---
+
+## 安装后启动
 
 打开终端，输入：
 
@@ -47,55 +69,47 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/
 claude
 ```
 
-按回车。第一次会弹出浏览器让你登录 Claude 账号。
-
-> 💬 试试说：**"帮我做一个个人博客网站"** —— 它会立刻开始写代码。
+回车。第一次会弹出浏览器让你登录 Claude 账号。登录后回到终端，就可以和 Claude Code 对话了。
 
 ---
 
----
+## 第一次使用建议
 
-## 💡 装好之后，试试这些 Skill
+试试对它说：
 
-Claude Code 本身是一个"通用 AI 程序员"，装上这些 **Skill 配置包** 之后，它会变成某个领域的专家——你只需要说话，它就帮你完成。
+> "帮我做一个个人博客网站"
 
-| 🎨 AI 一键做 PPT | 📊 AI 自动 Excel 报表 |
-|---|---|
-| "帮我做一份 8 页杂志风 PPT" | "帮我把本月销售数据做成周报" |
-| 5 分钟后 → 可以直接上台讲的演示稿 | 自动生成图表、分析、格式化 |
-| 两种风格：电子杂志风 + 瑞士极简风 | 支持数据清洗、透视表、图表 |
-| 支持 HTML 网页翻页 + PPTX 可编辑 | 周报/月报/财务报表模板开箱即用 |
-| **闲鱼搜：AI PPT Skill** | **闲鱼搜：Excel 自动化 Skill** |
-
-| 📝 AI 写作 & 报告 | 🛠 更多 Skill 合集 |
-|---|---|
-| 商业提案、年度总结、技术文档 | 持续更新：代码审查、项目脚手架... |
-| 一键生成大纲 + 正文 | 一次购买，永久更新 |
-| **即将上线** | **闲鱼搜：AI Skill 工厂** |
-
-> 📩 **闲鱼搜「AI Skill 工厂」** → 查看全部可用 Skill，总有一款帮你省时间。
+Claude Code 会立刻开始写代码。你会看到它在终端里一步步生成文件、解释思路。
 
 ---
 
-## ❓ 常见问题
+## 常见问题
 
-**Q: 输入 `claude` 后提示"找不到命令"？**
-→ 关掉终端窗口，重新打开，再试一次。
+**Q：输入 `claude` 后提示"找不到命令"？**
+A：关掉终端窗口，重新打开，再试一次。
 
-**Q: 安装过程中网络错误？**
-→ 断开当前 WiFi，换手机热点，重试。
+**Q：安装过程中网络错误？**
+A：断开当前 WiFi，换手机热点，重试。
 
-**Q: 怎么更新到最新版？**
-→ 重新运行一遍上面的安装命令即可，自动覆盖升级。
+**Q：需要账号吗？**
+A：需要 Claude 账号。Pro 订阅 $20/月，Max $100/月（用量更大），Team 和 Enterprise 按团队计费。
 
-**Q: 怎么卸载？**
-→ Mac：`rm -rf ~/.local/bin/claude ~/.claude/`
-→ Windows：`winget uninstall Anthropic.ClaudeCode`
+**Q：怎么更新到最新版？**
+A：重新运行一遍安装命令即可，自动覆盖升级。
 
-**Q: 其他问题？**
-→ 截图发闲鱼卖家，24 小时内回复。
-→ 或提 GitHub Issue：https://github.com/vinnim92/agent-install-guide/issues
+**Q：怎么卸载？**
+A：Mac / Linux：`rm -rf ~/.local/bin/claude ~/.claude/`
+A：Windows：`winget uninstall Anthropic.ClaudeCode`
 
 ---
 
-> 📖 **版本：v3.0 ｜ 会复制粘贴就会装 ｜ 永远保持更新**
+## 失败排查
+
+1. **"找不到命令"** → 关掉终端重新打开，再试 `claude`
+2. **网络错误** → 切换手机热点，重新运行安装命令
+3. **登录失败** → 确认 Claude 账号订阅有效
+4. **其他问题** → 截图报错信息进行排查
+
+---
+
+> 📖 返回 [总教程](guide.md) · 查看 [常见问题排查](troubleshooting.md)

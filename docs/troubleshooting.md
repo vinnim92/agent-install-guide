@@ -88,9 +88,9 @@ Set-ExecutionPolicy Bypass -Scope Process -Force
 
 ### OpenClaw
 
-**Mac**：`brew uninstall opencode` 或 `npm uninstall -g opencode-ai`
+**Mac**：`brew uninstall openclaw` 或 `npm uninstall -g openclaw@latest`
 
-**Windows**：`winget uninstall SST.opencode` 或 `npm uninstall -g opencode-ai`
+**Windows**：`npm uninstall -g openclaw@latest`
 
 ---
 
