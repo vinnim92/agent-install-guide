@@ -58,7 +58,7 @@ install_openclaw_macos() {
     # 优先 Homebrew
     if command_exists brew; then
         print_step "通过 Homebrew 安装..."
-        if brew install opencode 2>/dev/null; then
+        if brew install openclaw 2>/dev/null; then
             print_success "Homebrew 安装成功"
             return 0
         fi
@@ -69,23 +69,7 @@ install_openclaw_macos() {
 }
 
 install_openclaw_linux() {
-    # 尝试官方脚本
-    print_step "使用官方安装脚本..."
-    if curl -fsSL https://opencode.ai/install | bash 2>/dev/null; then
-        print_success "官方脚本安装成功"
-        return 0
-    fi
-
-    # Arch Linux AUR
-    if command_exists pacman; then
-        print_step "检测到 Arch Linux，尝试 pacman..."
-        if sudo pacman -S --noconfirm opencode 2>/dev/null; then
-            print_success "pacman 安装成功"
-            return 0
-        fi
-    fi
-
-    print_warning "官方脚本和包管理器均失败，改用 npm..."
+    # 尝试官方 npm 包（openclaw 目前主要通过 npm 发布）
     install_openclaw_npm
 }
 
@@ -97,15 +81,16 @@ install_openclaw_npm() {
         npm config set registry https://registry.npmmirror.com 2>/dev/null || true
     fi
 
-    if npm install -g opencode-ai@latest 2>/dev/null; then
+    if npm install -g openclaw@latest 2>/dev/null; then
         print_success "npm 安装成功"
     else
         print_error "npm 安装失败"
         echo ""
         echo "  手动安装:"
-        echo "    macOS: brew install opencode"
-        echo "    Linux: curl -fsSL https://opencode.ai/install | bash"
-        echo "    通用:  npm install -g opencode-ai@latest"
+        echo "    macOS: brew install openclaw"
+        echo "    通用:  npm install -g openclaw@latest"
+        echo ""
+        echo "  查看官方文档: https://github.com/microsoft/openclaw"
         return 1
     fi
 }
@@ -113,9 +98,9 @@ install_openclaw_npm() {
 verify_openclaw() {
     print_step "验证安装..."
 
-    if command_exists opencode 2>/dev/null; then
+    if command_exists openclaw 2>/dev/null; then
         local ver
-        ver=$(opencode --version 2>/dev/null | head -1 || echo "安装成功")
+        ver=$(openclaw --version 2>/dev/null | head -1 || echo "安装成功")
         print_success "OpenClaw 安装完成！"
         echo -e "  ${ver}"
         echo ""
@@ -130,7 +115,7 @@ verify_openclaw() {
         echo ""
         echo -e "  不配置 API Key 也能用——OpenClaw 内置免费模型"
     else
-        print_error "找不到 opencode 命令"
+        print_error "找不到 openclaw 命令"
         print_tip "请重新打开终端后重试"
         echo "  export PATH=\"\$(npm prefix -g)/bin:\$PATH\""
         return 1

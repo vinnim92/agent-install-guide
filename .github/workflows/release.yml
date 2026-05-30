@@ -73,12 +73,11 @@ jobs:
 
       - name: Validate Scripts
         run: |
-          bash -n scripts/install.sh || exit 1
-          echo "install.sh: syntax OK"
-          for f in scripts/mac-linux/*.sh; do
+          for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
             bash -n "$f" || exit 1
             echo "$f: syntax OK"
           done
+          bash scripts/check-scripts.sh
 
       - name: Create Release Package
         run: |
@@ -93,10 +92,13 @@ jobs:
           cp release/pdf/install-openclaw.pdf "${PKG_DIR}/单页安装指南/"
           cp release/pdf/install-guide-full.pdf "${PKG_DIR}/"
 
-          cp scripts/install.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
-          cp scripts/install.ps1 "${PKG_DIR}/scripts/" 2>/dev/null || true
-          cp -r scripts/mac-linux "${PKG_DIR}/scripts/" 2>/dev/null || true
-          cp -r scripts/windows "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-claude-code.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-codex.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-openclaw.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-claude-code.ps1 "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-codex.ps1 "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/install-openclaw.ps1 "${PKG_DIR}/scripts/" 2>/dev/null || true
+          cp scripts/check-scripts.sh "${PKG_DIR}/scripts/" 2>/dev/null || true
           cp -r scripts/lib "${PKG_DIR}/scripts/" 2>/dev/null || true
 
           cp docs/troubleshooting.md "${PKG_DIR}/"
@@ -130,17 +132,24 @@ jobs:
 
             ### 🚀 快速开始
 
-            Mac：打开终端，粘贴运行：
+            每个 Agent 一条命令，复制到终端回车即可：
+
+            **Claude Code**
             ```bash
-            curl -fsSL https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.sh | bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
             ```
 
-            Windows：打开 PowerShell，粘贴运行：
-            ```powershell
-            iwr -useb https://raw.githubusercontent.com/vinnim92/agent-install-guide/main/scripts/install.ps1 | iex
+            **Codex CLI**
+            ```bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
             ```
 
-            或只装其中一个：见对应单页指南。
+            **OpenClaw**
+            ```bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.sh | bash
+            ```
+
+            Windows 用户请使用对应的 `.ps1` 脚本，详见单页指南。
 
             ### 📝 更新日志
 

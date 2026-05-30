@@ -17,8 +17,6 @@ NC='\033[0m' # No Color
 # ---------- 全局变量 ----------
 REPO_URL="https://github.com/vinnim92/agent-install-guide"
 RAW_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main"
-VERSION_URL="${RAW_BASE}/VERSION"
-CURRENT_VERSION="v2.0.0"
 OS_TYPE=""
 OS_ARCH=""
 
@@ -26,7 +24,7 @@ OS_ARCH=""
 print_header() {
     echo ""
     echo -e "${CYAN}==========================================${NC}"
-    echo -e "${CYAN}  Agent 安装指南 · 一键部署工具${NC}"
+    echo -e "${CYAN}  AI Agent 安装助手${NC}"
     echo -e "${CYAN}  ${REPO_URL}${NC}"
     echo -e "${CYAN}==========================================${NC}"
     echo ""
@@ -60,7 +58,7 @@ detect_os() {
         MINGW*|MSYS*|CYGWIN*)
             OS_TYPE="windows-gitbash"
             print_warning "检测到 Git Bash 环境"
-            print_tip "Windows 用户请使用 PowerShell 脚本: install.ps1"
+            print_tip "Windows 用户请使用 PowerShell 脚本安装对应 Agent"
             print_tip "或在 WSL2 中运行本脚本以获得最佳体验"
             echo ""
             ;;
@@ -70,20 +68,6 @@ detect_os() {
             ;;
     esac
     OS_ARCH=$(uname -m)
-}
-
-# ---------- 版本自检 ----------
-check_self_update() {
-    print_step "检查脚本版本..."
-    local remote_version
-    remote_version=$(curl -fsSL --connect-timeout 5 "$VERSION_URL" 2>/dev/null || echo "")
-    if [ -n "$remote_version" ] && [ "$remote_version" != "$CURRENT_VERSION" ]; then
-        print_warning "发现新版本: $remote_version (当前: $CURRENT_VERSION)"
-        print_tip "建议更新: curl -fsSL ${RAW_BASE}/scripts/install.sh | bash"
-        echo ""
-    else
-        print_success "脚本已是最新版本 ($CURRENT_VERSION)"
-    fi
 }
 
 # ---------- 命令检查 ----------
@@ -121,7 +105,6 @@ safe_download() {
 # ---------- 网络连通性检查 ----------
 check_network() {
     print_step "检查网络连通性..."
-    # 检查能否访问 GitHub
     if curl -fsSL --connect-timeout 5 https://github.com >/dev/null 2>&1; then
         print_success "GitHub 可访问"
     else
