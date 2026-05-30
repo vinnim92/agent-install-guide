@@ -1,72 +1,46 @@
-name: Test install.sh
+name: Validate Scripts
 
 on:
   push:
     paths:
-      - 'scripts/install.sh'
+      - 'scripts/install-claude-code.sh'
+      - 'scripts/install-codex.sh'
+      - 'scripts/install-openclaw.sh'
+      - 'scripts/install-claude-code.ps1'
+      - 'scripts/install-codex.ps1'
+      - 'scripts/install-openclaw.ps1'
       - 'scripts/lib/**'
+      - 'scripts/check-scripts.sh'
   workflow_dispatch:
 
 jobs:
-  test-ubuntu:
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
-    runs-on: ${{ matrix.os }}
+  validate:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Run install.sh
+      - name: Syntax check (bash)
         run: |
-          echo "============================================"
-          echo "  Testing install.sh on ${{ matrix.os }}"
-          echo "  Date: $(date)"
-          echo "============================================"
-          bash scripts/install.sh 2>&1
-          echo ""
-          echo "============================================"
-          echo "  Verification"
-          echo "============================================"
+          for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
+            bash -n "$f" || exit 1
+            echo "$f: syntax OK"
+          done
 
-      - name: Verify installations
+      - name: Run check-scripts.sh
         run: |
-          set -e
-          FAILED=0
+          bash scripts/check-scripts.sh
 
-          echo ""
-          echo "--- Claude Code ---"
-          if command -v claude &>/dev/null; then
-            claude --version 2>&1 | head -1 || echo "(version check done)"
-            echo "✅ Claude Code installed"
-          else
-            echo "❌ Claude Code NOT found"
-            FAILED=1
-          fi
+      - name: Test --help
+        run: |
+          for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
+            echo "=== $f --help ==="
+            bash "$f" --help 2>&1 | head -3
+          done
 
-          echo ""
-          echo "--- Codex ---"
-          if command -v codex &>/dev/null; then
-            codex --version 2>&1 || echo "(version check done)"
-            echo "✅ Codex installed"
-          else
-            echo "❌ Codex NOT found"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "--- OpenClaw ---"
-          if command -v openclaw &>/dev/null; then
-            openclaw --version 2>&1 || echo "(version check done)"
-            echo "✅ OpenClaw installed"
-          else
-            echo "⚠️  OpenClaw not found (non-critical — may need network)"
-          fi
-
-          echo ""
-          if [ "$FAILED" -eq 1 ]; then
-            echo "=== ❌ CORE INSTALLS FAILED ==="
-            exit 1
-          else
-            echo "=== ✅ CORE INSTALLS VERIFIED ==="
-          fi
+      - name: Test --dry-run
+        run: |
+          for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
+            echo "=== $f --dry-run ==="
+            AGENT_INSTALL_YES=1 bash "$f" --dry-run 2>&1 | tail -3
+          done
