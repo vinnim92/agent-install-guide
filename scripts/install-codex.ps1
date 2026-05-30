@@ -6,7 +6,7 @@
 # 需要: Node.js >= 22（脚本会自动安装）
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 | iex
 #   .\install-codex.ps1 -Help
 #   .\install-codex.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-codex.ps1
@@ -47,7 +47,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -145,7 +145,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 0
     }
 }
@@ -243,7 +243,7 @@ function Start-Install {
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
         Write-Host "  2. 检查 Node.js: node -v (需要 >= 22)" -ForegroundColor Yellow
-        Write-Host "  3. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  3. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -260,16 +260,41 @@ function Start-Verify {
 
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
         Write-Host "  [OK] $AgentName 安装验证通过" -ForegroundColor Green
-        Write-Host ""
-        Write-Host "  第一次启动:" -ForegroundColor Green
-        Write-Host "    PowerShell 中输入 codex 并回车" -ForegroundColor Green
-        Write-Host "    浏览器会自动弹出 ChatGPT 登录页" -ForegroundColor Green
     } else {
         Write-Host "  [FAIL] 找不到 codex 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
+}
+
+# ---- Codex 登录方式选择 ----
+function Start-CodexLogin {
+    if ($DryRun) {
+        Write-Host "    [预演] 将执行: 提示选择 Codex 登录方式" -ForegroundColor Yellow
+        return
+    }
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "  Codex 登录方式" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  Codex 支持两种登录方式：" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  方式一：官方账号登录" -ForegroundColor Yellow
+    Write-Host "    适合已有 ChatGPT / OpenAI 账号的用户。" -ForegroundColor White
+    Write-Host "    PowerShell 输入 codex login，浏览器自动弹出登录页。" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  方式二：API Key 登录" -ForegroundColor Yellow
+    Write-Host "    适合使用 OpenAI API Key 的用户。" -ForegroundColor White
+    Write-Host ""
+    Write-Host "    在 PowerShell 依次运行:" -ForegroundColor White
+    Write-Host '      $env:OPENAI_API_KEY="你的 OpenAI API Key"' -ForegroundColor Cyan
+    Write-Host '      $env:OPENAI_API_KEY | codex login --with-api-key' -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  请选择适合你的方式。安装包负责安装和引导，不提供账号或 API Key。" -ForegroundColor White
+    Write-Host ""
 }
 
 # ==================== 主流程 ====================
@@ -286,6 +311,7 @@ if ($DryRun) {
 Start-PreCheck
 Start-Install
 Start-Verify
+Start-CodexLogin
 
 if ($DryRun) {
     Write-Host ""

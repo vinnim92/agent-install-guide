@@ -141,10 +141,30 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
 
 <!-- 7 -->
 <div class="section">
-  <h2>登录失败 / 认证失败</h2>
+  <h2>Claude Code — DeepSeek API 配置问题</h2>
   <ul>
-    <li><strong>Claude Code：</strong>首次运行 <code>claude</code> 会自动弹出浏览器登录页。如果没有弹出，手动运行 <code>claude login</code>。需要 Claude 账号（Pro/Max/Team/Enterprise）或 Anthropic API Key。</li>
-    <li><strong>Codex：</strong>首次运行 <code>codex</code> 会自动弹出浏览器登录页。如果没有弹出，手动运行 <code>codex login</code>。需要 ChatGPT Plus/Pro/Team 账号或 OpenAI API Key。</li>
+    <li><strong>Claude Code 已安装，但 DeepSeek API 配置失败：</strong>关掉终端重新打开（环境变量需新窗口才能加载），再试 <code>claude</code>。如果仍不生效，检查 <code>~/.zshrc</code>（Mac/Linux）或系统环境变量（Windows）中是否正确写入了 <code>ANTHROPIC_BASE_URL</code> 和 <code>ANTHROPIC_AUTH_TOKEN</code>。</li>
+    <li><strong>DeepSeek API Key 粘贴后没反应：</strong>输入 Key 时光标不会移动是正常的（安全输入模式），粘贴后直接回车即可。如果粘贴失败，右键粘贴后再按回车。</li>
+    <li><strong>Claude Code 启动后仍提示 Anthropic / Claude 登录：</strong>说明环境变量未生效。确认 <code>ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic</code> 已设置。Mac/Linux 用户运行 <code>source ~/.zshrc</code> 然后重试。</li>
+    <li><strong>如何手动重新配置 DeepSeek：</strong>重新运行安装脚本，或参考 <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/agents/claude-code.md">Claude Code 教程</a> 手动设置环境变量。</li>
+  </ul>
+</div>
+
+<!-- 8 -->
+<div class="section">
+  <h2>Codex — API Key 登录问题</h2>
+  <ul>
+    <li><strong>Codex 官方网页登录失败：</strong>确认 ChatGPT 账号有 Plus/Pro/Team 订阅。免费版不支持 Codex。尝试手动运行 <code>codex login</code>。</li>
+    <li><strong>Codex API Key 登录失败：</strong>确认 <code>OPENAI_API_KEY</code> 环境变量已正确设置。Mac/Linux 用 <code>echo $OPENAI_API_KEY</code> 检查，Windows 用 <code>$env:OPENAI_API_KEY</code> 检查。Key 以 <code>sk-</code> 开头。</li>
+    <li><strong>OPENAI_API_KEY 已设置但 Codex 不识别：</strong>关掉终端重新打开（环境变量需新窗口加载）。或用 <code>printenv OPENAI_API_KEY | codex login --with-api-key</code>（Mac）/ <code>$env:OPENAI_API_KEY | codex login --with-api-key</code>（Windows）直接传递。</li>
+    <li><strong>API Key 提示余额不足：</strong>登录 <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> 检查 API 用量和余额。</li>
+  </ul>
+</div>
+
+<!-- 9 -->
+<div class="section">
+  <h2>登录失败 / 认证失败（通用）</h2>
+  <ul>
     <li><strong>OpenClaw：</strong>内置免费模型，无需登录即可使用。如果想配置更多模型，运行 <code>openclaw dashboard</code> 在 Web 控制台设置。</li>
     <li><strong>浏览器没有弹出？</strong>手动在浏览器中打开对应网址登录，然后回到终端重试。</li>
     <li><strong>登录后仍然提示未授权？</strong>确认你的账号订阅状态有效。如果刚购买 Plus/Pro，等几分钟后再试。</li>

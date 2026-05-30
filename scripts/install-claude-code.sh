@@ -2,11 +2,12 @@
 # ============================================================
 # Claude Code 安装脚本
 # 支持系统: macOS / Linux
-# 需要: Claude 账号（Pro/Max/Team/Enterprise）或 Anthropic API Key
+# 推荐: DeepSeek API Key（国内获取方便、便宜）
+# 也可: Claude 官方账号 或 Anthropic API Key
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.sh | bash
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -69,7 +70,8 @@ show_help() {
     echo ""
     echo "安装: Claude Code（Anthropic 出品）"
     echo "系统: macOS / Linux"
-    echo "需要: Claude 账号（Pro/Max/Team/Enterprise）或 Anthropic API Key"
+    echo "推荐: DeepSeek API Key（国内获取方便、便宜）"
+    echo "也可: Claude 官方账号 或 Anthropic API Key"
     echo "      无需单独安装 Node.js（Claude Code 自带运行时）"
     echo ""
     echo "用法:"
@@ -85,7 +87,7 @@ show_help() {
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
     echo ""
     exit 0
 }
@@ -160,7 +162,7 @@ run_precheck() {
     # 6. 总结
     echo -e "  ${BOLD}接下来将安装:${NC} ${AGENT_NAME}"
     echo -e "  ${BOLD}安装方式:${NC} 官方安装脚本"
-    echo -e "  ${BOLD}需要准备:${NC} Claude 账号或 Anthropic API Key"
+    echo -e "  ${BOLD}推荐配置:${NC} DeepSeek API Key（安装后可配置）"
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
@@ -170,7 +172,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 0
     fi
 }
@@ -215,13 +217,13 @@ do_install() {
             run_cmd "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null" && print_success "npm 安装成功" || {
                 print_error "安装失败"
                 echo ""
-                echo "  排查: 访问 https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+                echo "  排查: 访问 https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
                 exit 1
             }
         else
             print_error "安装失败，且未找到 npm"
             echo "  手动安装: 访问 https://claude.ai/download"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
             exit 1
         fi
     fi
@@ -237,9 +239,112 @@ do_install() {
         print_error "找不到 ${AGENT_BIN} 命令"
         echo ""
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 1
     fi
+}
+
+# ---------- DeepSeek API 配置引导 ----------
+configure_deepseek() {
+    if [ "$DRY_RUN" = true ]; then
+        print_dryrun "提示配置 DeepSeek API（可选）"
+        return 0
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${CYAN}  DeepSeek API 配置（可选）${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "  本手册默认采用 ${BOLD}DeepSeek API${NC} 方案。"
+    echo "  DeepSeek 对国内用户更友好：注册方便、价格便宜、无需翻墙。"
+    echo "  你需要准备自己的 DeepSeek API Key。"
+    echo ""
+    echo "  获取方式: 打开浏览器访问 platform.deepseek.com"
+    echo "           注册 → API Keys → 创建 Key（以 sk- 开头）"
+    echo ""
+
+    if ! confirm "是否现在配置 DeepSeek API？"; then
+        echo ""
+        print_tip "已跳过 DeepSeek API 配置。"
+        echo "  稍后可以重新运行本脚本，或在终端手动设置环境变量。"
+        echo ""
+        echo "  如果你已有 Claude 官方账号，也可以直接运行:"
+        echo "    claude login"
+        echo ""
+        return 0
+    fi
+
+    echo ""
+    print_step "请输入你的 DeepSeek API Key（以 sk- 开头）"
+    echo "  （输入时光标不会移动，这是正常的，粘贴后按回车即可）"
+    echo ""
+
+    local api_key
+    read -r -s -p "  API Key: " api_key
+    echo ""
+
+    if [ -z "$api_key" ]; then
+        print_error "API Key 不能为空，已跳过配置。"
+        return 0
+    fi
+
+    echo ""
+    print_step "正在写入配置..."
+    echo ""
+
+    local rc_file=""
+    case "$SHELL" in */zsh) rc_file="$HOME/.zshrc" ;; */bash) rc_file="$HOME/.bashrc" ;; *) rc_file="$HOME/.profile" ;; esac
+
+    # 备份以避免重复写入
+    if grep -q "ANTHROPIC_BASE_URL.*api.deepseek.com" "$rc_file" 2>/dev/null; then
+        print_tip "检测到已有 DeepSeek 配置，将更新 API Key"
+        # 移除旧的 ANTHROPIC_AUTH_TOKEN
+        if [ "$(uname -s)" = "Darwin" ]; then
+            sed -i '' '/export ANTHROPIC_AUTH_TOKEN=.*deepseek\|# DeepSeek.*ANTHROPIC_AUTH_TOKEN/d' "$rc_file"
+            sed -i '' '/export ANTHROPIC_AUTH_TOKEN=sk-/d' "$rc_file"
+        else
+            sed -i '/export ANTHROPIC_AUTH_TOKEN=.*deepseek\|# DeepSeek.*ANTHROPIC_AUTH_TOKEN/d' "$rc_file"
+            sed -i '/export ANTHROPIC_AUTH_TOKEN=sk-/d' "$rc_file"
+        fi
+    fi
+
+    cat >> "$rc_file" << 'SHELLCONF'
+
+# === DeepSeek API for Claude Code ===
+export ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic
+export ANTHROPIC_AUTH_TOKEN=__API_KEY_PLACEHOLDER__
+export ANTHROPIC_MODEL=deepseek-v4-pro
+export ANTHROPIC_DEFAULT_OPUS_MODEL=deepseek-v4-pro
+export ANTHROPIC_DEFAULT_SONNET_MODEL=deepseek-v4-pro
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=deepseek-v4-flash
+export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
+export CLAUDE_CODE_EFFORT_LEVEL=max
+SHELLCONF
+
+    # 替换占位符为实际 Key
+    if [ "$(uname -s)" = "Darwin" ]; then
+        sed -i '' "s|__API_KEY_PLACEHOLDER__|${api_key}|" "$rc_file"
+    else
+        sed -i "s|__API_KEY_PLACEHOLDER__|${api_key}|" "$rc_file"
+    fi
+
+    # 立即生效
+    export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
+    export ANTHROPIC_AUTH_TOKEN="$api_key"
+    export ANTHROPIC_MODEL="deepseek-v4-pro"
+    export ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro"
+    export ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro"
+    export ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash"
+    export CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash"
+    export CLAUDE_CODE_EFFORT_LEVEL="max"
+
+    echo ""
+    print_success "DeepSeek API 配置完成！"
+    print_tip "配置已写入 ${rc_file}"
+    echo ""
+    echo "  现在可以输入 claude 启动，它将使用 DeepSeek 作为后端模型。"
+    echo ""
 }
 
 # ==================== 主流程 ====================
@@ -267,13 +372,13 @@ fi
 
 run_precheck
 do_install
+configure_deepseek
 
 echo ""
 print_success "${AGENT_NAME} 安装验证通过"
 echo ""
-echo -e "${GREEN}第一次启动:${NC}"
+echo -e "${GREEN}启动方式:${NC}"
 echo "  终端输入: ${AGENT_BIN}"
-echo "  浏览器会自动弹出 Claude 登录页"
 echo ""
 echo -e "  常用命令:"
 echo "    claude             启动交互式对话"

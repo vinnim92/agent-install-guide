@@ -25,7 +25,7 @@ Codex 适合 ChatGPT 用户，尤其是想把 OpenAI 能力接入本地开发流
 打开终端（Mac 右上角 🔍 搜索「终端」），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash
 ```
 
 屏幕上会滚动文字——这是脚本在自动工作。看到 `✅` 就是装好了。
@@ -37,7 +37,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scrip
 按 `⊞ + R`，输入 `powershell`，回车。粘贴下面这行，回车：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 | iex
 ```
 
 ---
@@ -49,13 +49,13 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/script
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash -s -- --dry-run
 ```
 
 ### Windows
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 -OutFile install-codex.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun
 ```
 
@@ -63,13 +63,35 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/script
 
 ## 安装后启动
 
-打开终端，输入：
+Codex 支持两种登录方式：
+
+### 方式一：官方账号登录
+
+适合已有 ChatGPT / OpenAI 账号的用户：
 
 ```
-codex
+codex login
 ```
 
-回车。第一次会弹出浏览器让你登录 ChatGPT 账号。登录后回到终端，就可以和 Codex 对话了。
+浏览器会自动弹出 ChatGPT 登录页，登录后即可使用。
+
+### 方式二：API Key 登录
+
+适合使用 OpenAI API Key 的用户：
+
+**macOS / Linux：**
+
+```bash
+export OPENAI_API_KEY="你的 OpenAI API Key"
+printenv OPENAI_API_KEY | codex login --with-api-key
+```
+
+**Windows：**
+
+```powershell
+$env:OPENAI_API_KEY="你的 OpenAI API Key"
+$env:OPENAI_API_KEY | codex login --with-api-key
+```
 
 ---
 
@@ -92,7 +114,7 @@ A：关掉终端窗口，重新打开，再试一次。
 A：断开当前 WiFi，换手机热点，重试。脚本在网络不佳时会自动切换国内 npm 镜像。
 
 **Q：需要 ChatGPT Plus 吗？**
-A：是的，Codex 需要 Plus（$20/月）、Pro（$200/月）或 Team 订阅。也可以使用 OpenAI API Key（按量计费）。
+A：有两种方式：① 官方账号登录需要 Plus（$20/月）、Pro（$200/月）或 Team 订阅；② 使用 OpenAI API Key 登录（按量计费），不需要订阅。
 
 **Q：怎么更新到最新版？**
 A：重新运行一遍安装命令即可，自动覆盖升级。

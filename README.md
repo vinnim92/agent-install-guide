@@ -38,11 +38,11 @@
 
 ## 选择你要安装的 Agent
 
-**Claude Code**
-适合想要稳定、成熟、强代码能力体验的用户。由 Anthropic 出品，是目前综合能力最强的 AI 编程助手之一。
+**Claude Code + DeepSeek API**
+采用 DeepSeek API 优先方案，国内获取方便、价格便宜。由 Anthropic 出品，是目前综合能力最强的 AI 编程助手之一。也支持 Claude 官方账号登录。
 
 **Codex**
-适合 ChatGPT 用户，尤其是想把 OpenAI 能力接入本地开发流程的人。由 OpenAI 出品，与 ChatGPT 生态深度打通。
+适合 ChatGPT 用户或 OpenAI API 用户。支持官方账号登录和 API Key 登录两种方式。由 OpenAI 出品，与 ChatGPT 生态深度打通。
 
 **OpenClaw**
 适合想尝试开源 Agent 工作流、希望有更多可玩性的用户。由微软开源，内置免费模型，支持 75+ 模型提供商。
@@ -58,19 +58,19 @@
 **Claude Code：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.sh | bash
 ```
 
 **Codex：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash
 ```
 
 **OpenClaw：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.sh | bash
 ```
 
 ### Windows
@@ -80,19 +80,19 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scrip
 **Claude Code：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.ps1 | iex
 ```
 
 **Codex：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 | iex
 ```
 
 **OpenClaw：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.ps1 | iex
 ```
 
 ---
@@ -122,7 +122,7 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/script
 在命令后面加 `--dry-run`：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash -s -- --dry-run
 ```
 
 ### Windows
@@ -130,7 +130,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scrip
 先将脚本下载到本地，再以 dry-run 模式执行：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 -OutFile install-codex.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun
 ```
 
@@ -145,7 +145,7 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/script
 ### macOS / Linux
 
 ```bash
-AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh)"
+AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh)"
 ```
 
 ### Windows
@@ -154,7 +154,7 @@ AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/a
 
 ```powershell
 $env:AGENT_INSTALL_YES = "1"
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 | iex
 ```
 
 ---

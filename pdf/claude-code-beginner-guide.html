@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude Code 小白安装手册 v3.0.4</title>
+<title>Claude Code + DeepSeek API 小白安装手册 v3.0.5</title>
 <style>
   @media print {
     body { -webkit-print-color-adjust: exact; }
@@ -100,10 +100,10 @@
 <!-- ====== Cover ====== -->
 <div class="cover">
   <div class="badge">Claude Code</div>
-  <h1>Claude Code<br>小白安装手册</h1>
-  <p class="tagline">Anthropic 出品 · 命令行 AI 编程助手</p>
+  <h1>Claude Code + DeepSeek API<br>小白安装手册</h1>
+  <p class="tagline">Anthropic 出品 · DeepSeek API 优先 · 命令行 AI 编程助手</p>
   <p class="meta">
-    <span>版本 v3.0.4</span><span>|</span><span>支持 Windows / Mac</span>
+    <span>版本 v3.0.5</span><span>|</span><span>支持 Windows / Mac</span>
   </p>
 </div>
 
@@ -112,7 +112,7 @@
   <h2>适用对象</h2>
   <p>本手册适合<strong>第一次接触命令行</strong>的新手用户。如果你平时只用鼠标操作电脑，从没打开过"终端"或"PowerShell"，本手册会手把手带你完成安装。</p>
   <div class="tip-box">
-    <strong>✅ Claude Code 不需要安装 Node.js</strong> — 它自带运行时，装上就能用。只要你有 Claude 账号（Pro / Max / Team / Enterprise）或 Anthropic API Key。
+    <strong>✅ Claude Code 不需要安装 Node.js</strong> — 它自带运行时，装上就能用。<strong>本手册默认采用 DeepSeek API 方案</strong>（国内获取方便、价格便宜），安装后脚本会引导你配置。
   </div>
 </div>
 
@@ -120,9 +120,9 @@
 <div class="section">
   <h2>安装前准备</h2>
   <div class="card">
-    <h4>🎫 需要一个 Claude 账号</h4>
-    <p>注册地址：<strong>https://claude.ai</strong>（在浏览器打开）<br>
-    支持 Pro（推荐）、Max、Team、Enterprise 订阅。或者准备一个 Anthropic API Key。</p>
+    <h4>🔑 需要准备一个 DeepSeek API Key</h4>
+    <p>获取地址：<strong>platform.deepseek.com</strong>（在浏览器打开）<br>
+    用手机号注册 → 点左侧"API Keys" → 创建 Key（以 sk- 开头）。价格便宜，¥1 起充。</p>
   </div>
   <div class="card">
     <h4>💻 电脑系统要求</h4>
@@ -197,13 +197,13 @@
   <h3>🪟 Windows 用户（在 PowerShell 中运行）</h3>
   <div class="cmd-box">
     <span class="label">Windows PowerShell</span>
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.ps1 | iex
   </div>
 
   <h3>🍎 Mac 用户（在终端中运行）</h3>
   <div class="cmd-box">
     <span class="label">macOS 终端</span>
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.sh | bash
   </div>
 
   <div class="warn-box">
@@ -235,38 +235,48 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scrip
 </div>
 
 <!-- ====== Step 4: 跟着提示走 ====== -->
-<div class="section page-break">
+<div class="section">
   <h2>第四步：跟着提示操作</h2>
-  <p>安装脚本会自动检查你的电脑环境：</p>
+  <p>安装脚本会自动检查你的电脑环境并安装 Claude Code：</p>
   <ol style="padding-left: 24px; line-height: 2.2;">
     <li>脚本会显示 <strong>"正在检查你的电脑环境…"</strong></li>
     <li>检查系统、网络、是否已安装过 Claude Code</li>
-    <li>显示 <strong>"是否继续安装 Claude Code？"</strong></li>
-    <li>输入 <code>y</code> 然后回车（或直接回车，默认就是 y）</li>
-    <li>脚本会通过 winget（Windows）或官方脚本（Mac）自动安装</li>
+    <li>显示 <strong>"是否继续安装 Claude Code？"</strong> → 输入 <code>y</code> 回车</li>
+    <li>脚本通过官方渠道自动安装 Claude Code</li>
     <li>看到 <strong>"✅ Claude Code 安装成功"</strong> 就完成了</li>
   </ol>
   <div class="tip-box">
     <strong>💡 如果中途出现红色报错：</strong>不要慌。把错误截图保存下来，然后访问故障排查页面：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html</a>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html</a>
   </div>
 </div>
 
-<!-- ====== Step 5: 启动 Claude Code ====== -->
+<!-- ====== Step 5: 配置 DeepSeek API ====== -->
 <div class="section">
-  <h2>第五步：启动 Claude Code</h2>
-  <p>安装完成后，关掉当前的终端/PowerShell 窗口，<strong>重新打开一个新窗口</strong>，然后：</p>
-  <div class="cmd-box">
-    <span class="label">在终端 / PowerShell 中输入</span>
-claude
+  <h2>第五步：配置 DeepSeek API</h2>
+  <p>安装完成后，脚本会自动询问你<strong>是否配置 DeepSeek API</strong>。</p>
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>看到 "是否现在配置 DeepSeek API？" 时，输入 <code>y</code> 回车</h3>
+    </div>
   </div>
-  <p style="margin-top: 10px;">第一次运行会自动弹出浏览器，让你登录 Claude 账号。登录后回到终端就能开始对话了。</p>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>粘贴你的 DeepSeek API Key（以 sk- 开头），回车</h3>
+      <p>输入时不会显示字符，这是正常的安全保护，粘贴后直接回车即可。</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>看到 "✅ DeepSeek API 配置完成"</h3>
+      <p>配置会自动写入系统，永久生效。</p>
+    </div>
+  </div>
   <div class="tip-box">
-    <strong>💡 常用命令：</strong><br>
-    <code>claude</code> — 开始交互式对话<br>
-    <code>claude "你的问题"</code> — 带初始提示启动<br>
-    <code>claude --version</code> — 查看版本<br>
-    <code>claude login</code> — 手动登录
+    <strong>💡 如果没有 DeepSeek API Key：</strong>可以跳过此步骤（输入 n 或直接回车）。如果你已有 Claude 官方账号，也可以稍后运行 <code>claude login</code> 用官方方式登录。
   </div>
 </div>
 
@@ -275,8 +285,8 @@ claude
   <h2>怎么知道安装成功了？</h2>
   <ul style="padding-left: 20px; line-height: 2.2;">
     <li>在终端输入 <code>claude --version</code>，能看到版本号（如 <code>v1.0.x</code>）</li>
-    <li>输入 <code>claude</code> 能进入对话界面</li>
-    <li>浏览器弹出 Claude 登录页，登录后能正常对话</li>
+    <li>输入 <code>claude</code> 能进入对话界面，直接和 AI 对话</li>
+    <li>如果已配置 DeepSeek API，Claude Code 将使用 DeepSeek 作为后端模型</li>
   </ul>
 </div>
 
@@ -295,19 +305,24 @@ claude
   </div>
 
   <div class="faq-item">
-    <p class="q">Q: 登录时浏览器没有自动弹出？</p>
-    <p class="a">A: 在终端手动输入 <code>claude login</code>，会触发浏览器登录流程。</p>
+    <p class="q">Q: 在哪里获取 DeepSeek API Key？</p>
+    <p class="a">A: 浏览器打开 <strong>platform.deepseek.com</strong>，手机号注册后，在左侧菜单"API Keys"中创建。Key 以 sk- 开头。充值 ¥1 起，按量扣费。</p>
   </div>
 
   <div class="faq-item">
-    <p class="q">Q: 提示 API Key 错误？</p>
-    <p class="a">A: 确认你用的是 Claude 账号登录（而非 API Key 登录）。Claude Code 支持两种方式，但推荐使用账号登录。</p>
+    <p class="q">Q: Claude Code 启动后提示需要登录？</p>
+    <p class="a">A: 说明 DeepSeek API 配置未生效。关掉终端重新打开（环境变量需要新窗口才能加载），再试 <code>claude</code>。或者运行 <code>claude login</code> 使用 Claude 官方账号登录。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: 我已经有 Claude 官方账号，怎么用？</p>
+    <p class="a">A: 安装脚本的 DeepSeek 配置步骤可以跳过。安装后直接在终端输入 <code>claude login</code>，浏览器会弹出 Claude 登录页。</p>
   </div>
 
   <div class="faq-item">
     <p class="q">Q: 安装失败了怎么办？</p>
     <p class="a">A: 打开故障排查页面，按步骤检查：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html</a></p>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html</a></p>
   </div>
 </div>
 
@@ -323,8 +338,8 @@ claude
 </div>
 
 <div class="footer">
-  <p>Claude Code 安装手册 v3.0.4 · 遇到问题请访问</p>
-  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">故障排查页面</a></p>
+  <p>Claude Code + DeepSeek API 安装手册 v3.0.5 · 遇到问题请访问</p>
+  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">故障排查页面</a></p>
 </div>
 
 </body>

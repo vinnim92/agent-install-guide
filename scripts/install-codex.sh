@@ -6,7 +6,7 @@
 # 需要: Node.js >= 22（脚本会自动安装）
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash
 #   bash install-codex.sh --help
 #   bash install-codex.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-codex.sh
@@ -86,7 +86,7 @@ show_help() {
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
     echo ""
     exit 0
 }
@@ -184,7 +184,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 0
     fi
 }
@@ -294,7 +294,7 @@ do_install() {
         print_warning "官方脚本不可用，使用 npm..."
         if ! command_exists npm; then
             print_error "npm 不可用"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
             exit 1
         fi
         local registry_flag=""
@@ -306,7 +306,7 @@ do_install() {
             print_success "npm 安装成功"
         else
             print_error "npm 安装失败"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
             exit 1
         fi
     fi
@@ -318,7 +318,7 @@ do_install() {
     else
         print_error "找不到 ${AGENT_BIN} 命令"
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 1
     fi
 }
@@ -346,15 +346,45 @@ if [ "$DRY_RUN" = true ]; then
     echo -e "  ${YELLOW}🔍 dry-run 模式 — 只看不装${NC}"
 fi
 
+# ---------- Codex 登录方式选择 ----------
+configure_codex_login() {
+    if [ "$DRY_RUN" = true ]; then
+        print_dryrun "提示选择 Codex 登录方式"
+        return 0
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${CYAN}  Codex 登录方式${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "  Codex 支持两种登录方式："
+    echo ""
+    echo -e "  ${BOLD}方式一：官方账号登录${NC}"
+    echo "    适合已有 ChatGPT / OpenAI 账号的用户。"
+    echo "    终端输入 codex login，浏览器自动弹出登录页。"
+    echo ""
+    echo -e "  ${BOLD}方式二：API Key 登录${NC}"
+    echo "    适合使用 OpenAI API Key 的用户。"
+    echo ""
+    echo "    在终端依次运行:"
+    echo "      export OPENAI_API_KEY=\"你的 OpenAI API Key\""
+    echo "      printenv OPENAI_API_KEY | codex login --with-api-key"
+    echo ""
+    echo "  请选择适合你的方式。安装包负责安装和引导，不提供账号或 API Key。"
+    echo ""
+}
+
 run_precheck
 do_install
 
 echo ""
 print_success "${AGENT_NAME} 安装验证通过"
+configure_codex_login
+
 echo ""
-echo -e "${GREEN}第一次启动:${NC}"
+echo -e "${GREEN}登录后启动:${NC}"
 echo "  终端输入: ${AGENT_BIN}"
-echo "  浏览器会自动弹出 ChatGPT 登录页"
 echo ""
 echo -e "  常用命令:"
 echo "    codex --version      查看版本"

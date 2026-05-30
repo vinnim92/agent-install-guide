@@ -47,14 +47,14 @@
 
 【你能装哪个 Agent？】
 
-🧠 Claude Code
+🧠 Claude Code + DeepSeek API
    Anthropic 出品，目前综合能力最强的 AI 编程助手之一
-   适合追求稳定、成熟代码体验的用户
-   需要 Claude 账号（Pro/Max/Team/Enterprise）或 API Key
+   DeepSeek API 优先——国内获取方便、便宜
+   也支持 Claude 官方账号登录
 
 ⚡ Codex
    OpenAI 出品，与 ChatGPT 生态深度打通
-   ChatGPT 用户首选
+   支持官方账号登录 + API Key 登录两种方式
    需要 ChatGPT Plus/Pro/Team 账号或 OpenAI API Key
 
 🦞 OpenClaw

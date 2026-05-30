@@ -1,5 +1,30 @@
 # Changelog
 
+## v3.0.5 (2026-05-30)
+
+### Claude Code 定位调整
+- Claude Code 改为 DeepSeek API 优先方案
+- 安装脚本新增 DeepSeek API 配置引导（可选，不强制）
+- PDF 手册不再第一步引导注册 Claude 官方账号
+- PDF 标题更新为"Claude Code + DeepSeek API 小白安装手册"
+
+### Codex 登录方式扩展
+- Codex 新增 API Key 登录方式（保留官方账号登录）
+- 安装脚本安装后增加登录方式选择
+- PDF 手册新增 API Key 登录引导
+
+### OpenClaw
+- 版本号同步到 v3.0.5，内容无变更
+
+### 检查增强
+- check-scripts.sh 新增 12 项检查（DeepSeek API、Codex API Key、禁止第一步引导注册等）
+
+### 故障排查
+- support.html 新增 Claude Code DeepSeek API 配置 FAQ
+- support.html 新增 Codex API Key 登录 FAQ
+
+---
+
 ## v3.0.4 (2026-05-30)
 
 ### 小白体验优化

@@ -294,10 +294,10 @@ fi
 
 # ---- 禁止 @main 未版本化 URL ----
 echo ""
-echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.4 等版本标签） ---"
+echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.5 等版本标签） ---"
 AT_MAIN_HITS=$(grep -rn '@main' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
 if [ -n "$AT_MAIN_HITS" ]; then
-    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.4 等版本标签）"
+    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.5 等版本标签）"
     echo "$AT_MAIN_HITS" | while read line; do echo "       $line"; done
 else
     check_pass "未发现 @main URL（已版本化）"
@@ -416,6 +416,110 @@ for f in \
         fi
     fi
 done
+
+# ---- v3.0.5 扩展检查: 禁止活动 @v3.0.4 交付命令 ----
+echo ""
+echo "--- 检查: 禁止活动 @v3.0.4 交付命令（应使用 @v3.0.5） ---"
+OLD_VER_HITS=$(grep -rn '@v3\.0\.4' README.md docs/ xianyu-materials/ pdf/ scripts/ 2>/dev/null | grep -v "CHANGELOG\|check-scripts" || true)
+if [ -n "$OLD_VER_HITS" ]; then
+    check_fail "发现活动 @v3.0.4 交付命令（应使用 @v3.0.5）"
+    echo "$OLD_VER_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "未发现活动 @v3.0.4 交付命令"
+fi
+
+# ---- v3.0.5 扩展检查: Claude Code PDF/docs 包含 DeepSeek API ----
+echo ""
+echo "--- 检查: Claude Code PDF/docs 包含 DeepSeek API ---"
+DS_PDF=$(grep -rn 'DeepSeek\|deepseek' pdf/claude-code-beginner-guide.html 2>/dev/null || true)
+DS_DOCS=$(grep -rn 'DeepSeek\|deepseek' docs/agents/claude-code.md docs/agents/claude-code-guide.html 2>/dev/null || true)
+if [ -n "$DS_PDF" ] && [ -n "$DS_DOCS" ]; then
+    check_pass "Claude Code PDF/docs 包含 DeepSeek API"
+else
+    check_fail "Claude Code PDF/docs 缺少 DeepSeek API 内容"
+fi
+
+# ---- v3.0.5 扩展检查: Claude Code PDF/docs 包含 ANTHROPIC_BASE_URL ----
+echo ""
+echo "--- 检查: Claude Code PDF/docs 包含 ANTHROPIC_BASE_URL ---"
+AU_PDF=$(grep -rn 'ANTHROPIC_BASE_URL' pdf/claude-code-beginner-guide.html docs/agents/claude-code-guide.html 2>/dev/null || true)
+AU_DOCS=$(grep -rn 'ANTHROPIC_BASE_URL' docs/agents/claude-code.md 2>/dev/null || true)
+if [ -n "$AU_PDF" ] || [ -n "$AU_DOCS" ]; then
+    check_pass "Claude Code 交付文档包含 ANTHROPIC_BASE_URL"
+else
+    check_fail "Claude Code 交付文档缺少 ANTHROPIC_BASE_URL 引用"
+fi
+
+# ---- v3.0.5 扩展检查: Claude Code 安装脚本包含 DeepSeek 配置引导 ----
+echo ""
+echo "--- 检查: Claude Code 安装脚本包含 DeepSeek 配置引导 ---"
+DS_SH=$(grep -rn 'DeepSeek\|deepseek\|configure_deepseek' scripts/install-claude-code.sh 2>/dev/null || true)
+DS_PS=$(grep -rn 'DeepSeek\|deepseek\|Start-DeepSeekConfig' scripts/install-claude-code.ps1 2>/dev/null || true)
+if [ -n "$DS_SH" ] && [ -n "$DS_PS" ]; then
+    check_pass "Claude Code 安装脚本包含 DeepSeek 配置引导"
+else
+    check_fail "Claude Code 安装脚本缺少 DeepSeek 配置引导"
+fi
+
+# ---- v3.0.5 扩展检查: Codex PDF/docs 包含 OPENAI_API_KEY ----
+echo ""
+echo "--- 检查: Codex PDF/docs 包含 OPENAI_API_KEY ---"
+CK_PDF=$(grep -rn 'OPENAI_API_KEY' pdf/codex-beginner-guide.html 2>/dev/null || true)
+CK_DOCS=$(grep -rn 'OPENAI_API_KEY' docs/agents/codex.md docs/agents/codex-guide.html 2>/dev/null || true)
+if [ -n "$CK_PDF" ] && [ -n "$CK_DOCS" ]; then
+    check_pass "Codex PDF/docs 包含 OPENAI_API_KEY"
+else
+    check_fail "Codex PDF/docs 缺少 OPENAI_API_KEY 引用"
+fi
+
+# ---- v3.0.5 扩展检查: Codex PDF/docs 包含 codex login --with-api-key ----
+echo ""
+echo "--- 检查: Codex PDF/docs 包含 codex login --with-api-key ---"
+CX_PDF=$(grep -rn 'codex login --with-api-key' pdf/codex-beginner-guide.html 2>/dev/null || true)
+CX_DOCS=$(grep -rn 'codex login --with-api-key' docs/agents/codex.md docs/agents/codex-guide.html 2>/dev/null || true)
+CX_SCRIPTS=$(grep -rn 'codex login --with-api-key' scripts/install-codex.sh scripts/install-codex.ps1 2>/dev/null || true)
+if [ -n "$CX_PDF" ] && [ -n "$CX_DOCS" ] && [ -n "$CX_SCRIPTS" ]; then
+    check_pass "Codex 各文档包含 codex login --with-api-key"
+else
+    check_fail "Codex 部分文档缺少 codex login --with-api-key"
+    [ -z "$CX_PDF" ] && echo "       pdf/codex-beginner-guide.html 缺少"
+    [ -z "$CX_DOCS" ] && echo "       docs/agents/codex.md 或 codex-guide.html 缺少"
+    [ -z "$CX_SCRIPTS" ] && echo "       install-codex.sh 或 install-codex.ps1 缺少"
+fi
+
+# ---- v3.0.5 扩展检查: 禁止 Claude Code 第一步引导注册官方账号 ----
+echo ""
+echo "--- 检查: 禁止把注册 Claude 官方账号作为第一流程 ---"
+CC_FIRST_HITS=$(grep -rn '需要一个 Claude 账号\|注册.*claude\.ai\|先去.*claude\.ai' pdf/claude-code-beginner-guide.html docs/agents/claude-code.md docs/agents/claude-code-guide.html 2>/dev/null || true)
+if [ -n "$CC_FIRST_HITS" ]; then
+    check_fail "Claude Code 交付文档仍把注册 Claude 官方账号作为第一流程"
+    echo "$CC_FIRST_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "Claude Code 交付文档未把注册 Claude 官方账号作为第一流程"
+fi
+
+# ---- v3.0.5 扩展检查: 禁止 Codex 第一步引导注册 OpenAI/ChatGPT 账号 ----
+echo ""
+echo "--- 检查: 禁止把注册 OpenAI/ChatGPT 账号作为 Codex 第一流程 ---"
+CX_FIRST_HITS=$(grep -rn '需要一个 ChatGPT 账号\|注册.*chatgpt\.com\|先去.*chatgpt\.com' pdf/codex-beginner-guide.html docs/agents/codex.md docs/agents/codex-guide.html 2>/dev/null || true)
+if [ -n "$CX_FIRST_HITS" ]; then
+    check_fail "Codex 交付文档仍把注册 ChatGPT 账号作为第一流程"
+    echo "$CX_FIRST_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "Codex 交付文档未把注册 ChatGPT 账号作为第一流程"
+fi
+
+# ---- v3.0.5 扩展检查: 禁止在 xianyu-materials 中写翻墙/科学上网 ----
+echo ""
+echo "--- 检查: xianyu-materials 中不包含翻墙相关内容 ---"
+# 排除：负面表达（无需翻墙/不需要翻墙）、故障排查建议（关闭VPN/开了VPN）
+GFW_HITS=$(grep -rni '翻墙\|科学上网\|梯子\|shadowsocks\|v2ray\|clash.*机场' xianyu-materials/ README.md docs/ pdf/ 2>/dev/null | grep -v '无需翻墙\|不需要翻墙\|不用翻墙\|不翻墙\|关闭.*代理.*VPN\|开了.*VPN\|切换.*全局' || true)
+if [ -n "$GFW_HITS" ]; then
+    check_fail "交付文档中存在翻墙相关内容"
+    echo "$GFW_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "交付文档中未发现翻墙相关内容"
+fi
 
 # ---- 结果汇总 ----
 echo ""

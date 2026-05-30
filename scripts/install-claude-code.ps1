@@ -2,11 +2,12 @@
 # Claude Code 安装脚本（Windows PowerShell）
 #
 # 支持系统: Windows 10/11
-# 需要: Claude 账号（Pro/Max/Team/Enterprise）或 Anthropic API Key
+# 推荐: DeepSeek API Key（国内获取方便、便宜）
+# 也可: Claude 官方账号 或 Anthropic API Key
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.ps1 | iex
 #   .\install-claude-code.ps1 -Help
 #   .\install-claude-code.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1
@@ -31,7 +32,8 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装: Claude Code"
     Write-Host "系统: Windows 10/11"
-    Write-Host "需要: Claude 账号或 Anthropic API Key"
+    Write-Host "推荐: DeepSeek API Key"
+    Write-Host "也可: Claude 官方账号 或 Anthropic API Key"
     Write-Host "      无需单独安装 Node.js"
     Write-Host ""
     Write-Host "用法:"
@@ -47,7 +49,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -116,7 +118,7 @@ function Start-PreCheck {
 
     Write-Host "  接下来将安装: $AgentName" -ForegroundColor White
     Write-Host "  安装方式: 官方安装脚本" -ForegroundColor White
-    Write-Host "  需要准备: Claude 账号或 Anthropic API Key" -ForegroundColor White
+    Write-Host "  推荐配置: DeepSeek API Key（安装后可配置）" -ForegroundColor White
     Write-Host ""
 
     if ($DryRun) {
@@ -126,9 +128,81 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
         exit 0
     }
+}
+
+# ---- DeepSeek API 配置 ----
+function Start-DeepSeekConfig {
+    if ($DryRun) {
+        Write-Host "    [预演] 将执行: 提示配置 DeepSeek API（可选）" -ForegroundColor Yellow
+        return
+    }
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "  DeepSeek API 配置（可选）" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  本手册默认采用 DeepSeek API 方案。" -ForegroundColor White
+    Write-Host "  DeepSeek 对国内用户更友好：注册方便、价格便宜。" -ForegroundColor White
+    Write-Host "  你需要准备自己的 DeepSeek API Key。" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  获取方式: 浏览器访问 platform.deepseek.com" -ForegroundColor Cyan
+    Write-Host "           注册 -> API Keys -> 创建 Key（以 sk- 开头）" -ForegroundColor Cyan
+    Write-Host ""
+
+    if (-not (Confirm-Action "是否现在配置 DeepSeek API？")) {
+        Write-Host ""
+        Write-Host "  已跳过 DeepSeek API 配置。" -ForegroundColor Yellow
+        Write-Host "  稍后可以重新运行本脚本，或在 PowerShell 手动设置环境变量。" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "  如果你已有 Claude 官方账号，也可以直接运行:" -ForegroundColor Yellow
+        Write-Host "    claude login" -ForegroundColor Yellow
+        Write-Host ""
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  请输入你的 DeepSeek API Key（以 sk- 开头）:" -ForegroundColor Cyan
+
+    $apiKey = Read-Host -AsSecureString "  API Key"
+    $apiKeyPlain = [System.Net.NetworkCredential]::new("", $apiKey).Password
+
+    if ([string]::IsNullOrWhiteSpace($apiKeyPlain)) {
+        Write-Host "  [FAIL] API Key 不能为空，已跳过配置。" -ForegroundColor Red
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  正在配置环境变量..." -ForegroundColor Cyan
+
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "https://api.deepseek.com/anthropic", "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_AUTH_TOKEN", $apiKeyPlain, "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_MODEL", "deepseek-v4-pro", "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_OPUS_MODEL", "deepseek-v4-pro", "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_SONNET_MODEL", "deepseek-v4-pro", "User")
+    [System.Environment]::SetEnvironmentVariable("ANTHROPIC_DEFAULT_HAIKU_MODEL", "deepseek-v4-flash", "User")
+    [System.Environment]::SetEnvironmentVariable("CLAUDE_CODE_SUBAGENT_MODEL", "deepseek-v4-flash", "User")
+    [System.Environment]::SetEnvironmentVariable("CLAUDE_CODE_EFFORT_LEVEL", "max", "User")
+
+    # 当前会话立即生效
+    $env:ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"
+    $env:ANTHROPIC_AUTH_TOKEN = $apiKeyPlain
+    $env:ANTHROPIC_MODEL = "deepseek-v4-pro"
+    $env:ANTHROPIC_DEFAULT_OPUS_MODEL = "deepseek-v4-pro"
+    $env:ANTHROPIC_DEFAULT_SONNET_MODEL = "deepseek-v4-pro"
+    $env:ANTHROPIC_DEFAULT_HAIKU_MODEL = "deepseek-v4-flash"
+    $env:CLAUDE_CODE_SUBAGENT_MODEL = "deepseek-v4-flash"
+    $env:CLAUDE_CODE_EFFORT_LEVEL = "max"
+
+    Write-Host ""
+    Write-Host "  [OK] DeepSeek API 配置完成！" -ForegroundColor Green
+    Write-Host "  配置已写入用户环境变量（永久生效）" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  现在可以输入 claude 启动，它将使用 DeepSeek 作为后端模型。" -ForegroundColor Green
+    Write-Host ""
 }
 
 # ---- 安装 ----
@@ -185,7 +259,7 @@ function Start-Install {
         Write-Host ""
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -203,13 +277,12 @@ function Start-Verify {
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
         Write-Host "  [OK] $AgentName 安装验证通过" -ForegroundColor Green
         Write-Host ""
-        Write-Host "  第一次启动:" -ForegroundColor Green
+        Write-Host "  启动方式:" -ForegroundColor Green
         Write-Host "    PowerShell 中输入 claude 并回车" -ForegroundColor Green
-        Write-Host "    浏览器会自动弹出 Claude 登录页" -ForegroundColor Green
     } else {
         Write-Host "  [FAIL] 找不到 claude 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -228,6 +301,7 @@ if ($DryRun) {
 Start-PreCheck
 Start-Install
 Start-Verify
+Start-DeepSeekConfig
 
 if ($DryRun) {
     Write-Host ""
