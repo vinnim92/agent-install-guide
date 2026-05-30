@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate:
+  validate-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,3 +44,58 @@ jobs:
             echo "=== $f --dry-run ==="
             AGENT_INSTALL_YES=1 bash "$f" --dry-run 2>&1 | tail -3
           done
+
+  validate-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Syntax check (PowerShell)
+        shell: pwsh
+        run: |
+          $scripts = @(
+            'scripts/install-claude-code.ps1',
+            'scripts/install-codex.ps1',
+            'scripts/install-openclaw.ps1'
+          )
+          foreach ($s in $scripts) {
+            $tokens = $null
+            $errors = $null
+            $ast = [System.Management.Automation.Language.Parser]::ParseFile(
+              (Join-Path $pwd $s), [ref]$tokens, [ref]$errors
+            )
+            if ($errors.Count -gt 0) {
+              Write-Host "$s : SYNTAX ERROR"
+              $errors | ForEach-Object { Write-Host "  $_" }
+              exit 1
+            }
+            Write-Host "$s : syntax OK"
+          }
+
+      - name: Test -Help
+        shell: pwsh
+        run: |
+          $scripts = @(
+            'scripts/install-claude-code.ps1',
+            'scripts/install-codex.ps1',
+            'scripts/install-openclaw.ps1'
+          )
+          foreach ($s in $scripts) {
+            Write-Host "=== $s -Help ==="
+            & $s -Help 2>&1 | Select-Object -First 3
+          }
+
+      - name: Test -DryRun
+        shell: pwsh
+        run: |
+          $scripts = @(
+            'scripts/install-claude-code.ps1',
+            'scripts/install-codex.ps1',
+            'scripts/install-openclaw.ps1'
+          )
+          foreach ($s in $scripts) {
+            Write-Host "=== $s -DryRun ==="
+            $env:AGENT_INSTALL_YES = '1'
+            & $s -DryRun 2>&1 | Select-Object -Last 3
+          }

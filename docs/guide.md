@@ -51,19 +51,19 @@
 **安装 Claude Code：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.sh | bash
 ```
 
 **安装 Codex：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash
 ```
 
 **安装 OpenClaw：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.sh | bash
 ```
 
 ### Windows
@@ -73,19 +73,19 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts
 **安装 Claude Code：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.ps1 | iex
 ```
 
 **安装 Codex：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
 ```
 
 **安装 OpenClaw：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.ps1 | iex
 ```
 
 脚本会自动检测系统、安装依赖、完成配置。看到 `✅` 就是装好了。
@@ -115,7 +115,7 @@ dry-run 模式让你先看一遍安装脚本要做什么，不会改动你的电
 在命令后面加 `--dry-run`：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash -s -- --dry-run
 ```
 
 把 `install-codex` 换成其他 Agent 名即可。
@@ -125,7 +125,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts
 先将脚本下载到本地，再以 dry-run 模式执行：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 -OutFile install-codex.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun
 ```
 
@@ -138,14 +138,14 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/
 ### macOS / Linux
 
 ```bash
-AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh)"
+AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh)"
 ```
 
 ### Windows
 
 ```powershell
 $env:AGENT_INSTALL_YES = "1"
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
 ```
 
 ---

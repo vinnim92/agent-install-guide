@@ -136,17 +136,17 @@ jobs:
 
             **Claude Code**
             ```bash
-            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.sh | bash
             ```
 
             **Codex CLI**
             ```bash
-            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash
             ```
 
             **OpenClaw**
             ```bash
-            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.sh | bash
+            curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.sh | bash
             ```
 
             Windows 用户请使用对应的 `.ps1` 脚本，详见单页指南。

@@ -6,7 +6,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.sh | bash
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -189,18 +189,7 @@ install_claude_code() {
             print_success "Claude Code 已安装"
             return 0
         fi
-        case "$OS_TYPE" in
-            macOS)
-                if command_exists brew; then
-                    print_dryrun "brew install --cask claude-code"
-                else
-                    print_dryrun "curl -fsSL https://claude.ai/install.sh | bash"
-                fi
-                ;;
-            linux)
-                print_dryrun "curl -fsSL https://claude.ai/install.sh | bash"
-                ;;
-        esac
+        print_dryrun "curl -fsSL https://claude.ai/install.sh | bash"
         print_dryrun "验证: command -v claude"
         return 0
     fi
@@ -217,51 +206,39 @@ install_claude_code() {
 
     print_step "开始安装 Claude Code..."
 
-    case "$OS_TYPE" in
-        macOS)
-            if command_exists brew; then
-                print_step "通过 Homebrew 安装..."
-                if run_cmd "brew install --cask claude-code 2>/dev/null"; then
-                    print_success "Homebrew 安装成功"
-                else
-                    print_warning "Homebrew 安装失败，改用官方脚本..."
-                    install_via_official_script
-                fi
+    # 方法1: 官方 Native installer（优先）
+    if install_via_official_script; then
+        verify_installation
+        return 0
+    fi
+
+    # 方法2: npm fallback
+    print_warning "官方脚本不可用，尝试 npm 安装..."
+    if command_exists npm; then
+        if confirm "将通过 npm 安装 Claude Code（全局），是否继续？"; then
+            if run_cmd "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null"; then
+                print_success "npm 安装成功"
             else
-                install_via_official_script
+                print_error "安装失败"
+                return 1
             fi
-            ;;
-        linux)
-            install_via_official_script
-            ;;
-    esac
+        else
+            print_tip "已取消"
+            exit 0
+        fi
+    else
+        print_error "安装失败，且未找到 npm"
+        echo ""
+        echo "  手动安装: 访问 https://claude.ai/download 下载安装包"
+        exit 1
+    fi
 
     verify_installation
 }
 
 install_via_official_script() {
-    print_step "使用官方安装脚本..."
-    if run_cmd "curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null"; then
-        print_success "官方脚本安装成功"
-    else
-        print_warning "官方脚本不可用，尝试 npm 安装..."
-        if command_exists npm; then
-            if confirm "将通过 npm 安装 Claude Code（全局），是否继续？"; then
-                run_cmd "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null" && print_success "npm 安装成功" || {
-                    print_error "安装失败"
-                    return 1
-                }
-            else
-                print_tip "已取消"
-                exit 0
-            fi
-        else
-            print_error "安装失败，且未找到 npm"
-            echo ""
-            echo "  手动安装: 访问 https://claude.ai/download 下载安装包"
-            exit 1
-        fi
-    fi
+    print_step "使用官方安装脚本（claude.ai/install.sh）..."
+    run_cmd "curl -fsSL https://claude.ai/install.sh | bash 2>/dev/null"
 }
 
 # ---------- 验证安装 ----------
@@ -333,7 +310,7 @@ if [ "$DRY_RUN" = true ]; then
     echo "    bash install-claude-code.sh"
     echo ""
     echo "  或在管道中远程执行:"
-    echo "    curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash"
+    echo "    curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.sh | bash"
     exit 0
 fi
 

@@ -76,12 +76,13 @@ install_openclaw_linux() {
 install_openclaw_npm() {
     print_step "通过 npm 全局安装..."
 
-    # 国内镜像
+    # 国内镜像（单次 --registry 参数，不永久修改配置）
+    local registry_flag=""
     if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-        npm config set registry https://registry.npmmirror.com 2>/dev/null || true
+        registry_flag="--registry https://registry.npmmirror.com"
     fi
 
-    if npm install -g openclaw@latest 2>/dev/null; then
+    if npm install -g ${registry_flag} openclaw@latest 2>/dev/null; then
         print_success "npm 安装成功"
     else
         print_error "npm 安装失败"

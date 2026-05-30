@@ -2,11 +2,11 @@
 # ============================================================
 # OpenClaw 安装脚本
 # 支持系统: macOS / Linux
-# 需要: Node.js >= 22（脚本会自动安装）
+# 需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）
 # OpenClaw 内置免费模型，无需 API Key 也能使用
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.sh | bash
 #   bash install-openclaw.sh --help
 #   bash install-openclaw.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-openclaw.sh
@@ -21,6 +21,7 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 DRY_RUN=false
 SKIP_CONFIRM=false
 OS_TYPE=""
+NODE_MIN="22.19.0"
 
 # ---------- 输出函数 ----------
 print_step()    { echo -e "${BLUE}[→]${NC} $1"; }
@@ -67,7 +68,7 @@ show_help() {
     echo ""
     echo "安装: OpenClaw（微软开源）"
     echo "系统: macOS / Linux"
-    echo "需要: Node.js >= 22（脚本会自动安装）"
+    echo "需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）"
     echo "      内置免费模型，无需 API Key 也能使用"
     echo "      支持 75+ 模型提供商"
     echo ""
@@ -84,7 +85,7 @@ show_help() {
     echo "  终端输入: openclaw dashboard 打开 Web 控制台"
     echo ""
     echo "常见失败原因:"
-    echo "  1. Node.js 版本不足 → 脚本会自动安装 v22+"
+    echo "  1. Node.js 版本不足 → 脚本会自动安装 v22+（推荐 24）"
     echo "  2. npm 网络问题 → 脚本会自动切换国内镜像"
     echo "  3. Linux 缺少编译依赖 → 需 gcc g++ make"
     echo "  4. 安装后找不到 openclaw → 关掉终端重新打开"
@@ -162,25 +163,25 @@ ensure_nodejs() {
         local node_ver
         node_ver=$(node -v | sed 's/v//')
         echo -e "  当前 Node.js 版本: v${node_ver}"
-        if version_gte "$node_ver" "22.0.0"; then
-            print_success "Node.js 版本满足要求 (>= 22)"
+        if version_gte "$node_ver" "$NODE_MIN"; then
+            print_success "Node.js 版本满足要求 (>= ${NODE_MIN})"
             return 0
         else
-            print_warning "Node.js 版本过低: v${node_ver} (需要 >= 22)"
+            print_warning "Node.js 版本过低: v${node_ver} (需要 >= ${NODE_MIN}，推荐 24+)"
         fi
     else
-        print_warning "Node.js 未安装 (OpenClaw 需要 >= 22)"
+        print_warning "Node.js 未安装 (OpenClaw 需要 >= ${NODE_MIN}，推荐 24+)"
     fi
 
     if [ "$DRY_RUN" = true ]; then
         case "$OS_TYPE" in
-            macOS) print_dryrun "通过 Homebrew 安装 node@22" ;;
+            macOS) print_dryrun "通过 Homebrew 安装 node@24（推荐）或 node@22" ;;
             linux) print_dryrun "通过 apt/dnf/pacman 安装 nodejs" ;;
         esac
         return 0
     fi
 
-    if ! confirm "即将安装 Node.js v22+（系统级软件），是否继续？"; then
+    if ! confirm "即将安装 Node.js（推荐 v24+），是否继续？"; then
         print_error "Node.js 是 OpenClaw 的必要依赖，无法跳过"
         exit 1
     fi
@@ -204,15 +205,15 @@ ensure_nodejs() {
                 fi
             fi
             if command_exists brew; then
-                run_cmd "brew install node@22 2>/dev/null && brew link --overwrite --force node@22 2>/dev/null || true"
+                run_cmd "brew install node@24 2>/dev/null && brew link --overwrite --force node@24 2>/dev/null || brew install node@22 2>/dev/null && brew link --overwrite --force node@22 2>/dev/null || true"
             fi
             ;;
         linux)
             if command_exists apt-get; then
-                run_cmd "curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - 2>/dev/null"
+                run_cmd "curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash - 2>/dev/null || curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - 2>/dev/null"
                 run_cmd "sudo apt-get install -y -qq nodejs 2>/dev/null || true"
             elif command_exists dnf; then
-                run_cmd "curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - 2>/dev/null"
+                run_cmd "curl -fsSL https://rpm.nodesource.com/setup_24.x | sudo bash - 2>/dev/null || curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - 2>/dev/null"
                 run_cmd "sudo dnf install -y nodejs 2>/dev/null || true"
             elif command_exists pacman; then
                 run_cmd "sudo pacman -S --noconfirm nodejs npm 2>/dev/null || true"
@@ -226,7 +227,7 @@ ensure_nodejs() {
         print_error "Node.js 自动安装失败"
         echo ""
         echo "  请手动安装 Node.js:"
-        echo "    访问 https://nodejs.org 下载安装包"
+        echo "    访问 https://nodejs.org 下载 v24 LTS 安装包"
         echo "    安装后重新运行本脚本即可"
         exit 1
     fi
@@ -280,6 +281,21 @@ check_linux_build_deps() {
     fi
 }
 
+# ---------- npm 安装（带国内镜像自动切换） ----------
+install_via_npm() {
+    local pkg="$1"
+
+    print_step "通过 npm 全局安装 ${pkg}..."
+
+    local registry_flag=""
+    if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
+        print_tip "npm 官方源不可达，本次使用国内镜像"
+        registry_flag="--registry https://registry.npmmirror.com"
+    fi
+
+    run_cmd "npm install -g ${registry_flag} ${pkg} 2>/dev/null"
+}
+
 # ---------- 安装 OpenClaw ----------
 install_openclaw() {
     echo ""
@@ -294,70 +310,46 @@ install_openclaw() {
     fi
 
     if [ "$DRY_RUN" = true ]; then
-        case "$OS_TYPE" in
-            macOS)
-                if command_exists brew; then
-                    print_dryrun "brew install openclaw"
-                else
-                    print_dryrun "npm install -g openclaw@latest"
-                fi
-                ;;
-            linux)
-                print_dryrun "npm install -g openclaw@latest"
-                ;;
-        esac
+        print_dryrun "curl -fsSL https://openclaw.ai/install.sh | bash"
         print_dryrun "验证: command -v openclaw"
         return 0
     fi
 
-    if ! confirm "即将安装 OpenClaw（全局 npm 包），是否继续？"; then
+    if ! confirm "即将安装 OpenClaw，是否继续？"; then
         print_tip "已取消安装"
         exit 0
     fi
 
-    print_step "安装 OpenClaw..."
-
-    case "$OS_TYPE" in
-        macOS)
-            if command_exists brew; then
-                print_step "通过 Homebrew 安装..."
-                if run_cmd "brew install openclaw 2>/dev/null"; then
-                    print_success "Homebrew 安装成功"
-                    verify_installation
-                    return 0
-                fi
-                print_warning "Homebrew 安装失败，改用 npm..."
-            fi
-            install_via_npm
-            ;;
-        linux)
-            install_via_npm
-            ;;
-    esac
-
-    verify_installation
-}
-
-install_via_npm() {
-    print_step "通过 npm 全局安装..."
-
-    if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-        npm config set registry https://registry.npmmirror.com 2>/dev/null || true
-        print_tip "已切换至国内 npm 镜像加速"
+    # 方法1: 官方 installer（优先）
+    print_step "使用官方安装脚本（openclaw.ai/install.sh）..."
+    if run_cmd "curl -fsSL https://openclaw.ai/install.sh | bash 2>/dev/null"; then
+        print_success "官方脚本安装成功"
+        verify_installation
+        return 0
     fi
 
-    if run_cmd "npm install -g openclaw@latest 2>/dev/null"; then
+    # 方法2: npm fallback
+    print_warning "官方脚本不可用，改用 npm 安装..."
+    if ! command_exists npm; then
+        print_error "npm 不可用，无法安装 OpenClaw"
+        echo ""
+        echo "  请先安装 Node.js: https://nodejs.org"
+        exit 1
+    fi
+
+    if install_via_npm "openclaw@latest"; then
         print_success "npm 安装成功"
     else
         print_error "npm 安装失败"
         echo ""
         echo "  手动安装:"
-        echo "    macOS: brew install openclaw"
-        echo "    通用:  npm install -g openclaw@latest"
+        echo "    npm install -g openclaw@latest"
         echo ""
         echo "  查看官方文档: https://github.com/microsoft/openclaw"
         exit 1
     fi
+
+    verify_installation
 }
 
 verify_installation() {

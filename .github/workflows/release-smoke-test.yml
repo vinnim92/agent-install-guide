@@ -1,0 +1,105 @@
+name: CDN Smoke Test
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to test (e.g. v3.0.3)'
+        required: true
+        default: 'v3.0.3'
+
+jobs:
+  cdn-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "TAG=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: CDN reachability check (bash scripts)
+        run: |
+          TAG="${{ steps.version.outputs.TAG }}"
+          CDN_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${TAG}"
+
+          scripts=(
+            "scripts/install-claude-code.sh"
+            "scripts/install-codex.sh"
+            "scripts/install-openclaw.sh"
+          )
+
+          for s in "${scripts[@]}"; do
+            url="${CDN_BASE}/${s}"
+            echo "=== Fetching: $url ==="
+            HTTP_CODE=$(curl -fsSL -o /dev/null -w '%{http_code}' --connect-timeout 10 "$url" 2>&1)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "  OK: HTTP $HTTP_CODE"
+            else
+              echo "  FAIL: HTTP $HTTP_CODE"
+              exit 1
+            fi
+          done
+
+      - name: CDN reachability check (PowerShell scripts)
+        run: |
+          TAG="${{ steps.version.outputs.TAG }}"
+          CDN_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${TAG}"
+
+          scripts=(
+            "scripts/install-claude-code.ps1"
+            "scripts/install-codex.ps1"
+            "scripts/install-openclaw.ps1"
+          )
+
+          for s in "${scripts[@]}"; do
+            url="${CDN_BASE}/${s}"
+            echo "=== Fetching: $url ==="
+            HTTP_CODE=$(curl -fsSL -o /dev/null -w '%{http_code}' --connect-timeout 10 "$url" 2>&1)
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "  OK: HTTP $HTTP_CODE"
+            else
+              echo "  FAIL: HTTP $HTTP_CODE"
+              exit 1
+            fi
+          done
+
+      - name: Bash script --help via CDN
+        run: |
+          TAG="${{ steps.version.outputs.TAG }}"
+          CDN_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${TAG}"
+
+          for agent in claude-code codex openclaw; do
+            url="${CDN_BASE}/scripts/install-${agent}.sh"
+            echo "=== $url --help ==="
+            curl -fsSL "$url" | bash -s -- --help 2>&1 | head -3 || exit 1
+          done
+
+      - name: Bash script --dry-run via CDN
+        run: |
+          TAG="${{ steps.version.outputs.TAG }}"
+          CDN_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${TAG}"
+
+          for agent in claude-code codex openclaw; do
+            url="${CDN_BASE}/scripts/install-${agent}.sh"
+            echo "=== $url --dry-run ==="
+            AGENT_INSTALL_YES=1 curl -fsSL "$url" | bash -s -- --dry-run 2>&1 | tail -3 || exit 1
+          done
+
+      - name: Smoke summary
+        run: |
+          TAG="${{ steps.version.outputs.TAG }}"
+          echo "========================================"
+          echo "  CDN Smoke Test: ${TAG}"
+          echo "========================================"
+          echo ""
+          echo "  All 6 scripts reachable via jsDelivr CDN"
+          echo "  All --help / --dry-run functional"
+          echo ""
+          echo "  CDN base: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${TAG}"

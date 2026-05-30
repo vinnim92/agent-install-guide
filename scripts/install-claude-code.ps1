@@ -6,7 +6,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.ps1 | iex
 #   .\install-claude-code.ps1 -Help
 #   .\install-claude-code.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1
@@ -133,7 +133,7 @@ if (-not $DryRun -and (Get-Command claude -ErrorAction SilentlyContinue)) {
 
     # 方法2: 官方 PowerShell 脚本
     if (-not $installed) {
-        Write-Host "  尝试官方脚本安装..." -ForegroundColor Cyan
+        Write-Host "  尝试官方脚本安装（claude.ai/install.ps1）..." -ForegroundColor Cyan
         try {
             Invoke-RestMethod -Uri "https://claude.ai/install.ps1" -TimeoutSec 30 | Invoke-Expression 2>$null
             $localBin = Join-Path $env:USERPROFILE ".local\bin"
@@ -144,7 +144,7 @@ if (-not $DryRun -and (Get-Command claude -ErrorAction SilentlyContinue)) {
         }
     }
 
-    # 方法3: npm
+    # 方法3: npm fallback
     if (-not $installed -and $hasNpm) {
         Write-Host "  通过 npm 安装 @anthropic-ai/claude-code ..." -ForegroundColor Cyan
         npm install -g @anthropic-ai/claude-code@latest 2>$null

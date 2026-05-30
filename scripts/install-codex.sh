@@ -6,7 +6,7 @@
 # 需要: Node.js >= 22（脚本会自动安装）
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash
 #   bash install-codex.sh --help
 #   bash install-codex.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-codex.sh
@@ -256,6 +256,23 @@ fix_npm_permissions() {
     fi
 }
 
+# ---------- npm 安装（带国内镜像自动切换） ----------
+install_via_npm() {
+    local pkg="$1"
+    local bin_name="$2"
+
+    print_step "通过 npm 全局安装 ${pkg}..."
+
+    # 先检查官方 registry 是否可达
+    local registry_flag=""
+    if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
+        print_tip "npm 官方源不可达，本次使用国内镜像"
+        registry_flag="--registry https://registry.npmmirror.com"
+    fi
+
+    run_cmd "npm install -g ${registry_flag} ${pkg} 2>/dev/null"
+}
+
 # ---------- 安装 Codex ----------
 install_codex() {
     echo ""
@@ -270,24 +287,34 @@ install_codex() {
     fi
 
     if [ "$DRY_RUN" = true ]; then
-        print_dryrun "npm install -g @openai/codex"
+        print_dryrun "curl -fsSL https://chatgpt.com/codex/install.sh | bash"
         print_dryrun "验证: command -v codex"
         return 0
     fi
 
-    if ! confirm "即将通过 npm 安装 Codex CLI（全局），是否继续？"; then
+    if ! confirm "即将安装 Codex CLI，是否继续？"; then
         print_tip "已取消安装"
         exit 0
     fi
 
-    print_step "通过 npm 安装 Codex..."
-
-    if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-        npm config set registry https://registry.npmmirror.com 2>/dev/null || true
-        print_tip "已切换至国内 npm 镜像加速"
+    # 方法1: 官方 standalone installer（优先）
+    print_step "使用官方安装脚本（chatgpt.com/codex/install.sh）..."
+    if run_cmd "curl -fsSL https://chatgpt.com/codex/install.sh | bash 2>/dev/null"; then
+        print_success "官方脚本安装成功"
+        verify_installation
+        return 0
     fi
 
-    if run_cmd "npm install -g @openai/codex 2>/dev/null"; then
+    # 方法2: npm fallback
+    print_warning "官方脚本不可用，改用 npm 安装..."
+    if ! command_exists npm; then
+        print_error "npm 不可用，无法安装 Codex"
+        echo ""
+        echo "  请先安装 Node.js: https://nodejs.org"
+        exit 1
+    fi
+
+    if install_via_npm "@openai/codex" "codex"; then
         print_success "Codex npm 安装成功"
     else
         print_error "npm 安装失败"

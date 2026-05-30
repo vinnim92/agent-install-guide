@@ -269,6 +269,59 @@ for f in \
     fi
 done
 
+# ---- 禁止 npm config set registry（应使用 --registry 单次参数） ----
+echo ""
+echo "--- 检查: 禁止 npm config set registry（应使用 --registry 单次参数） ---"
+NPM_REGISTRY_HITS=$(grep -rn 'npm config set registry' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
+if [ -n "$NPM_REGISTRY_HITS" ]; then
+    check_fail "发现 npm config set registry（应改用 --registry 单次参数）"
+    echo "$NPM_REGISTRY_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "未发现 npm config set registry（使用 --registry 单次参数）"
+fi
+
+# ---- 禁止 sudo npm install -g ----
+echo ""
+echo "--- 检查: 禁止 sudo npm install -g ---"
+SUDO_NPM_HITS=$(grep -rn 'sudo npm install -g\|sudo -E npm install -g' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
+if [ -n "$SUDO_NPM_HITS" ]; then
+    check_fail "发现 sudo npm install -g（不应使用 sudo）"
+    echo "$SUDO_NPM_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "未发现 sudo npm install -g"
+fi
+
+# ---- 禁止 @main 未版本化 URL ----
+echo ""
+echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.3 等版本标签） ---"
+AT_MAIN_HITS=$(grep -rn '@main' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
+if [ -n "$AT_MAIN_HITS" ]; then
+    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.3 等版本标签）"
+    echo "$AT_MAIN_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "未发现 @main URL（已版本化）"
+fi
+
+# ---- 官方 installer 引用检查 ----
+echo ""
+echo "--- 检查: 安装脚本引用官方 installer ---"
+check_official_ref() {
+    local file="$1"; local label="$2"; local official_url="$3"
+    if [ -f "$file" ]; then
+        if grep -q "$official_url" "$file" 2>/dev/null; then
+            check_pass "$(basename "$file") 引用 ${label} 官方 installer"
+        else
+            check_fail "$(basename "$file") 缺少 ${label} 官方 installer 引用: ${official_url}"
+        fi
+    fi
+}
+check_official_ref "${SCRIPT_DIR}/install-claude-code.sh"   "Claude Code" "claude\.ai/install\.sh"
+check_official_ref "${SCRIPT_DIR}/install-claude-code.ps1"  "Claude Code" "claude\.ai/install\.ps1"
+check_official_ref "${SCRIPT_DIR}/install-codex.sh"         "Codex"       "chatgpt\.com/codex/install\.sh"
+check_official_ref "${SCRIPT_DIR}/install-codex.ps1"        "Codex"       "chatgpt\.com/codex/install\.ps1"
+check_official_ref "${SCRIPT_DIR}/install-openclaw.sh"      "OpenClaw"    "openclaw\.ai/install\.sh"
+check_official_ref "${SCRIPT_DIR}/install-openclaw.ps1"     "OpenClaw"    "openclaw\.ai/install\.ps1"
+
 # ---- 危险命令检查 ----
 echo ""
 echo "--- 检查: 禁止危险命令 ---"

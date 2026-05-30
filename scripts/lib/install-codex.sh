@@ -41,14 +41,15 @@ install_codex() {
 
     print_step "安装 Codex CLI..."
 
-    # 检测国内网络，自动切镜像
+    # 检测国内网络，自动切镜像（单次 --registry 参数，不永久修改配置）
+    local registry_flag=""
     if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-        print_warning "npm 官方源访问慢，切换淘宝镜像..."
-        npm config set registry https://registry.npmmirror.com 2>/dev/null || true
+        print_warning "npm 官方源访问慢，本次使用淘宝镜像..."
+        registry_flag="--registry https://registry.npmmirror.com"
     fi
 
     # npm 全局安装
-    if npm install -g @openai/codex 2>/dev/null; then
+    if npm install -g ${registry_flag} @openai/codex 2>/dev/null; then
         print_success "Codex 安装成功"
     else
         print_error "npm 安装失败"

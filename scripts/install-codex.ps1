@@ -6,7 +6,7 @@
 # 需要: Node.js >= 22（脚本会自动安装）
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
 #   .\install-codex.ps1 -Help
 #   .\install-codex.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-codex.ps1
@@ -162,31 +162,46 @@ if (-not $DryRun -and (Get-Command codex -ErrorAction SilentlyContinue)) {
     Write-Host "  [OK] Codex 已安装" -ForegroundColor Green
     codex --version 2>$null | ForEach-Object { Write-Host "  $_" }
 } elseif ($DryRun) {
-    Write-DryRun "npm install -g @openai/codex"
+    Write-DryRun "Invoke-RestMethod https://chatgpt.com/codex/install.ps1 | Invoke-Expression"
+    Write-DryRun "fallback: npm install -g @openai/codex"
     Write-DryRun "验证: Get-Command codex"
 } else {
-    $hasNpm = Get-Command npm -ErrorAction SilentlyContinue
-    if ($hasNpm) {
-        if (-not (Confirm-Action "即将通过 npm 安装 Codex CLI（全局），是否继续？")) {
-            Write-Host "  已取消" -ForegroundColor Yellow
-            exit 0
+    if (-not (Confirm-Action "即将安装 Codex CLI，是否继续？")) {
+        Write-Host "  已取消" -ForegroundColor Yellow
+        exit 0
+    }
+
+    $installed = $false
+
+    # 方法1: 官方 standalone installer（优先）
+    Write-Host "  尝试官方脚本安装（chatgpt.com/codex/install.ps1）..." -ForegroundColor Cyan
+    try {
+        Invoke-RestMethod -Uri "https://chatgpt.com/codex/install.ps1" -TimeoutSec 30 | Invoke-Expression 2>$null
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
+        if (Get-Command codex -ErrorAction SilentlyContinue) { $installed = $true }
+    } catch {
+        Write-Host "  [!] 官方脚本不可用，改用 npm..." -ForegroundColor Yellow
+    }
+
+    # 方法2: npm fallback
+    if (-not $installed) {
+        $hasNpm = Get-Command npm -ErrorAction SilentlyContinue
+        if ($hasNpm) {
+            Write-Host "  通过 npm 安装 @openai/codex ..." -ForegroundColor Cyan
+            npm install -g @openai/codex 2>$null
+            if (Get-Command codex -ErrorAction SilentlyContinue) { $installed = $true }
         }
-        Write-Host "  通过 npm 安装 @openai/codex ..." -ForegroundColor Cyan
-        npm install -g @openai/codex 2>$null
-        if (Get-Command codex -ErrorAction SilentlyContinue) {
-            Write-Host "  [OK] Codex 安装成功!" -ForegroundColor Green
-        } else {
-            Write-Host "  [FAIL] Codex 安装失败（可能是网络问题）" -ForegroundColor Red
-            Write-Host ""
-            Write-Host "  排查建议:" -ForegroundColor Yellow
-            Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
-            Write-Host "  2. 检查 Node.js: node -v (需要 >= 22)" -ForegroundColor Yellow
-            Write-Host "  3. 手动安装: npm install -g @openai/codex" -ForegroundColor Yellow
-            exit 1
-        }
+    }
+
+    if ($installed) {
+        Write-Host "  [OK] Codex 安装成功!" -ForegroundColor Green
     } else {
-        Write-Host "  [FAIL] npm 不可用，无法安装 Codex" -ForegroundColor Red
-        Write-Host "  请先安装 Node.js: https://nodejs.org" -ForegroundColor Yellow
+        Write-Host "  [FAIL] Codex 安装失败" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "  排查建议:" -ForegroundColor Yellow
+        Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
+        Write-Host "  2. 检查 Node.js: node -v (需要 >= 22)" -ForegroundColor Yellow
+        Write-Host "  3. 手动安装: npm install -g @openai/codex" -ForegroundColor Yellow
         exit 1
     }
 }

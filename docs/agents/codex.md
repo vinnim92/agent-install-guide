@@ -25,7 +25,7 @@ Codex 适合 ChatGPT 用户，尤其是想把 OpenAI 能力接入本地开发流
 打开终端（Mac 右上角 🔍 搜索「终端」），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash
 ```
 
 屏幕上会滚动文字——这是脚本在自动工作。看到 `✅` 就是装好了。
@@ -37,7 +37,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts
 按 `⊞ + R`，输入 `powershell`，回车。粘贴下面这行，回车：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
 ```
 
 ---
@@ -49,13 +49,13 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash -s -- --dry-run
 ```
 
 ### Windows
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 -OutFile install-codex.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun
 ```
 
