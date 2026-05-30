@@ -6,7 +6,7 @@
 # OpenClaw 内置免费模型，无需 API Key 也能使用
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh | bash
 #   bash install-openclaw.sh --help
 #   bash install-openclaw.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-openclaw.sh
@@ -45,7 +45,13 @@ confirm() {
         return 0
     fi
     local yn
-    read -r -p "$(echo -e "${BLUE}[?]${NC} ${prompt} [Y/n]: ")" yn
+    if [ -r /dev/tty ]; then
+        read -r -p "$(echo -e "${BLUE}[?]${NC} ${prompt} [Y/n]: ")" yn < /dev/tty
+    else
+        print_warning "当前环境无法读取键盘输入"
+        print_tip "如果你确认继续，请使用：curl ... | AGENT_INSTALL_YES=1 bash"
+        return 1
+    fi
     yn=${yn:-y}
     case "$yn" in
         [Yy]*|[Yy][Ee][Ss]*|是|是的|对|对的) return 0 ;;
@@ -82,13 +88,20 @@ show_help() {
     echo "跳过确认:"
     echo "  AGENT_INSTALL_YES=1 bash install-openclaw.sh"
     echo ""
+    echo "如果你使用 curl | bash，推荐命令："
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh\" | AGENT_INSTALL_YES=1 bash"
+    echo ""
+    echo "如果你想手动确认，请先下载脚本再运行："
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh\" -o install-openclaw.sh"
+    echo "  bash install-openclaw.sh"
+    echo ""
     echo "安装后启动:"
     echo "  openclaw           进入交互式对话"
     echo "  openclaw dashboard 打开 Web 控制台"
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
+    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
     echo ""
     exit 0
 }
@@ -204,7 +217,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
+        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
         exit 0
     fi
 }
@@ -314,7 +327,7 @@ do_install() {
         print_warning "官方脚本不可用，使用 npm..."
         if ! command_exists npm; then
             print_error "npm 不可用"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
             exit 1
         fi
         local registry_flag=""
@@ -326,7 +339,7 @@ do_install() {
             print_success "npm 安装成功"
         else
             print_error "npm 安装失败"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
             exit 1
         fi
     fi
@@ -338,7 +351,7 @@ do_install() {
     else
         print_error "找不到 ${AGENT_BIN} 命令"
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html"
+        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
         exit 1
     fi
 }

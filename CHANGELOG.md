@@ -1,5 +1,28 @@
 # Changelog
 
+## v3.0.6 (2026-05-30)
+
+### 修复: curl|bash 模式下无法读取确认输入
+- Bash confirm() 改为从 /dev/tty 读取用户输入，解决管道 stdin 冲突
+- 当 /dev/tty 不可用时，输出中文提示并引导使用 AGENT_INSTALL_YES=1
+- --help 新增 curl|bash 推荐命令和手动确认模式说明
+
+### 交付命令更新
+- macOS/Linux 正式交付命令改为 `| AGENT_INSTALL_YES=1 bash`（自动确认模式）
+- 3 份 PDF 手册同步更新交付命令和版本号
+- 06-一键复制命令.txt 新增手动确认模式使用说明
+
+### 故障排查
+- support.html 新增"运行到确认步骤直接取消"FAQ
+
+### 检查增强
+- check-scripts.sh 新增 confirm() /dev/tty 检查
+- 新增 help 包含 AGENT_INSTALL_YES=1 bash 推荐检查
+- 新增 PDF/delivery 交付命令 AGENT_INSTALL_YES=1 检查
+- 新增禁止裸 | bash 检查
+
+---
+
 ## v3.0.5 (2026-05-30)
 
 ### Claude Code 定位调整

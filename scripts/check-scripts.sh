@@ -270,6 +270,40 @@ for f in \
     fi
 done
 
+# ---- v3.0.6: confirm() 使用 /dev/tty ----
+echo ""
+echo "--- 检查: Bash confirm() 使用 /dev/tty ---"
+for f in \
+    "${SCRIPT_DIR}/install-claude-code.sh" \
+    "${SCRIPT_DIR}/install-codex.sh" \
+    "${SCRIPT_DIR}/install-openclaw.sh"; do
+    fname=$(basename "$f")
+    if [ -f "$f" ]; then
+        if grep -q '/dev/tty' "$f" 2>/dev/null; then
+            check_pass "${fname} confirm() 使用 /dev/tty"
+        else
+            check_fail "${fname} confirm() 缺少 /dev/tty"
+        fi
+    fi
+done
+
+# ---- v3.0.6: Bash help 包含 curl|bash AGENT_INSTALL_YES=1 推荐 ----
+echo ""
+echo "--- 检查: Bash help 包含 AGENT_INSTALL_YES=1 bash 推荐 ---"
+for f in \
+    "${SCRIPT_DIR}/install-claude-code.sh" \
+    "${SCRIPT_DIR}/install-codex.sh" \
+    "${SCRIPT_DIR}/install-openclaw.sh"; do
+    fname=$(basename "$f")
+    if [ -f "$f" ]; then
+        if grep -q 'AGENT_INSTALL_YES=1 bash' "$f" 2>/dev/null; then
+            check_pass "${fname} help 包含 AGENT_INSTALL_YES=1 bash 推荐"
+        else
+            check_fail "${fname} help 缺少 AGENT_INSTALL_YES=1 bash 推荐"
+        fi
+    fi
+done
+
 # ---- 禁止 npm config set registry（应使用 --registry 单次参数） ----
 echo ""
 echo "--- 检查: 禁止 npm config set registry（应使用 --registry 单次参数） ---"
@@ -294,13 +328,34 @@ fi
 
 # ---- 禁止 @main 未版本化 URL ----
 echo ""
-echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.5 等版本标签） ---"
+echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.6 等版本标签） ---"
 AT_MAIN_HITS=$(grep -rn '@main' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
 if [ -n "$AT_MAIN_HITS" ]; then
-    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.5 等版本标签）"
+    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.6 等版本标签）"
     echo "$AT_MAIN_HITS" | while read line; do echo "       $line"; done
 else
     check_pass "未发现 @main URL（已版本化）"
+fi
+
+# ---- v3.0.6: PDF/delivery macOS/Linux 命令必须使用 AGENT_INSTALL_YES=1 bash ----
+echo ""
+echo "--- 检查: PDF/delivery macOS/Linux 交付命令包含 AGENT_INSTALL_YES=1 bash ---"
+YES_DELIVERY=$(grep -rn 'AGENT_INSTALL_YES=1 bash' pdf/ dist/ 2>/dev/null || true)
+if [ -z "$YES_DELIVERY" ]; then
+    check_fail "PDF/delivery 中 macOS/Linux 交付命令缺少 AGENT_INSTALL_YES=1 bash"
+else
+    check_pass "PDF/delivery 中 macOS/Linux 交付命令包含 AGENT_INSTALL_YES=1 bash"
+fi
+
+# ---- v3.0.6: 禁止 macOS/Linux 正式交付命令使用裸 | bash ----
+echo ""
+echo "--- 检查: 禁止 PDF/delivery 中 macOS/Linux 命令使用裸 | bash（不含 AGENT_INSTALL_YES=1） ---"
+BARE_BASH_HITS=$(grep -rn 'curl.*| bash' pdf/ dist/delivery/ 2>/dev/null | grep -v 'AGENT_INSTALL_YES=1' || true)
+if [ -n "$BARE_BASH_HITS" ]; then
+    check_fail "PDF/delivery 中 macOS/Linux 命令存在裸 | bash（应使用 AGENT_INSTALL_YES=1 bash）"
+    echo "$BARE_BASH_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "PDF/delivery 中 macOS/Linux 交付命令均包含 AGENT_INSTALL_YES=1"
 fi
 
 # ---- 官方 installer 引用检查 ----
@@ -417,15 +472,15 @@ for f in \
     fi
 done
 
-# ---- v3.0.5 扩展检查: 禁止活动 @v3.0.4 交付命令 ----
+# ---- v3.0.6 扩展检查: 禁止活动 @v3.0.5 交付命令 ----
 echo ""
-echo "--- 检查: 禁止活动 @v3.0.4 交付命令（应使用 @v3.0.5） ---"
-OLD_VER_HITS=$(grep -rn '@v3\.0\.4' README.md docs/ xianyu-materials/ pdf/ scripts/ 2>/dev/null | grep -v "CHANGELOG\|check-scripts" || true)
+echo "--- 检查: 禁止活动 @v3.0.5 交付命令（应使用 @v3.0.6） ---"
+OLD_VER_HITS=$(grep -rn '@v3\.0\.5' README.md docs/ xianyu-materials/ pdf/ scripts/ 2>/dev/null | grep -v "CHANGELOG\|check-scripts" || true)
 if [ -n "$OLD_VER_HITS" ]; then
-    check_fail "发现活动 @v3.0.4 交付命令（应使用 @v3.0.5）"
+    check_fail "发现活动 @v3.0.5 交付命令（应使用 @v3.0.6）"
     echo "$OLD_VER_HITS" | while read line; do echo "       $line"; done
 else
-    check_pass "未发现活动 @v3.0.4 交付命令"
+    check_pass "未发现活动 @v3.0.5 交付命令"
 fi
 
 # ---- v3.0.5 扩展检查: Claude Code PDF/docs 包含 DeepSeek API ----

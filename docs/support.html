@@ -146,7 +146,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
     <li><strong>Claude Code 已安装，但 DeepSeek API 配置失败：</strong>关掉终端重新打开（环境变量需新窗口才能加载），再试 <code>claude</code>。如果仍不生效，检查 <code>~/.zshrc</code>（Mac/Linux）或系统环境变量（Windows）中是否正确写入了 <code>ANTHROPIC_BASE_URL</code> 和 <code>ANTHROPIC_AUTH_TOKEN</code>。</li>
     <li><strong>DeepSeek API Key 粘贴后没反应：</strong>输入 Key 时光标不会移动是正常的（安全输入模式），粘贴后直接回车即可。如果粘贴失败，右键粘贴后再按回车。</li>
     <li><strong>Claude Code 启动后仍提示 Anthropic / Claude 登录：</strong>说明环境变量未生效。确认 <code>ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic</code> 已设置。Mac/Linux 用户运行 <code>source ~/.zshrc</code> 然后重试。</li>
-    <li><strong>如何手动重新配置 DeepSeek：</strong>重新运行安装脚本，或参考 <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/agents/claude-code.md">Claude Code 教程</a> 手动设置环境变量。</li>
+    <li><strong>如何手动重新配置 DeepSeek：</strong>重新运行安装脚本，或参考 <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/agents/claude-code.md">Claude Code 教程</a> 手动设置环境变量。</li>
   </ul>
 </div>
 
@@ -162,6 +162,22 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
 </div>
 
 <!-- 9 -->
+<div class="section">
+  <h2>运行到"是否继续安装"时，直接显示已取消</h2>
+  <ul>
+    <li><strong>原因：</strong>使用 <code>curl | bash</code> 时，脚本的标准输入来自 curl 管道，有时无法从键盘读取确认输入。</li>
+    <li><strong>解决方法一（推荐）：</strong>使用交付包中的自动确认命令：
+      <div class="cmd-block">curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash</div>
+      把命令中的脚本名换成你要安装的 Agent（install-claude-code.sh / install-codex.sh / install-openclaw.sh）。加上 <code>AGENT_INSTALL_YES=1</code> 后脚本会自动跳过确认。
+    </li>
+    <li><strong>解决方法二：</strong>先下载脚本再运行（可以手动确认）：
+      <div class="cmd-block">curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh" -o install-openclaw.sh
+bash install-openclaw.sh</div>
+    </li>
+  </ul>
+</div>
+
+<!-- 10 -->
 <div class="section">
   <h2>登录失败 / 认证失败（通用）</h2>
   <ul>

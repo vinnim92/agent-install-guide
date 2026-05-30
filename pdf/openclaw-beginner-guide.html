@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenClaw 小白安装手册 v3.0.5</title>
+<title>OpenClaw 小白安装手册 v3.0.6</title>
 <style>
   @media print {
     body { -webkit-print-color-adjust: exact; }
@@ -95,7 +95,7 @@
   <h1>OpenClaw<br>小白安装手册</h1>
   <p class="tagline">微软开源 · 命令行 AI 编程助手 · 内置免费模型</p>
   <p class="meta">
-    <span>版本 v3.0.5</span><span>|</span><span>支持 Windows / Mac</span>
+    <span>版本 v3.0.6</span><span>|</span><span>支持 Windows / Mac</span>
   </p>
 </div>
 
@@ -179,18 +179,37 @@
 <!-- ====== Step 2: 复制命令 ====== -->
 <div class="section page-break">
   <h2>第二步：复制安装命令</h2>
-  <p>选中下面 <strong>对应你电脑系统</strong> 的那行命令，完整复制（用鼠标选中 → 右键复制，或按 Ctrl+C / Command+C）：</p>
+  <div class="warn-box" style="border-left-color: #7c3aed; background: #f5f0fa;">
+    <strong>⚠️ 重要提醒：</strong>PDF 里的长命令有时会因换行，复制后被拆成两段。<br>
+    如果你看到命令里出现类似 <code>@v3.0.</code> 和下一行 <code>5/scripts/...</code>，说明命令被拆坏了。<br>
+    <strong>请优先打开交付包里的《06-一键复制命令.txt》，从里面复制完整命令。</strong>
+  </div>
+
+  <div style="background: #fff; border: 2px dashed #ff4d4f; padding: 12px 16px; border-radius: 8px; margin: 14px 0;">
+    <strong style="color: #ff4d4f;">正确命令必须是一整行</strong><br>
+    <span style="color: #ff4d4f;">❌ 错误（被拆断）：</span><br>
+    <code style="word-break: break-all;">@v3.0.<br>5/scripts/...</code><br>
+    <span style="color: #52c41a;">✅ 正确（完整）：</span><br>
+    <code style="word-break: break-all;">@v3.0.6/scripts/...</code>
+  </div>
+
+  <p style="margin-top: 16px;">选中下面 <strong>对应你电脑系统</strong> 的那行命令，完整复制（用鼠标选中 → 右键复制，或按 Ctrl+C / Command+C）：</p>
+  <p style="color: #ff4d4f; font-size: 0.92em;"><strong>为避免复制断行，请优先从《06-一键复制命令.txt》中复制。</strong></p>
 
   <h3>🪟 Windows 用户（在 PowerShell 中运行）</h3>
   <div class="cmd-box">
     <span class="label">Windows PowerShell</span>
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.ps1 | iex
+iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.ps1" | iex
   </div>
 
   <h3>🍎 Mac 用户（在终端中运行）</h3>
   <div class="cmd-box">
     <span class="label">macOS 终端</span>
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.sh | bash
+curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 Mac 命令中的 AGENT_INSTALL_YES=1：</strong>脚本会自动检查电脑环境。为了避免命令行管道读取不到键盘输入，交付命令默认使用自动确认模式。如果想手动确认每一步，可以先下载脚本再运行：<code>curl -fsSL "..." -o install-openclaw.sh && bash install-openclaw.sh</code>
   </div>
 
   <div class="warn-box">
@@ -229,13 +248,13 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scrip
     <li>脚本会显示 <strong>"正在检查你的电脑环境…"</strong></li>
     <li>检查系统、网络、Node.js 版本、是否已安装过 OpenClaw</li>
     <li>如果 Node.js 版本不够（需要 >= 22.19），脚本会询问是否自动安装 → 输入 <code>y</code> 回车</li>
-    <li>显示 <strong>"是否继续安装 OpenClaw？"</strong> → 输入 <code>y</code> 回车</li>
+    <li>确认提示会自动跳过（AGENT_INSTALL_YES=1 模式），脚本直接进入安装</li>
     <li>脚本通过官方渠道自动安装 OpenClaw</li>
     <li>看到 <strong>"✅ OpenClaw 安装成功"</strong> 就完成了</li>
   </ol>
   <div class="tip-box">
     <strong>💡 如果中途出现红色报错：</strong>不要慌。把错误截图保存下来，然后访问故障排查页面：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html</a>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html</a>
   </div>
 </div>
 
@@ -306,7 +325,7 @@ openclaw dashboard
   <div class="faq-item">
     <p class="q">Q: 安装失败了怎么办？</p>
     <p class="a">A: 打开故障排查页面，按步骤检查：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html</a></p>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html</a></p>
   </div>
 </div>
 
@@ -322,8 +341,8 @@ openclaw dashboard
 </div>
 
 <div class="footer">
-  <p>OpenClaw 安装手册 v3.0.5 · 遇到问题请访问</p>
-  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/docs/support.html">故障排查页面</a></p>
+  <p>OpenClaw 安装手册 v3.0.6 · 遇到问题请访问</p>
+  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">故障排查页面</a></p>
 </div>
 
 </body>

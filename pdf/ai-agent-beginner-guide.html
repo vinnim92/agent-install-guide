@@ -397,12 +397,12 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <h3>macOS / Linux：预演</h3>
 <p>以 Codex 为例：</p>
-<pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash -s -- --dry-run</code></pre>
+<pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash -s -- --dry-run</code></pre>
 <p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可预演其他 Agent。</p>
 
 <h3>Windows：预演</h3>
 <p>以 Codex 为例（两步）：</p>
-<pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 -OutFile install-codex.ps1
+<pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun</code></pre>
 <p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可。</p>
 
@@ -419,22 +419,22 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <div class="agent-block">
   <h3 class="agent-name-cc">Claude Code</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.sh | bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-cx">Codex</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.sh | bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-oc">OpenClaw</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.sh | bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="tip">
   <strong>想跳过确认？</strong>在命令最前面加 <code>AGENT_INSTALL_YES=1 </code>（注意空格），例如：<br>
-  <code>AGENT_INSTALL_YES=1 curl -fsSL https://... | bash</code>
+  <code>AGENT_INSTALL_YES=1 curl -fsSL https://... | AGENT_INSTALL_YES=1 bash</code>
 </div>
 
 <!-- ==================== 6. Windows 命令 ==================== -->
@@ -445,17 +445,17 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <div class="agent-block">
   <h3 class="agent-name-cc">Claude Code</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-claude-code.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.ps1 | iex</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-cx">Codex</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-codex.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.ps1 | iex</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-oc">OpenClaw</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.5/scripts/install-openclaw.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.ps1 | iex</code></pre>
 </div>
 
 <div class="tip">
