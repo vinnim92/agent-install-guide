@@ -79,7 +79,7 @@ if (-not $hasNode) {
             Write-Host "  ✅ Node.js 安装成功！" -ForegroundColor Green
         } else {
             Write-Host "  ⚠️  Node.js 已安装，但当前窗口未生效" -ForegroundColor Yellow
-            Write-Host "  👉 关掉此窗口，重新打开 PowerShell，再运行一次安装命令" -ForegroundColor Yellow
+            Write-Host "  👉 关掉此窗口，重新打开 PowerShell，重新运行安装命令" -ForegroundColor Yellow
             Write-Host ""
             Read-Host "按回车键退出"
             return
