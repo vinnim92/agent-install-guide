@@ -58,19 +58,19 @@
 **Claude Code：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.sh | bash
 ```
 
 **Codex：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash
 ```
 
 **OpenClaw：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.sh | bash
 ```
 
 ### Windows
@@ -80,19 +80,19 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scrip
 **Claude Code：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-claude-code.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.ps1 | iex
 ```
 
 **Codex：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
 ```
 
 **OpenClaw：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-openclaw.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.ps1 | iex
 ```
 
 ---
@@ -122,7 +122,7 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/script
 在命令后面加 `--dry-run`：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash -s -- --dry-run
 ```
 
 ### Windows
@@ -130,7 +130,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scrip
 先将脚本下载到本地，再以 dry-run 模式执行：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 -OutFile install-codex.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun
 ```
 
@@ -145,7 +145,7 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/script
 ### macOS / Linux
 
 ```bash
-AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.sh)"
+AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh)"
 ```
 
 ### Windows
@@ -154,7 +154,7 @@ AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/a
 
 ```powershell
 $env:AGENT_INSTALL_YES = "1"
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.3/scripts/install-codex.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
 ```
 
 ---
@@ -178,8 +178,8 @@ A：不需要。复制命令即可，不需要任何准备工作。
 **Q：我需要先下载这个仓库吗？**
 A：不需要。脚本会从云端加载，你只复制那一条命令就够了。
 
-**Q：我可以一次安装三个 Agent 吗？**
-A：不建议。每个 Agent 设计为独立安装，分开装更清楚、更稳定。
+**Q：可以同时安装多个 Agent 吗？**
+A：可以，但建议分开安装。每个 Agent 设计为独立安装，逐个来更清楚、更稳定。
 
 **Q：安装后怎么启动？**
 A：在终端输入 `claude`、`codex` 或 `openclaw` 即可。安装完成的最后一行也会提示你。

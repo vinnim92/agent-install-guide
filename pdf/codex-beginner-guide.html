@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codex 小白安装手册 v3.0.4</title>
+<style>
+  @media print {
+    body { -webkit-print-color-adjust: exact; }
+    .page-break { page-break-before: always; }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #1a1a1a; line-height: 1.9; font-size: 15px;
+  }
+
+  .cover {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; text-align: center;
+    background: linear-gradient(135deg, #f0f4f8 0%, #dce8f2 40%, #c5d9e8 100%);
+    padding: 40px;
+  }
+  .cover .badge {
+    display: inline-block; background: #10a37f; color: #fff;
+    padding: 6px 22px; border-radius: 20px; font-size: 0.9em; margin-bottom: 20px;
+  }
+  .cover h1 { font-size: 2.8em; margin: 10px 0 6px; font-weight: 700; }
+  .cover .tagline { font-size: 1.05em; color: #555; margin-bottom: 30px; }
+  .cover .meta { font-size: 0.88em; color: #777; }
+  .cover .meta span { margin: 0 10px; }
+
+  .section {
+    max-width: 700px; margin: 0 auto; padding: 36px 28px;
+  }
+  .section h2 {
+    font-size: 1.35em; border-left: 4px solid #10a37f; padding-left: 12px;
+    margin-bottom: 16px; color: #1a1a1a;
+  }
+  .section h3 { font-size: 1.08em; margin: 18px 0 8px; color: #333; }
+
+  .card {
+    background: #fafaf8; border-radius: 10px; padding: 20px 24px;
+    margin: 12px 0; border: 1px solid #eee;
+  }
+  .card h4 { font-size: 1em; margin-bottom: 6px; }
+
+  .cmd-box {
+    background: #1e1e1e; color: #e0e0e0; padding: 14px 18px;
+    border-radius: 8px; font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    font-size: 0.9em; margin: 10px 0; overflow-x: auto;
+    white-space: pre-wrap; word-break: break-all; line-height: 1.7;
+  }
+  .cmd-box .label {
+    display: inline-block; background: #333; color: #aaa;
+    font-size: 0.75em; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px;
+  }
+
+  .step-row { display: flex; gap: 14px; align-items: flex-start; margin: 20px 0; }
+  .step-num {
+    flex-shrink: 0; width: 36px; height: 36px; background: #10a37f; color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.1em;
+  }
+  .step-body { flex: 1; }
+  .step-body h3 { margin-top: 2px; }
+
+  .tip-box {
+    background: #f0faf6; border-left: 4px solid #10a37f;
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+    font-size: 0.93em;
+  }
+  .warn-box {
+    background: #fff2f0; border-left: 4px solid #ff4d4f;
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+    font-size: 0.93em;
+  }
+
+  .faq-item { margin: 14px 0; }
+  .faq-item .q { font-weight: 600; color: #10a37f; }
+  .faq-item .a { margin-top: 4px; color: #444; }
+
+  .footer {
+    text-align: center; padding: 28px; color: #999;
+    font-size: 0.85em; border-top: 1px solid #eee;
+  }
+  .footer a { color: #1677ff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- ====== Cover ====== -->
+<div class="cover">
+  <div class="badge">Codex</div>
+  <h1>Codex CLI<br>小白安装手册</h1>
+  <p class="tagline">OpenAI 出品 · 命令行 AI 编程助手</p>
+  <p class="meta">
+    <span>版本 v3.0.4</span><span>|</span><span>支持 Windows / Mac</span>
+  </p>
+</div>
+
+<!-- ====== 适用对象 ====== -->
+<div class="section page-break">
+  <h2>适用对象</h2>
+  <p>本手册适合<strong>第一次接触命令行</strong>的新手用户。如果你平时只用鼠标操作电脑，从没打开过"终端"或"PowerShell"，本手册会手把手带你完成安装。</p>
+  <div class="tip-box">
+    <strong>✅ 安装脚本会自动检测并安装 Node.js</strong> — 你不需要手动安装任何依赖。但你需要一个 ChatGPT 账号（Plus / Pro / Team）或 OpenAI API Key。
+  </div>
+</div>
+
+<!-- ====== 准备工作 ====== -->
+<div class="section">
+  <h2>安装前准备</h2>
+  <div class="card">
+    <h4>🎫 需要一个 ChatGPT 账号</h4>
+    <p>注册地址：<strong>https://chatgpt.com</strong>（在浏览器打开）<br>
+    需要 Plus（推荐）、Pro 或 Team 订阅。或者准备一个 OpenAI API Key。</p>
+  </div>
+  <div class="card">
+    <h4>💻 电脑系统要求</h4>
+    <p>Windows 10/11 或 macOS 10.15+</p>
+  </div>
+  <div class="card">
+    <h4>🌐 需要网络连接</h4>
+    <p>安装过程需要联网下载 Node.js 和 Codex。如果公司/学校网络较严，切换到手机热点。</p>
+  </div>
+</div>
+
+<!-- ====== Step 1: 打开终端 ====== -->
+<div class="section page-break">
+  <h2>第一步：打开终端 / PowerShell</h2>
+
+  <h3>🪟 Windows 用户</h3>
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body"><h3>点击"开始"菜单（屏幕左下角 Windows 图标）</h3></div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>在搜索框输入 <code>PowerShell</code></h3>
+      <p>搜索结果会出现蓝色图标的"Windows PowerShell"。</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>点击打开</h3>
+      <p>弹出一个白底黑字（或蓝底白字）的窗口，能看到闪烁的光标，这就是命令行界面。</p>
+    </div>
+  </div>
+  <div class="tip-box">
+    <strong>💡 提示：</strong>你也可以右键点击"开始"菜单 → 选择"Windows 终端"或"PowerShell"。
+  </div>
+
+  <h3 style="margin-top: 28px;">🍎 Mac 用户</h3>
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body"><h3>点击程序坞（Dock）上的 Launchpad 图标（火箭）</h3></div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>在搜索框输入 <code>终端</code></h3>
+      <p>或者在 Finder 中打开：<code>应用程序 → 实用工具 → 终端.app</code></p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>双击打开"终端"</h3>
+      <p>弹出一个白底黑字的窗口，能看到闪烁的光标和你的用户名。这就是命令行界面。</p>
+    </div>
+  </div>
+  <div class="tip-box">
+    <strong>💡 提示：</strong>按 <code>Command + 空格</code> 打开 Spotlight，输入"终端"然后回车，这是最快的方式。
+  </div>
+</div>
+
+<!-- ====== Step 2: 复制命令 ====== -->
+<div class="section page-break">
+  <h2>第二步：复制安装命令</h2>
+  <p>选中下面 <strong>对应你电脑系统</strong> 的那行命令，完整复制（用鼠标选中 → 右键复制，或按 Ctrl+C / Command+C）：</p>
+
+  <h3>🪟 Windows 用户（在 PowerShell 中运行）</h3>
+  <div class="cmd-box">
+    <span class="label">Windows PowerShell</span>
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex
+  </div>
+
+  <h3>🍎 Mac 用户（在终端中运行）</h3>
+  <div class="cmd-box">
+    <span class="label">macOS 终端</span>
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash
+  </div>
+
+  <div class="warn-box">
+    <strong>⚠️ 注意：</strong>请完整复制整行命令，不要手动输入（容易打错字母）。不要漏掉开头的 <code>iwr</code>（Windows）或 <code>curl</code>（Mac）。
+  </div>
+</div>
+
+<!-- ====== Step 3: 粘贴并回车 ====== -->
+<div class="section">
+  <h2>第三步：粘贴命令，按回车</h2>
+  <div class="step-row">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>把刚才复制的命令粘贴到终端窗口</h3>
+      <p><strong>Windows PowerShell：</strong>直接右键点击窗口即可粘贴（或按 Ctrl+V）。<br>
+      <strong>Mac 终端：</strong>按 Command+V 粘贴。</p>
+    </div>
+  </div>
+  <div class="step-row">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>按键盘上的 Enter / Return 回车键</h3>
+      <p>命令开始运行。你会看到一些文字输出，这是正常的。</p>
+    </div>
+  </div>
+  <div class="tip-box">
+    <strong>💡 如果粘贴不了：</strong>试试右键 → 粘贴，或者 Shift+Insert（Windows）。如果还是不行，检查确认复制时真的选中了整行命令。
+  </div>
+</div>
+
+<!-- ====== Step 4: 跟着提示走 ====== -->
+<div class="section page-break">
+  <h2>第四步：跟着提示操作</h2>
+  <p>安装脚本会自动检查你的电脑环境，如果需要还会自动安装 Node.js：</p>
+  <ol style="padding-left: 24px; line-height: 2.2;">
+    <li>脚本会显示 <strong>"正在检查你的电脑环境…"</strong></li>
+    <li>检查系统、网络、Node.js 版本、是否已安装过 Codex</li>
+    <li>如果 Node.js 版本不够，脚本会询问是否自动安装 → 输入 <code>y</code> 回车</li>
+    <li>显示 <strong>"是否继续安装 Codex？"</strong> → 输入 <code>y</code> 回车</li>
+    <li>脚本通过官方渠道自动安装 Codex</li>
+    <li>看到 <strong>"✅ Codex 安装成功"</strong> 就完成了</li>
+  </ol>
+  <div class="tip-box">
+    <strong>💡 如果中途出现红色报错：</strong>不要慌。把错误截图保存下来，然后访问故障排查页面：<br>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html</a>
+  </div>
+</div>
+
+<!-- ====== Step 5: 启动 Codex ====== -->
+<div class="section">
+  <h2>第五步：启动 Codex</h2>
+  <p>安装完成后，关掉当前的终端/PowerShell 窗口，<strong>重新打开一个新窗口</strong>，然后：</p>
+  <div class="cmd-box">
+    <span class="label">在终端 / PowerShell 中输入</span>
+codex
+  </div>
+  <p style="margin-top: 10px;">第一次运行会自动弹出浏览器，让你登录 ChatGPT 账号。登录后回到终端就能开始对话了。</p>
+  <div class="tip-box">
+    <strong>💡 常用命令：</strong><br>
+    <code>codex</code> — 开始交互式对话<br>
+    <code>codex "你的任务"</code> — 带初始提示启动<br>
+    <code>codex exec "..."</code> — 非交互执行任务<br>
+    <code>codex --version</code> — 查看版本<br>
+    <code>codex login</code> — 手动登录
+  </div>
+</div>
+
+<!-- ====== 成功标志 ====== -->
+<div class="section">
+  <h2>怎么知道安装成功了？</h2>
+  <ul style="padding-left: 20px; line-height: 2.2;">
+    <li>在终端输入 <code>codex --version</code>，能看到版本号</li>
+    <li>输入 <code>codex</code> 能进入对话界面</li>
+    <li>浏览器弹出 ChatGPT 登录页，登录后能正常对话</li>
+  </ul>
+</div>
+
+<!-- ====== 常见问题 ====== -->
+<div class="section page-break">
+  <h2>常见问题</h2>
+
+  <div class="faq-item">
+    <p class="q">Q: 关闭终端重开后，输入 codex 提示"找不到命令"？</p>
+    <p class="a">A: 重新运行一遍安装脚本即可，它会自动识别已有安装并修复 PATH。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: 安装脚本提示 Node.js 安装失败？</p>
+    <p class="a">A: 手动去 <a href="https://nodejs.org">https://nodejs.org</a> 下载并安装 LTS 版本（左侧绿色按钮），装完后再运行一次 Codex 安装脚本。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: 登录时浏览器没有自动弹出？</p>
+    <p class="a">A: 在终端手动输入 <code>codex login</code>，会触发浏览器登录流程。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: 提示"未授权"或"需要订阅"？</p>
+    <p class="a">A: Codex CLI 需要 ChatGPT Plus/Pro/Team 账号。免费版 ChatGPT 无法使用 Codex。确认你的订阅状态后在 codex 中重新登录。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: 安装失败了怎么办？</p>
+    <p class="a">A: 打开故障排查页面，按步骤检查：<br>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html</a></p>
+  </div>
+</div>
+
+<!-- ====== 安装后做什么 ====== -->
+<div class="section">
+  <h2>安装好了，接下来做什么？</h2>
+  <ol style="padding-left: 20px; line-height: 2.2;">
+    <li>在终端输入 <code>codex</code> 启动对话</li>
+    <li>试试问它："帮我写一个 Python 的 Hello World 程序"</li>
+    <li>用 <code>codex "解释我当前目录的代码"</code> 让它分析项目</li>
+    <li>探索更多功能：<code>codex --help</code> 查看所有可用命令</li>
+  </ol>
+</div>
+
+<div class="footer">
+  <p>Codex 安装手册 v3.0.4 · 遇到问题请访问</p>
+  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/docs/support.html">故障排查页面</a></p>
+</div>
+
+</body>
+</html>

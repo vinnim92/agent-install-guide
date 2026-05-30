@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI Agent 小白安装引导手册 v3.0.4</title>
+<style>
+  @page {
+    size: A4;
+    margin: 22mm 20mm 25mm 20mm;
+    @bottom-center {
+      content: "AI Agent 小白安装引导手册 v3.0.4";
+      font-size: 9px;
+      color: #999;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #2d2d2d;
+    max-width: 100%;
+  }
+
+  /* ====== 封面 ====== */
+  .cover {
+    page-break-after: always;
+    text-align: center;
+    padding-top: 120px;
+  }
+
+  .cover .tag {
+    display: inline-block;
+    background: #f0f4ff;
+    color: #4a6cf7;
+    padding: 6px 22px;
+    border-radius: 20px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+
+  .cover h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 20px 0 12px;
+    line-height: 1.3;
+  }
+
+  .cover .subtitle {
+    font-size: 17px;
+    color: #555;
+    margin-bottom: 50px;
+    line-height: 1.6;
+  }
+
+  .cover .features {
+    display: inline-block;
+    text-align: left;
+    margin: 0 auto 60px;
+    background: #fafafa;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 28px 36px;
+  }
+
+  .cover .features li {
+    font-size: 13px;
+    color: #444;
+    padding: 5px 0;
+    list-style: none;
+  }
+
+  .cover .features li::before {
+    content: "✅ ";
+    font-size: 12px;
+  }
+
+  .cover .version {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 30px;
+  }
+
+  /* ====== 通用 ====== */
+  h1 { font-size: 24px; color: #1a1a1a; margin: 32px 0 14px; }
+  h2 { font-size: 19px; color: #222; margin: 28px 0 10px; border-bottom: 2px solid #4a6cf7; padding-bottom: 6px; }
+  h3 { font-size: 15px; color: #333; margin: 20px 0 8px; }
+
+  p { margin: 6px 0 10px; }
+
+  ul, ol { margin: 6px 0 10px; padding-left: 22px; }
+  li { margin: 3px 0; }
+
+  .page-break { page-break-before: always; }
+
+  /* ====== 代码块 ====== */
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+    font-size: 11.5px;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 10px 0;
+  }
+
+  code {
+    font-family: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+    background: #f0f0f0;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+
+  /* ====== 提示框 ====== */
+  .tip {
+    background: #f0f7ff;
+    border-left: 4px solid #4a6cf7;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+  }
+
+  .warn {
+    background: #fff8e6;
+    border-left: 4px solid #f0a030;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+  }
+
+  /* ====== 表格 ====== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+
+  th {
+    background: #f5f5f5;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 2px solid #ddd;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+
+  /* ====== 步骤编号 ====== */
+  .step {
+    display: inline-block;
+    background: #4a6cf7;
+    color: #fff;
+    width: 22px;
+    height: 22px;
+    line-height: 22px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+
+  /* ====== FAQ ====== */
+  .faq-q {
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 14px 0 2px;
+  }
+
+  .faq-a {
+    color: #555;
+    margin: 2px 0 10px;
+    padding-left: 8px;
+    border-left: 2px solid #e0e0e0;
+  }
+
+  /* ====== 页脚 ====== */
+  .section-ending {
+    text-align: center;
+    color: #aaa;
+    font-size: 11px;
+    margin: 30px 0 10px;
+  }
+
+  /* ====== Agent 区块 ====== */
+  .agent-block {
+    background: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 14px 0;
+  }
+
+  .agent-block h3 {
+    margin-top: 0;
+  }
+
+  .agent-name-cc  { color: #c4a35a; }
+  .agent-name-cx  { color: #10a37f; }
+  .agent-name-oc  { color: #e05a2b; }
+
+  /* ====== 结尾页 ====== */
+  .end-page {
+    page-break-before: always;
+    text-align: center;
+    padding-top: 180px;
+  }
+
+  .end-page h2 {
+    border-bottom: none;
+    font-size: 22px;
+    color: #333;
+  }
+
+  .end-page p {
+    font-size: 14px;
+    color: #666;
+    margin: 14px 0;
+  }
+
+  /* ====== TOC ====== */
+  .toc { page-break-after: always; }
+  .toc h2 { border-bottom: 2px solid #4a6cf7; }
+  .toc ul { list-style: none; padding-left: 0; }
+  .toc li {
+    padding: 6px 0;
+    border-bottom: 1px dotted #ddd;
+    font-size: 13px;
+  }
+  .toc .num { color: #4a6cf7; font-weight: 600; margin-right: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ==================== 封面 ==================== -->
+<div class="cover">
+  <div class="tag">AI AGENT · 小白友好</div>
+  <h1>AI Agent 小白安装引导手册</h1>
+  <p class="subtitle">一条命令安装 Claude Code / Codex / OpenClaw</p>
+
+  <ul class="features">
+    <li>不用看英文文档</li>
+    <li>自动检测环境，自动安装依赖</li>
+    <li>中文提示 · 出错了告诉你怎么办</li>
+    <li>支持 dry-run 预演，先看再装</li>
+    <li>每个 Agent 独立安装，更清楚更稳定</li>
+  </ul>
+
+  <p class="version">v3.0.4 稳定版 · 2026-05-30</p>
+</div>
+
+<!-- ==================== 目录 ==================== -->
+<div class="toc">
+  <h2>目录</h2>
+  <ul>
+    <li><span class="num">01</span> 这份手册适合谁</li>
+    <li><span class="num">02</span> 先选你要安装的 Agent</li>
+    <li><span class="num">03</span> 安装前的 3 个概念</li>
+    <li><span class="num">04</span> 推荐流程：先预演，再安装</li>
+    <li><span class="num">05</span> macOS / Linux 安装命令</li>
+    <li><span class="num">06</span> Windows PowerShell 安装命令</li>
+    <li><span class="num">07</span> 正式安装流程</li>
+    <li><span class="num">08</span> 安装完成后怎么启动</li>
+    <li><span class="num">09</span> 安装成功的判断标准</li>
+    <li><span class="num">10</span> 常见问题 FAQ</li>
+    <li><span class="num">11</span> 报错反馈模板</li>
+    <li><span class="num">12</span> 装好以后能做什么</li>
+  </ul>
+</div>
+
+<!-- ==================== 1. 适合谁 ==================== -->
+<div class="page-break"></div>
+<h2>01 · 这份手册适合谁</h2>
+
+<p>如果你是以下任何一种情况，这本手册就是写给你的：</p>
+
+<ul>
+  <li>想用 AI Agent，但卡在"怎么装"这一步的人</li>
+  <li>打开官方文档全是英文，不知道从哪开始的人</li>
+  <li>听说过 Claude Code / Codex / OpenClaw，但不知道怎么装到自己电脑上的人</li>
+  <li>不想折腾 Node、npm、PATH、终端配置的人</li>
+  <li>装了好几次都失败，已经想放弃的人</li>
+  <li>想帮朋友/同事/家人装一个 AI 助手的人</li>
+</ul>
+
+<div class="tip">
+  <strong>你需要准备什么？</strong><br>
+  一台能上网的电脑（macOS / Linux / Windows）+ 会复制粘贴 + 会按回车。<br>
+  真的，就这些。
+</div>
+
+<div class="warn">
+  <strong>注意事项</strong><br>
+  本手册教你安装 AI Agent，但实际使用 Claude Code / Codex / OpenClaw 仍需要你准备对应账号、订阅或 API Key。手册不包含这些。
+</div>
+
+<!-- ==================== 2. 选 Agent ==================== -->
+<div class="page-break"></div>
+<h2>02 · 先选你要安装的 Agent</h2>
+
+<p>选一个最符合你需求的。装完一个想再装另一个，复制对应的命令就行，互不影响。</p>
+
+<table>
+  <tr>
+    <th style="width:18%">Agent</th>
+    <th style="width:30%">适合谁</th>
+    <th style="width:22%">需要什么</th>
+    <th style="width:30%">一句话</th>
+  </tr>
+  <tr>
+    <td><strong class="agent-name-cc">Claude Code</strong></td>
+    <td>追求稳定、成熟代码体验的用户</td>
+    <td>Claude 账号（Pro/Max/Team）或 API Key</td>
+    <td>Anthropic 出品，目前综合能力最强的 AI 编程助手之一</td>
+  </tr>
+  <tr>
+    <td><strong class="agent-name-cx">Codex</strong></td>
+    <td>ChatGPT / OpenAI 用户</td>
+    <td>ChatGPT Plus/Pro/Team 账号或 OpenAI API Key</td>
+    <td>OpenAI 出品，与 ChatGPT 生态深度打通</td>
+  </tr>
+  <tr>
+    <td><strong class="agent-name-oc">OpenClaw</strong></td>
+    <td>想体验开源 Agent 工作流的用户</td>
+    <td>无需 API Key 也能用（内置免费模型）</td>
+    <td>微软开源，支持 75+ 模型提供商，可玩性高</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <strong>不确定选哪个？</strong><br>
+  建议从 Claude Code 开始。它是目前综合体验最好的 AI Agent 之一，自带运行时，不用额外装 Node.js，安装过程最简单。
+</div>
+
+<!-- ==================== 3. 3 个概念 ==================== -->
+<div class="page-break"></div>
+<h2>03 · 安装前的 3 个概念</h2>
+
+<h3>1. 终端是什么？</h3>
+<p>
+终端就是你电脑里的一个黑底白字的窗口，它是你和电脑"直接说话"的地方。<br>
+平常你点鼠标操作，终端里你是用键盘输入命令操作。<br>
+这次安装，你需要打开终端，把命令粘贴进去，按回车就行。
+</p>
+
+<table>
+  <tr><th>系统</th><th>怎么打开终端</th></tr>
+  <tr><td>Mac</td><td>点右上角 🔍 搜索「终端」，打开</td></tr>
+  <tr><td>Linux</td><td>打开系统自带的「终端」</td></tr>
+  <tr><td>Windows</td><td>按 <code>⊞ + R</code>，输入 <code>powershell</code>，回车</td></tr>
+</table>
+
+<h3>2. dry-run 是什么？</h3>
+<p>
+dry-run = 预演模式。<br>
+加了 <code>--dry-run</code> 参数后，脚本只会告诉你"如果正式安装，我会做什么"，并<strong>不会真的修改你电脑的任何东西</strong>。<br>
+对小白特别友好——先看清楚流程，再决定是否正式安装。
+</p>
+
+<h3>3. API Key / 账号 / 订阅是什么？</h3>
+<p>
+AI Agent 本质上是把 AI 能力接入你的电脑。<br>
+Claude Code 需要 Claude 的账号（去 claude.ai 注册）。<br>
+Codex 需要 OpenAI 的账号（去 chatgpt.com 注册）。<br>
+OpenClaw 内置免费模型，不配置也能先跑起来。<br>
+<strong>安装脚本只负责把工具装好，不包含账号注册。</strong>
+</p>
+
+<!-- ==================== 4. 先预演 ==================== -->
+<div class="page-break"></div>
+<h2>04 · 推荐流程：先预演，再安装</h2>
+
+<p>正式安装前，建议先用 dry-run 预演一遍。它不会安装任何东西，只是告诉你脚本准备做什么。</p>
+
+<h3>macOS / Linux：预演</h3>
+<p>以 Codex 为例：</p>
+<pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash -s -- --dry-run</code></pre>
+<p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可预演其他 Agent。</p>
+
+<h3>Windows：预演</h3>
+<p>以 Codex 为例（两步）：</p>
+<pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 -OutFile install-codex.ps1
+.\install-codex.ps1 -DryRun</code></pre>
+<p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可。</p>
+
+<div class="tip">
+  <strong>dry-run 输出长什么样？</strong><br>
+  你会看到以 <code>[DRY-RUN] 将执行:</code> 开头的一行行文字，告诉你脚本会检查什么、安装什么。最后会显示"预览完成 — 以上步骤未实际执行"。
+</div>
+
+<!-- ==================== 5. macOS/Linux 命令 ==================== -->
+<div class="page-break"></div>
+<h2>05 · macOS / Linux 安装命令</h2>
+
+<p>打开终端，复制你选的 Agent 对应的命令，回车。</p>
+
+<div class="agent-block">
+  <h3 class="agent-name-cc">Claude Code</h3>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.sh | bash</code></pre>
+</div>
+
+<div class="agent-block">
+  <h3 class="agent-name-cx">Codex</h3>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.sh | bash</code></pre>
+</div>
+
+<div class="agent-block">
+  <h3 class="agent-name-oc">OpenClaw</h3>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.sh | bash</code></pre>
+</div>
+
+<div class="tip">
+  <strong>想跳过确认？</strong>在命令最前面加 <code>AGENT_INSTALL_YES=1 </code>（注意空格），例如：<br>
+  <code>AGENT_INSTALL_YES=1 curl -fsSL https://... | bash</code>
+</div>
+
+<!-- ==================== 6. Windows 命令 ==================== -->
+<div class="page-break"></div>
+<h2>06 · Windows PowerShell 安装命令</h2>
+
+<p>按 <code>⊞ + R</code>，输入 <code>powershell</code>，回车。粘贴你选的 Agent 对应的命令。</p>
+
+<div class="agent-block">
+  <h3 class="agent-name-cc">Claude Code</h3>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-claude-code.ps1 | iex</code></pre>
+</div>
+
+<div class="agent-block">
+  <h3 class="agent-name-cx">Codex</h3>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-codex.ps1 | iex</code></pre>
+</div>
+
+<div class="agent-block">
+  <h3 class="agent-name-oc">OpenClaw</h3>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.4/scripts/install-openclaw.ps1 | iex</code></pre>
+</div>
+
+<div class="tip">
+  <strong>想跳过确认？</strong>在粘贴安装命令之前，先输入：<br>
+  <code>$env:AGENT_INSTALL_YES = "1"</code> 并回车，然后再粘贴安装命令。
+</div>
+
+<!-- ==================== 7. 正式安装流程 ==================== -->
+<div class="page-break"></div>
+<h2>07 · 正式安装流程</h2>
+
+<p>整个安装只需要三步：</p>
+
+<p><span class="step">1</span> <strong>复制对应命令</strong><br>
+从第 05 节（macOS/Linux）或第 06 节（Windows）中找到你要装的 Agent，选中整行命令，复制。</p>
+
+<p><span class="step">2</span> <strong>看到中文提示后确认</strong><br>
+粘贴命令到终端，回车。脚本会自动检测你的系统、检查环境、询问你是否继续。<br>
+看到 <code>[?]</code> 提示时，直接回车就是确认。</p>
+
+<p><span class="step">3</span> <strong>等待安装完成</strong><br>
+脚本会自动完成剩余步骤。你不需要做任何其他操作。<br>
+最后看到 <code>✅ 安装验证通过</code> 就完成了。</p>
+
+<div class="warn">
+  <strong>安装过程中可能会问你是否安装 Node.js</strong><br>
+  Codex 和 OpenClaw 需要 Node.js。如果脚本提示需要安装，按回车确认即可，脚本会自动处理。<br>
+  Claude Code 自带运行时，不需要额外安装 Node.js。
+</div>
+
+<!-- ==================== 8. 启动 ==================== -->
+<div class="page-break"></div>
+<h2>08 · 安装完成后怎么启动</h2>
+
+<p>安装完成后，在终端或 PowerShell 中输入对应命令启动：</p>
+
+<table>
+  <tr><th>安装了哪个</th><th>启动命令</th><th>会发生什么</th></tr>
+  <tr>
+    <td><strong class="agent-name-cc">Claude Code</strong></td>
+    <td><code>claude</code></td>
+    <td>浏览器弹出 Claude 登录页，登录后回到终端开始对话</td>
+  </tr>
+  <tr>
+    <td><strong class="agent-name-cx">Codex</strong></td>
+    <td><code>codex</code></td>
+    <td>浏览器弹出 ChatGPT 登录页，登录后回到终端开始对话</td>
+  </tr>
+  <tr>
+    <td><strong class="agent-name-oc">OpenClaw</strong></td>
+    <td><code>openclaw</code></td>
+    <td>直接在终端进入交互式对话（或 <code>openclaw dashboard</code> 打开 Web 控制台）</td>
+  </tr>
+</table>
+
+<div class="tip">
+  <strong>找不到命令？</strong><br>
+  关掉终端窗口重新打开再试。这是因为终端需要刷新一下"环境路径"。
+</div>
+
+<!-- ==================== 9. 成功标准 ==================== -->
+<div class="page-break"></div>
+<h2>09 · 安装成功的判断标准</h2>
+
+<p>装好了是以下三种情况中的任意一种：</p>
+
+<ol>
+  <li><strong>终端显示</strong> <code>✅ 安装验证通过</code> 或类似成功提示</li>
+  <li><strong>输入启动命令有响应</strong>：输入 <code>claude</code>、<code>codex</code> 或 <code>openclaw</code> 后，终端不是显示"找不到命令"</li>
+  <li><strong>进入了登录或对话界面</strong>：浏览器弹出登录页，或终端直接进入交互模式</li>
+</ol>
+
+<p>这三条中满足任意一条，就说明安装成功了。</p>
+
+<p>如果没有——回到第 04 节，先用 dry-run 预演一遍，看看是哪一步出了问题。也可以跳到第 11 节用反馈模板求助。</p>
+
+<!-- ==================== 10. FAQ ==================== -->
+<div class="page-break"></div>
+<h2>10 · 常见问题 FAQ</h2>
+
+<p class="faq-q">Q1：我需要下载 GitHub 仓库吗？</p>
+<p class="faq-a">不需要。你只需要复制这一条命令，脚本会从云端自动加载。</p>
+
+<p class="faq-q">Q2：我需要懂编程吗？</p>
+<p class="faq-a">不需要。照着命令复制粘贴，看到提示按确认就可以。</p>
+
+<p class="faq-q">Q3：为什么每次只装一个 Agent？</p>
+<p class="faq-a">更清楚、更稳定。出问题也更容易定位是哪一个。想装多个 Agent 就重复操作，互不影响。</p>
+
+<p class="faq-q">Q4：我可以重复运行脚本吗？</p>
+<p class="faq-a">可以。脚本会检查是否已经安装过了，不会重复安装。想升级到最新版，重新运行一次就行。</p>
+
+<p class="faq-q">Q5：安装后还需要账号吗？</p>
+<p class="faq-a">需要。安装脚本只负责把 Claude Code、Codex 或 OpenClaw 装进你的电脑。实际使用时：Claude Code 需要 Claude 账号；Codex 需要 OpenAI/ChatGPT 账号；OpenClaw 内置免费模型，可以先跑起来。</p>
+
+<p class="faq-q">Q6：国内网络能不能用？</p>
+<p class="faq-a">安装脚本通过 jsDelivr CDN 分发，对国内用户更友好。具体 Agent 的登录和模型访问取决于对应服务本身的网络情况。</p>
+
+<p class="faq-q">Q7：失败了怎么办？</p>
+<p class="faq-a">先运行 dry-run 预演（见第 04 节），把报错截图。然后用第 11 节的反馈模板求助。</p>
+
+<p class="faq-q">Q8：我该先装哪一个？</p>
+<p class="faq-a">没有对错之分。想获得最稳定的体验 → Claude Code。你是 ChatGPT 深度用户 → Codex。想玩开源、尝试不同模型 → OpenClaw。</p>
+
+<!-- ==================== 11. 反馈模板 ==================== -->
+<div class="page-break"></div>
+<h2>11 · 报错反馈模板</h2>
+
+<p>如果安装遇到问题，请复制以下模板，填写后发给帮你排查的人：</p>
+
+<pre><code>我的系统：（macOS / Linux / Windows）
+我安装的 Agent：（Claude Code / Codex / OpenClaw）
+我运行的命令：
+是否使用了 dry-run：
+终端最后 20 行内容：
+（粘贴到这里）
+报错截图：
+（附上截图）
+我想实现的目标：（简单描述）</code></pre>
+
+<div class="tip">
+  <strong>小建议</strong><br>
+  截图时尽量截完整终端窗口，尤其是红色的报错行。报错信息本身就能帮助快速定位问题。
+</div>
+
+<!-- ==================== 12. 进阶 ==================== -->
+<div class="page-break"></div>
+<h2>12 · 装好以后能做什么</h2>
+
+<p>AI Agent 是一个通用工具。装好之后，它可以帮你：</p>
+
+<ul>
+  <li>写公众号文章、小红书笔记</li>
+  <li>整理资料、做笔记、写总结</li>
+  <li>生成项目计划、待办清单</li>
+  <li>辅助写代码、调试程序</li>
+  <li>辅助科研写作、文献整理</li>
+  <li>搭建个人工作流，自动化重复任务</li>
+</ul>
+
+<p>更重要的是——配上<strong> Skill 配置包</strong>，AI Agent 会变成某个领域的专家：</p>
+
+<table>
+  <tr><th>Skill</th><th>能做什么</th></tr>
+  <tr><td>AI 做 PPT</td><td>一句话生成整份 PPT，5 分钟上台能讲</td></tr>
+  <tr><td>AI 做 Excel</td><td>自动分析数据、生成图表、做周报</td></tr>
+  <tr><td>AI 写作</td><td>商业提案、年度总结、技术文档</td></tr>
+</table>
+
+<p>装好是第一步。接入工作流，才是 AI Agent 真正的价值。</p>
+
+<!-- ==================== 结尾 ==================== -->
+<div class="end-page">
+  <h2>你已经完成了第一步</h2>
+
+  <p>复制一条命令 → 跟着提示确认 → 安装完成。</p>
+  <p>AI Agent 已经装进你的电脑了。</p>
+  <p>现在打开终端，输入启动命令，开始和 AI 对话吧。</p>
+
+  <p style="margin-top:40px; font-size:12px; color:#aaa;">
+    —— AI Agent 小白安装引导手册 v3.0.4 ——
+  </p>
+</div>
+
+</body>
+</html>

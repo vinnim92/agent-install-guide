@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag to test (e.g. v3.0.3)'
+        description: 'Version tag to test (e.g. v3.0.4)'
         required: true
-        default: 'v3.0.3'
+        default: 'v3.0.4'
 
 jobs:
   cdn-smoke:

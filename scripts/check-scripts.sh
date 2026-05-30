@@ -172,12 +172,13 @@ check_verify_cmd() {
         fi
     fi
 }
-check_verify_cmd "${SCRIPT_DIR}/install-claude-code.sh"    "claude"   "command -v claude\|command_exists claude"
-check_verify_cmd "${SCRIPT_DIR}/install-codex.sh"          "codex"    "command -v codex\|command_exists codex"
-check_verify_cmd "${SCRIPT_DIR}/install-openclaw.sh"       "openclaw" "command -v openclaw\|command_exists openclaw"
-check_verify_cmd "${SCRIPT_DIR}/install-claude-code.ps1"   "claude"   "Get-Command claude"
-check_verify_cmd "${SCRIPT_DIR}/install-codex.ps1"         "codex"    "Get-Command codex"
-check_verify_cmd "${SCRIPT_DIR}/install-openclaw.ps1"      "openclaw" "Get-Command openclaw"
+# 接受两种形式：硬编码命令名 或 变量形式（AGENT_BIN="xxx" + command_exists）
+check_verify_cmd "${SCRIPT_DIR}/install-claude-code.sh"    "claude"   "command -v claude\|command_exists claude\|command_exists.*AGENT_BIN"
+check_verify_cmd "${SCRIPT_DIR}/install-codex.sh"          "codex"    "command -v codex\|command_exists codex\|command_exists.*AGENT_BIN"
+check_verify_cmd "${SCRIPT_DIR}/install-openclaw.sh"       "openclaw" "command -v openclaw\|command_exists openclaw\|command_exists.*AGENT_BIN"
+check_verify_cmd "${SCRIPT_DIR}/install-claude-code.ps1"   "claude"   "Get-Command claude\|Get-Command \$AgentBin"
+check_verify_cmd "${SCRIPT_DIR}/install-codex.ps1"         "codex"    "Get-Command codex\|Get-Command \$AgentBin"
+check_verify_cmd "${SCRIPT_DIR}/install-openclaw.ps1"      "openclaw" "Get-Command openclaw\|Get-Command \$AgentBin"
 
 # ---- --help 支持 ----
 echo ""
@@ -293,10 +294,10 @@ fi
 
 # ---- 禁止 @main 未版本化 URL ----
 echo ""
-echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.3 等版本标签） ---"
+echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.4 等版本标签） ---"
 AT_MAIN_HITS=$(grep -rn '@main' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
 if [ -n "$AT_MAIN_HITS" ]; then
-    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.3 等版本标签）"
+    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.4 等版本标签）"
     echo "$AT_MAIN_HITS" | while read line; do echo "       $line"; done
 else
     check_pass "未发现 @main URL（已版本化）"
@@ -331,6 +332,90 @@ if [ -n "$DANGER_HITS" ]; then
 else
     check_pass "未发现危险命令"
 fi
+
+# ---- 扩展检查: 交付文档禁止 @main ----
+echo ""
+echo "--- 检查: README/docs/xianyu-materials/pdf 中禁止 @main URL ---"
+DOCS_AT_MAIN=$(grep -rn '@main' README.md docs/ xianyu-materials/ pdf/ 2>/dev/null || true)
+if [ -n "$DOCS_AT_MAIN" ]; then
+    check_fail "交付文档中存在 @main 未版本化 URL"
+    echo "$DOCS_AT_MAIN" | while read line; do echo "       $line"; done
+else
+    check_pass "交付文档中未发现 @main URL"
+fi
+
+# ---- 扩展检查: 交付文档禁止旧路径 ----
+echo ""
+echo "--- 检查: 交付文档禁止旧路径 (scripts/install.sh / mac-linux / windows) ---"
+OLD_PATH_HITS=$(grep -rn 'scripts/install\.sh\|scripts/install\.ps1\|scripts/mac-linux\|scripts/windows' README.md docs/ xianyu-materials/ pdf/ 2>/dev/null || true)
+if [ -n "$OLD_PATH_HITS" ]; then
+    check_fail "交付文档中存在旧路径引用"
+    echo "$OLD_PATH_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "交付文档中未发现旧路径引用"
+fi
+
+# ---- 扩展检查: 禁止"发给我" ----
+echo ""
+echo "--- 检查: 交付文档禁止"发给我" ---"
+SEND_ME=$(grep -rn '发给我' README.md docs/ xianyu-materials/ pdf/ 2>/dev/null || true)
+if [ -n "$SEND_ME" ]; then
+    check_fail "交付文档中存在"发给我"（应使用故障排查页面链接）"
+    echo "$SEND_ME" | while read line; do echo "       $line"; done
+else
+    check_pass "交付文档中未发现"发给我""
+fi
+
+# ---- 扩展检查: 禁止三合一语义在交付文档 ----
+echo ""
+echo "--- 检查: 交付文档禁止三合一/聚合选择语义 ---"
+AGG_HITS=$(grep -rn '三合一\|一次安装.*三\|同时安装.*三\|全部.*安装.*[三3]' README.md docs/ xianyu-materials/ pdf/ 2>/dev/null | grep -v '不建议\|不推荐\|不要\|不建议.*一次安装' || true)
+if [ -n "$AGG_HITS" ]; then
+    check_fail "交付文档中存在三合一/聚合选择语义"
+    echo "$AGG_HITS" | while read line; do echo "       $line"; done
+else
+    check_pass "交付文档中未发现三合一/聚合选择语义"
+fi
+
+# ---- 扩展检查: 6 个脚本包含"正在检查你的电脑环境" ----
+echo ""
+echo "--- 检查: 安装脚本包含预检提示 ---"
+for f in \
+    "${SCRIPT_DIR}/install-claude-code.sh" \
+    "${SCRIPT_DIR}/install-codex.sh" \
+    "${SCRIPT_DIR}/install-openclaw.sh" \
+    "${SCRIPT_DIR}/install-claude-code.ps1" \
+    "${SCRIPT_DIR}/install-codex.ps1" \
+    "${SCRIPT_DIR}/install-openclaw.ps1"; do
+    fname=$(basename "$f")
+    if [ -f "$f" ]; then
+        if grep -q '正在检查你的电脑环境' "$f" 2>/dev/null; then
+            check_pass "${fname} 包含预检提示"
+        else
+            check_fail "${fname} 缺少\"正在检查你的电脑环境\""
+        fi
+    fi
+done
+
+# ---- 扩展检查: dry-run 定位为排查/预览 ----
+echo ""
+echo "--- 检查: dry-run 描述为排查/预览（非主流程） ---"
+for f in \
+    "${SCRIPT_DIR}/install-claude-code.sh" \
+    "${SCRIPT_DIR}/install-codex.sh" \
+    "${SCRIPT_DIR}/install-openclaw.sh" \
+    "${SCRIPT_DIR}/install-claude-code.ps1" \
+    "${SCRIPT_DIR}/install-codex.ps1" \
+    "${SCRIPT_DIR}/install-openclaw.ps1"; do
+    fname=$(basename "$f")
+    if [ -f "$f" ]; then
+        if grep -q '排查.*预览\|预览.*排查\|只看不装\|排查/预览' "$f" 2>/dev/null; then
+            check_pass "${fname} dry-run 定位为排查/预览"
+        else
+            check_fail "${fname} dry-run 缺少\"排查/预览\"描述"
+        fi
+    fi
+done
 
 # ---- 结果汇总 ----
 echo ""
