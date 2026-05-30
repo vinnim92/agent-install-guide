@@ -1,94 +1,213 @@
-# AI 编程助手 · 零基础安装指南
+# AI Agent 小白一键安装包
 
-> 会复制粘贴就会装。三款最火 AI 编程助手，一行命令全部搞定。
-
-[![Version](https://img.shields.io/badge/version-v3.0-blue)](https://github.com/vinnim92/agent-install-guide/releases)
+不会配环境？复制一行命令，把 Claude Code / Codex / OpenClaw 装进你的电脑。
 
 ---
 
-## 这是什么？
+## 你只需要复制粘贴
 
-一份给**完全不会电脑的人**准备的 AI 编程助手安装包。
+你不需要研究英文文档。
+你不需要手动配置 Node、npm、PATH。
+你不需要在各种教程之间来回跳转。
 
-你不需要懂命令行、不需要知道什么是 Node.js、不需要配置任何东西。你只需要：
-
-1. 复制一行命令
-2. 粘贴到黑窗口
-3. 按回车
-4. 等着完成
-
-**包含三款最火的 AI 编程助手**：
-
-| 助手 | 适合谁 | 安装指南 |
-|------|--------|---------|
-| 🧠 **Claude Code** | 追求最好体验的用户 | [→ 1 页安装指南](docs/agents/claude-code.md) |
-| ⚡ **Codex** | ChatGPT Plus 会员 | [→ 1 页安装指南](docs/agents/codex.md) |
-| 🦞 **OpenClaw** | 想用免费模型的用户 | [→ 1 页安装指南](docs/agents/openclaw.md) |
-
-> 🆕 v3.0：每个 Agent 有独立的 1 页安装指南，选你需要的看。装好之后还推荐了能立刻用的 Skill。
+你只需要选择自己的系统和想安装的 Agent，复制对应命令，跟着提示完成安装。
 
 ---
 
-## 一键安装（三个一起装）
+## 适合谁
 
-### Mac 用户
+- 想用 AI 编程助手，但卡在安装环境的人
+- 看不懂官方英文文档的人
+- 不知道 Claude Code、Codex、OpenClaw 怎么装的人
+- 不想折腾 Node、npm、终端配置的人
+- 想快速体验 AI Agent 的小白用户
 
-打开"终端"（点右上角🔍搜索"终端"），粘贴下面这行，回车：
+---
+
+## 这个工具能帮你做什么
+
+- 自动检测你的系统环境
+- 自动检查基础依赖
+- 自动安装对应 Agent
+- 自动处理常见 npm 权限问题
+- 自动给出启动命令
+- 支持 dry-run 预演，先看它会做什么再执行
+- 每个 Agent 独立安装，互不干扰
+
+---
+
+## 选择你要安装的 Agent
+
+**Claude Code**
+适合想要稳定、成熟、强代码能力体验的用户。由 Anthropic 出品，是目前综合能力最强的 AI 编程助手之一。
+
+**Codex**
+适合 ChatGPT 用户，尤其是想把 OpenAI 能力接入本地开发流程的人。由 OpenAI 出品，与 ChatGPT 生态深度打通。
+
+**OpenClaw**
+适合想尝试开源 Agent 工作流、希望有更多可玩性的用户。由微软开源，内置免费模型，支持 75+ 模型提供商。
+
+---
+
+## 快速开始
+
+### macOS / Linux
+
+打开终端，复制你要装的 Agent 对应的命令，回车：
+
+**Claude Code：**
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.sh | bash
 ```
 
-### Windows 用户
+**Codex：**
 
-按 `⊞ + R`，输入 `powershell`，粘贴下面这行，回车：
+```bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash
+```
+
+**OpenClaw：**
+
+```bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.sh | bash
+```
+
+### Windows
+
+按 `⊞ + R`，输入 `powershell`，回车。粘贴你要装的 Agent 对应的命令：
+
+**Claude Code：**
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-claude-code.ps1 | iex
 ```
 
-脚本会自动处理一切，你等着就行。5-10 分钟完成。
+**Codex：**
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+```
+
+**OpenClaw：**
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-openclaw.ps1 | iex
+```
 
 ---
 
-## 只装其中一个？
+## 小白推荐流程
 
-每个 Agent 有独立的 1 页安装指南（含 Skill 推荐）：
+**第一步：** 先选 Agent
+**第二步：** 复制对应命令
+**第三步：** 按提示确认，等待安装完成
 
-- [🧠 安装 Claude Code](docs/agents/claude-code.md) — 最聪明，装完推荐 PPT/Excel Skill
-- [⚡ 安装 Codex](docs/agents/codex.md) — ChatGPT 用户首选
-- [🦞 安装 OpenClaw](docs/agents/openclaw.md) — 有免费模型，不花钱
+安装完成后，在终端或 PowerShell 输入对应命令启动：
 
----
-
-## 安装完成后
-
-| AI 助手 | 启动命令 | 说明 |
-|---------|---------|------|
-| Claude Code | 终端输入 `claude` | 第一次会弹浏览器登录 |
-| Codex | 终端输入 `codex` | 第一次会弹浏览器登录 |
-| OpenClaw | 终端输入 `openclaw gateway start` | 浏览器访问 localhost:18789 |
+| Agent | 启动命令 |
+|-------|---------|
+| Claude Code | `claude` |
+| Codex | `codex` |
+| OpenClaw | `openclaw` |
 
 ---
 
-## 装好之后能干什么？
+## 不敢直接安装？先预演
 
-AI 编程助手本身是"通用工具"。配上 **Skill 配置包**，它会变成某个领域的专家。闲鱼搜 **「AI Skill 工厂」**，看看已经有哪些 Skill：
+这个功能让你先看一遍安装脚本要做什么，不会改动你的电脑任何东西。
 
-- 🎨 **AI 一键做 PPT** — 说话就能出专业演示稿
-- 📊 **AI 自动 Excel** — 报表周报一句话搞定
-- 🛠 更多持续更新中
+### macOS / Linux
+
+在命令后面加 `--dry-run`：
+
+```bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh | bash -s -- --dry-run
+```
+
+### Windows
+
+先将脚本下载到本地，再以 dry-run 模式执行：
+
+```powershell
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 -OutFile install-codex.ps1
+.\install-codex.ps1 -DryRun
+```
+
+把 `install-codex` 换成你想要的 Agent 名即可。
 
 ---
 
-## 更新方法
+## 想更省事？开启自动确认模式
 
-再运行一次安装命令即可更新到最新版。
+默认情况下，涉及系统环境修改的步骤会询问你确认。如果你不想一次次手动确认，可以把这行加到命令前面：
+
+### macOS / Linux
+
+```bash
+AGENT_INSTALL_YES=1 bash -c "$(curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.sh)"
+```
+
+### Windows
+
+打开 PowerShell，先设置环境变量，再运行脚本：
+
+```powershell
+$env:AGENT_INSTALL_YES = "1"
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@main/scripts/install-codex.ps1 | iex
+```
 
 ---
 
-## 有问题？
+## 为什么这个安装包更适合小白
 
-- [常见问题排查](docs/troubleshooting.md) — 7 个常见问题手把手解决
-- 截图发给卖家（闲鱼 24 小时内回复）
-- 或提 [GitHub Issue](https://github.com/vinnim92/agent-install-guide/issues)
+- 每个 Agent 独立脚本，不会装一堆不需要的东西
+- 安装前有提示，安装后有启动命令，不会装完了不知道怎么用
+- 脚本自包含，只需要复制一条命令，不需要下载整个仓库
+- 通过 jsDelivr CDN 分发，国内访问更顺畅
+- 支持 dry-run，先看流程再执行
+- 出错时给中文提示，不再对着英文报错发懵
+
+---
+
+## 常见问题
+
+**Q：我需要先安装 GitHub 吗？**
+A：不需要。复制命令即可，不需要任何准备工作。
+
+**Q：我需要先下载这个仓库吗？**
+A：不需要。脚本会从云端加载，你只复制那一条命令就够了。
+
+**Q：我可以一次安装三个 Agent 吗？**
+A：不建议。每个 Agent 设计为独立安装，分开装更清楚、更稳定。
+
+**Q：安装后怎么启动？**
+A：在终端输入 `claude`、`codex` 或 `openclaw` 即可。安装完成的最后一行也会提示你。
+
+**Q：我需要账号吗？**
+A：Claude Code、Codex 和 OpenClaw 的实际使用需要你准备对应账号、订阅或 API Key。安装包负责安装和引导，不负责账号注册。
+
+**Q：国内网络能用吗？**
+A：安装脚本通过 jsDelivr CDN 分发，对国内用户友好。具体 Agent 的登录和模型访问取决于对应服务本身的网络情况。
+
+**Q：安装失败怎么办？**
+A：先运行 dry-run 查看预演提示；也可以截图报错信息进行排查。
+
+**Q：可以重复运行吗？**
+A：可以。脚本会检测已安装的内容，不会重复安装。也可以用来更新到最新版。
+
+---
+
+## 安全说明
+
+- 每个脚本只安装一个 Agent，不会多装其他东西
+- 脚本支持 dry-run 预演，安装前可以先看清楚每一步
+- 涉及环境修改（如安装 Node.js、修改 PATH）时会提示你确认
+- 所有脚本在 GitHub 开源，代码随时可查看
+- 可以通过 `AGENT_INSTALL_YES=1` 跳过确认，适合信任脚本后批量部署
+
+---
+
+选一个你想体验的 AI Agent，复制命令，开始你的第一步。
+
+别再卡在安装环境上，把时间留给真正使用 AI。
