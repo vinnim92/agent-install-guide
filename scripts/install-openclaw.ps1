@@ -3,10 +3,10 @@
 #
 # 支持系统: Windows 10/11
 # 需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）
-# OpenClaw 内置免费模型，无需 API Key 也能使用
+# 安装阶段不需要 API Key；首次配置或正式使用时需要模型服务的 API Key
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.ps1 | iex
 #   .\install-openclaw.ps1 -Help
 #   .\install-openclaw.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-openclaw.ps1
@@ -32,7 +32,7 @@ if ($Help) {
     Write-Host "安装: OpenClaw（微软开源）"
     Write-Host "系统: Windows 10/11"
     Write-Host "需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）"
-    Write-Host "      内置免费模型，无需 API Key"
+    Write-Host "      安装阶段不需要 API Key；首次配置时需要模型服务的 API Key"
     Write-Host ""
     Write-Host "用法:"
     Write-Host "  .\install-openclaw.ps1           正常安装（自动检查环境）"
@@ -42,13 +42,14 @@ if ($Help) {
     Write-Host "跳过确认:"
     Write-Host '  $env:AGENT_INSTALL_YES="1"; .\install-openclaw.ps1'
     Write-Host ""
-    Write-Host "安装后启动:"
-    Write-Host "  openclaw           进入交互式对话"
-    Write-Host "  openclaw dashboard 打开 Web 控制台"
+    Write-Host "安装后配置:"
+    Write-Host "  openclaw onboard --auth-choice deepseek-api-key"
+    Write-Host "  openclaw models list --provider deepseek"
+    Write-Host "  openclaw dashboard"
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -138,7 +139,7 @@ function Start-PreCheck {
 
     Write-Host "  接下来将安装: $AgentName" -ForegroundColor White
     Write-Host "  可能需要: 自动安装 Node.js（如果需要）" -ForegroundColor White
-    Write-Host "  需要准备: 无需 API Key（内置免费模型）" -ForegroundColor White
+    Write-Host "  需要准备: 安装阶段不需要 API Key；首次配置时可能需要模型服务的 API Key" -ForegroundColor White
     Write-Host ""
 
     if ($DryRun) {
@@ -148,7 +149,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
         exit 0
     }
 }
@@ -235,8 +236,29 @@ function Start-Install {
         $hasNpm = Get-Command npm -ErrorAction SilentlyContinue
         if ($hasNpm) {
             Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
-            npm install -g openclaw@latest 2>$null
-            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+
+            # 测试包是否存在
+            $pkgVer = npm view openclaw version --registry=https://registry.npmjs.org/ 2>$null
+            if ($pkgVer) {
+                Write-Host "    openclaw 包存在，最新版本: $pkgVer" -ForegroundColor Green
+            }
+
+            npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>$null
+            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
+                $installed = $true
+            } else {
+                # npm cache clean and retry
+                npm cache clean --force 2>$null
+                npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>$null
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            }
+
+            # fallback: npmmirror
+            if (-not $installed) {
+                Write-Host "  [!] 官方源安装失败，尝试国内镜像..." -ForegroundColor Yellow
+                npm install -g openclaw@latest --registry=https://registry.npmmirror.com --no-audit --no-fund 2>$null
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            }
         }
     }
 
@@ -248,9 +270,63 @@ function Start-Install {
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
         Write-Host "  2. 检查 Node.js: node -v (需要 >= 22.19)" -ForegroundColor Yellow
-        Write-Host "  3. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  3. 如果报 EACCES / permission denied，说明 npm 缓存权限异常" -ForegroundColor Yellow
+        Write-Host "     查看故障排查页面的 EACCES 修复指引" -ForegroundColor Yellow
+        Write-Host "  4. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
+}
+
+# ---- OpenClaw DeepSeek onboarding ----
+function Start-OpenClawConfig {
+    if ($DryRun) {
+        Write-Host "    [预演] 将执行: 提示 OpenClaw DeepSeek API Key 配置引导" -ForegroundColor Yellow
+        return
+    }
+
+    Write-Host ""
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "  OpenClaw 首次配置（推荐）" -ForegroundColor Cyan
+    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  OpenClaw 支持 75+ 模型提供商。" -ForegroundColor White
+    Write-Host "  安装阶段不需要 API Key；首次配置或正式使用时需要。" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  对于国内用户，推荐使用 DeepSeek API Key：" -ForegroundColor White
+    Write-Host "    注册方便、价格便宜" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  获取方式: 浏览器访问 platform.deepseek.com" -ForegroundColor Cyan
+    Write-Host "           注册 -> API Keys -> 创建 Key（以 sk- 开头）" -ForegroundColor Cyan
+    Write-Host ""
+
+    if (-not (Confirm-Action "是否现在配置 OpenClaw？")) {
+        Write-Host ""
+        Write-Host "  已跳过配置。稍后可以手动运行:" -ForegroundColor Yellow
+        Write-Host "    openclaw onboard --auth-choice deepseek-api-key" -ForegroundColor Yellow
+        Write-Host ""
+        return
+    }
+
+    Write-Host ""
+    Write-Host "  运行 OpenClaw onboarding（DeepSeek API Key）..." -ForegroundColor Cyan
+    Write-Host "  （按终端提示输入你的 DeepSeek API Key）" -ForegroundColor Cyan
+    Write-Host ""
+
+    try {
+        & $AgentBin onboard --auth-choice deepseek-api-key 2>$null
+        Write-Host "  [OK] OpenClaw 配置完成" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "  验证:" -ForegroundColor White
+        Write-Host "    openclaw models list --provider deepseek" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "  启动控制面板:" -ForegroundColor White
+        Write-Host "    openclaw dashboard" -ForegroundColor Cyan
+    } catch {
+        Write-Host "  [!] onboard 未完成，你可以稍后手动运行:" -ForegroundColor Yellow
+        Write-Host "    openclaw onboard --auth-choice deepseek-api-key" -ForegroundColor Yellow
+    }
+
+    Write-Host ""
 }
 
 # ---- 验证 ----
@@ -266,13 +342,16 @@ function Start-Verify {
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
         Write-Host "  [OK] $AgentName 安装验证通过" -ForegroundColor Green
         Write-Host ""
-        Write-Host "  第一次启动:" -ForegroundColor Green
-        Write-Host "    PowerShell 中输入 openclaw 进入交互式对话" -ForegroundColor Green
-        Write-Host "    或输入 openclaw dashboard 打开 Web 控制台" -ForegroundColor Green
+        Write-Host "  首次配置（推荐 DeepSeek API Key）:" -ForegroundColor Green
+        Write-Host "    openclaw onboard --auth-choice deepseek-api-key" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "  启动:" -ForegroundColor Green
+        Write-Host "    openclaw           进入交互式对话" -ForegroundColor Green
+        Write-Host "    openclaw dashboard 打开 Web 控制台" -ForegroundColor Green
     } else {
         Write-Host "  [FAIL] 找不到 openclaw 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -290,6 +369,7 @@ if ($DryRun) {
 
 Start-PreCheck
 Start-Install
+Start-OpenClawConfig
 Start-Verify
 
 if ($DryRun) {

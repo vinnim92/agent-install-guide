@@ -26,7 +26,7 @@ Claude Code 适合想要稳定、成熟、强代码能力体验的用户。本�
 打开终端（Mac 右上角 🔍 搜索「终端」），粘贴下面这行，回车：
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.sh | bash
 ```
 
 屏幕上会滚动文字——这是脚本在自动工作。看到 `✅` 就是装好了。
@@ -40,7 +40,7 @@ curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scrip
 按 `⊞ + R`，输入 `powershell`，回车。粘贴下面这行，回车：
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.ps1 | iex
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.ps1 | iex
 ```
 
 ---
@@ -52,13 +52,13 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/script
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.sh | bash -s -- --dry-run
+curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.sh | bash -s -- --dry-run
 ```
 
 ### Windows
 
 ```powershell
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.ps1 -OutFile install-claude-code.ps1
+iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.ps1 -OutFile install-claude-code.ps1
 .\install-claude-code.ps1 -DryRun
 ```
 

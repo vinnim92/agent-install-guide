@@ -58,8 +58,8 @@
    需要 ChatGPT Plus/Pro/Team 账号或 OpenAI API Key
 
 🦞 OpenClaw
-   微软开源，内置免费模型
-   不想花钱就想体验 AI Agent？选这个
+   微软开源，推荐 DeepSeek API Key
+   想体验开源 Agent 工作流？选这个
    支持 75+ 模型提供商，可玩性高
 
 ━━━━━━━━━━━━━━━━━━

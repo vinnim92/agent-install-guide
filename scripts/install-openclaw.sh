@@ -3,10 +3,10 @@
 # OpenClaw 安装脚本
 # 支持系统: macOS / Linux
 # 需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）
-# OpenClaw 内置免费模型，无需 API Key 也能使用
+# 安装阶段不需要 API Key；首次配置或正式使用时需要模型服务的 API Key
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh | bash
 #   bash install-openclaw.sh --help
 #   bash install-openclaw.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-openclaw.sh
@@ -78,7 +78,7 @@ show_help() {
     echo "安装: OpenClaw（微软开源）"
     echo "系统: macOS / Linux"
     echo "需要: Node.js >= 22.19（推荐 24+，脚本会自动安装）"
-    echo "      内置免费模型，无需 API Key 也能使用"
+    echo "      安装阶段不需要 API Key；首次配置时需要模型服务的 API Key"
     echo ""
     echo "用法:"
     echo "  bash install-openclaw.sh           正常安装（自动检查环境）"
@@ -88,20 +88,21 @@ show_help() {
     echo "跳过确认:"
     echo "  AGENT_INSTALL_YES=1 bash install-openclaw.sh"
     echo ""
-    echo "如果你使用 curl | bash，推荐命令："
-    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh\" | AGENT_INSTALL_YES=1 bash"
+    echo "推荐一行安装命令:"
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh\" | AGENT_INSTALL_YES=1 bash"
     echo ""
-    echo "如果你想手动确认，请先下载脚本再运行："
-    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh\" -o install-openclaw.sh"
+    echo "如需手动确认，请先下载脚本再运行:"
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh\" -o install-openclaw.sh"
     echo "  bash install-openclaw.sh"
     echo ""
-    echo "安装后启动:"
-    echo "  openclaw           进入交互式对话"
-    echo "  openclaw dashboard 打开 Web 控制台"
+    echo "安装后配置:"
+    echo "  openclaw onboard --auth-choice deepseek-api-key"
+    echo "  openclaw models list --provider deepseek"
+    echo "  openclaw dashboard"
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
     echo ""
     exit 0
 }
@@ -207,7 +208,7 @@ run_precheck() {
     # 8. 总结
     echo -e "  ${BOLD}接下来将安装:${NC} ${AGENT_NAME}"
     echo -e "  ${BOLD}可能需要:${NC} 自动安装 Node.js（如果需要）"
-    echo -e "  ${BOLD}需要准备:${NC} 无需 API Key（内置免费模型）"
+    echo -e "  ${BOLD}需要准备:${NC} 安装阶段不需要 API Key；首次配置时可能需要模型服务的 API Key"
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
@@ -217,7 +218,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
         exit 0
     fi
 }
@@ -301,6 +302,171 @@ fix_npm_permissions() {
     fi
 }
 
+# ---------- npm 缓存权限诊断 ----------
+diagnose_npm_cache_perms() {
+    local logfile="$1"
+    if [ ! -f "$logfile" ]; then return 1; fi
+
+    if grep -qE 'EACCES|permission denied|\.npm/_cacache|errno -13' "$logfile" 2>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+fix_npm_cache_perms() {
+    echo ""
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}  检测到 npm 缓存权限异常${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo "  这通常是以前使用 sudo npm 或安装器异常"
+    echo "  导致 ~/.npm 目录中部分文件不属于当前用户。"
+    echo "  这不是 OpenClaw 包不存在，也不是命令复制错误。"
+    echo ""
+    echo "  修复命令:"
+    echo "    sudo chown -R \"\$(id -u):\$(id -g)\" \"\$HOME/.npm\""
+    echo "    chmod -R u+rwX \"\$HOME/.npm\""
+    echo "    npm cache verify"
+    echo ""
+
+    local auto_fix=false
+    if [ "$SKIP_CONFIRM" = true ]; then
+        auto_fix=true
+        print_tip "AGENT_INSTALL_YES=1 已设置，将自动尝试修复"
+    elif [ -r /dev/tty ]; then
+        local yn
+        read -r -p "$(echo -e "${BLUE}[?]${NC} 是否自动修复 npm 缓存权限？ [Y/n]: ")" yn < /dev/tty
+        yn=${yn:-y}
+        case "$yn" in
+            [Yy]*|[Yy][Ee][Ss]*|是|是的|对|对的) auto_fix=true ;;
+            *) print_tip "已跳过自动修复，请手动执行上面修复命令后重试"; return 1 ;;
+        esac
+    else
+        print_tip "当前环境无法读取键盘输入，请手动执行上面修复命令后重试"
+        print_tip "或使用: AGENT_INSTALL_YES=1 bash install-openclaw.sh"
+        return 1
+    fi
+
+    if [ "$auto_fix" = true ]; then
+        echo ""
+        print_step "正在修复 npm 缓存权限..."
+        echo "  （可能需要输入你的电脑开机密码）"
+        echo ""
+
+        if sudo chown -R "$(id -u):$(id -g)" "$HOME/.npm" 2>/dev/null; then
+            print_success "已修复 ~/.npm 目录所有权"
+        else
+            print_warning "sudo chown 执行失败，请手动执行"
+            return 1
+        fi
+
+        if chmod -R u+rwX "$HOME/.npm" 2>/dev/null; then
+            print_success "已修复 ~/.npm 目录权限"
+        else
+            print_warning "chmod 执行失败"
+        fi
+
+        if npm cache verify 2>/dev/null; then
+            print_success "npm cache verify 通过"
+        else
+            print_warning "npm cache verify 失败，继续尝试安装"
+        fi
+    fi
+
+    return 0
+}
+
+# ---------- npm 安装 OpenClaw ----------
+npm_install_openclaw() {
+    local logfile
+    logfile=$(mktemp /tmp/openclaw-npm-install.XXXXXX.log)
+
+    # 步骤1: 测试包是否存在
+    print_step "测试 openclaw 包是否存在（npm view）..."
+    if npm view openclaw version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
+        local pkg_ver
+        pkg_ver=$(npm view openclaw version --registry=https://registry.npmjs.org/ 2>/dev/null)
+        print_success "openclaw 包存在，最新版本: ${pkg_ver}"
+    else
+        print_warning "无法访问 npm 官方源查询 openclaw 版本，将继续尝试安装"
+    fi
+
+    # 步骤2: 官方源安装
+    print_step "通过 npm 官方源安装 openclaw..."
+    if run_cmd "npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>\"${logfile}\""; then
+        rm -f "$logfile"
+        return 0
+    fi
+
+    # 安装失败，检查日志
+    print_error "npm 官方源安装失败"
+
+    if [ -f "$logfile" ] && [ -s "$logfile" ]; then
+        echo ""
+        print_tip "最后 30 行安装日志:"
+        echo "  ----------------------------------------"
+        tail -30 "$logfile" 2>/dev/null | while IFS= read -r line; do
+            echo "  $line"
+        done
+        echo "  ----------------------------------------"
+
+        # 检查是否是 npm 缓存权限异常
+        if diagnose_npm_cache_perms "$logfile"; then
+            rm -f "$logfile"
+            if fix_npm_cache_perms; then
+                # 权限修复后重试
+                echo ""
+                print_step "重新尝试安装 OpenClaw（npm 官方源）..."
+                local logfile2
+                logfile2=$(mktemp /tmp/openclaw-npm-retry.XXXXXX.log)
+                if run_cmd "npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>\"${logfile2}\""; then
+                    rm -f "$logfile2"
+                    print_success "npm 缓存权限已修复，OpenClaw 安装成功"
+                    return 0
+                fi
+                rm -f "$logfile2"
+                print_error "权限修复后安装仍然失败"
+
+                # 兜底方案：备份并重建 .npm
+                print_tip "权限修复后仍失败，建议重建 npm 缓存目录:"
+                echo ""
+                echo "  mv \"\$HOME/.npm\" \"\$HOME/.npm.bak.\$(date +%Y%m%d_%H%M%S)\""
+                echo "  npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund"
+                echo ""
+                return 1
+            fi
+            return 1
+        fi
+
+        # 不是权限问题，尝试 clean cache
+        print_tip "未检测到权限异常，尝试清理 npm 缓存..."
+        rm -f "$logfile"
+        npm cache clean --force 2>/dev/null || true
+        print_step "重新尝试 npm 官方源安装..."
+        if run_cmd "npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>/dev/null"; then
+            print_success "npm 缓存清理后安装成功"
+            return 0
+        fi
+    else
+        rm -f "$logfile"
+        npm cache clean --force 2>/dev/null || true
+        if run_cmd "npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>/dev/null"; then
+            print_success "npm 安装成功"
+            return 0
+        fi
+    fi
+
+    # 步骤3: npmmirror fallback
+    print_warning "npm 官方源仍失败，尝试国内镜像..."
+    if run_cmd "npm install -g openclaw@latest --registry=https://registry.npmmirror.com --no-audit --no-fund 2>/dev/null"; then
+        print_success "npmmirror 镜像安装成功"
+        return 0
+    fi
+
+    print_error "所有 npm 安装方式均失败"
+    return 1
+}
+
 # ---------- 安装 ----------
 do_install() {
     echo ""
@@ -323,23 +489,17 @@ do_install() {
     if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash 2>/dev/null"; then
         print_success "官方脚本安装成功"
     else
-        # 方法2: npm fallback
+        # 方法2: npm fallback with enhanced diagnostics
         print_warning "官方脚本不可用，使用 npm..."
         if ! command_exists npm; then
             print_error "npm 不可用"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
             exit 1
         fi
-        local registry_flag=""
-        if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-            print_tip "切换国内镜像"
-            registry_flag="--registry https://registry.npmmirror.com"
-        fi
-        if run_cmd "npm install -g ${registry_flag} openclaw@latest 2>/dev/null"; then
-            print_success "npm 安装成功"
-        else
+        if ! npm_install_openclaw; then
             print_error "npm 安装失败"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+            echo ""
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
             exit 1
         fi
     fi
@@ -351,9 +511,60 @@ do_install() {
     else
         print_error "找不到 ${AGENT_BIN} 命令"
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
         exit 1
     fi
+}
+
+# ---------- OpenClaw DeepSeek API Key onboarding ----------
+configure_openclaw() {
+    if [ "$DRY_RUN" = true ]; then
+        print_dryrun "提示 OpenClaw DeepSeek API Key 配置引导"
+        return 0
+    fi
+
+    echo ""
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${CYAN}  OpenClaw 首次配置（推荐）${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo "  OpenClaw 支持 75+ 模型提供商。"
+    echo "  安装阶段不需要 API Key；首次配置或正式使用时需要。"
+    echo ""
+    echo "  对于国内用户，推荐使用 DeepSeek API Key："
+    echo "    注册方便、价格便宜、无需翻墙"
+    echo ""
+    echo "  获取方式: 打开浏览器访问 platform.deepseek.com"
+    echo "           注册 → API Keys → 创建 Key（以 sk- 开头）"
+    echo ""
+
+    if ! confirm "是否现在配置 OpenClaw？"; then
+        echo ""
+        print_tip "已跳过配置。稍后可以手动运行:"
+        echo "  openclaw onboard --auth-choice deepseek-api-key"
+        echo ""
+        return 0
+    fi
+
+    echo ""
+    print_step "运行 OpenClaw onboarding（DeepSeek API Key）..."
+    echo "  （按终端提示输入你的 DeepSeek API Key）"
+    echo ""
+
+    if run_cmd "openclaw onboard --auth-choice deepseek-api-key"; then
+        print_success "OpenClaw 配置完成"
+        echo ""
+        echo "  验证:"
+        echo "    openclaw models list --provider deepseek"
+        echo ""
+        echo "  启动控制面板:"
+        echo "    openclaw dashboard"
+    else
+        print_warning "onboard 未完成，你可以稍后手动运行:"
+        echo "  openclaw onboard --auth-choice deepseek-api-key"
+    fi
+
+    echo ""
 }
 
 # ==================== 主流程 ====================
@@ -385,15 +596,14 @@ do_install
 echo ""
 print_success "${AGENT_NAME} 安装验证通过"
 echo ""
-echo -e "${GREEN}第一次启动:${NC}"
-echo "  终端输入: openclaw           进入交互式对话"
-echo "  终端输入: openclaw dashboard 打开 Web 控制台"
+echo -e "${GREEN}首次配置（推荐 DeepSeek API Key）:${NC}"
+echo "  openclaw onboard --auth-choice deepseek-api-key"
 echo ""
-echo -e "  推荐初始化:"
-echo "    openclaw config set gateway.mode local"
-echo "    openclaw gateway install"
-echo "    openclaw gateway start"
-echo "    然后访问 http://localhost:18789"
+echo -e "${GREEN}启动:${NC}"
+echo "  openclaw           进入交互式对话"
+echo "  openclaw dashboard 打开 Web 控制台"
 echo ""
-echo -e "  OpenClaw 内置免费模型，不用 API Key 也能先跑起来"
+echo -e "  常用命令:"
+echo "    openclaw models list --provider deepseek  查看可用模型"
+echo "    openclaw dashboard                        打开控制面板"
 echo ""

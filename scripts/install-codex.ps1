@@ -6,7 +6,7 @@
 # 需要: Node.js >= 22（脚本会自动安装）
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.ps1 | iex
 #   .\install-codex.ps1 -Help
 #   .\install-codex.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-codex.ps1
@@ -47,7 +47,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -145,7 +145,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
         exit 0
     }
 }
@@ -243,7 +243,7 @@ function Start-Install {
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
         Write-Host "  2. 检查 Node.js: node -v (需要 >= 22)" -ForegroundColor Yellow
-        Write-Host "  3. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  3. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -263,7 +263,7 @@ function Start-Verify {
     } else {
         Write-Host "  [FAIL] 找不到 codex 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }

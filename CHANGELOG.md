@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.0.7 (2026-05-30)
+
+- 修复 PDF 长命令复制断行问题，新增 06-一键复制命令.txt
+- macOS/Linux 交付命令默认使用 AGENT_INSTALL_YES=1 bash
+- Bash confirm() 改为从 /dev/tty 读取，解决 curl | bash 读不到确认输入的问题
+- 增强 OpenClaw npm install 失败诊断
+- 新增 npm 缓存权限异常 EACCES / ~/.npm/_cacache 修复指引
+- OpenClaw 默认 onboarding 改为 DeepSeek API Key
+- OpenClaw support 增加 OpenAI Codex OAuth unsupported_region 排查
+- 修正 OpenClaw "无需 API Key / 内置免费模型"误导文案
+
+---
+
 ## v3.0.6 (2026-05-30)
 
 ### 修复: curl|bash 模式下无法读取确认输入

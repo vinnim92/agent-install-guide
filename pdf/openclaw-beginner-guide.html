@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OpenClaw 小白安装手册 v3.0.6</title>
+<title>OpenClaw + DeepSeek API 小白安装手册 v3.0.7</title>
 <style>
   @media print {
     body { -webkit-print-color-adjust: exact; }
@@ -92,10 +92,10 @@
 <!-- ====== Cover ====== -->
 <div class="cover">
   <div class="badge">OpenClaw</div>
-  <h1>OpenClaw<br>小白安装手册</h1>
-  <p class="tagline">微软开源 · 命令行 AI 编程助手 · 内置免费模型</p>
+  <h1>OpenClaw + DeepSeek<br>小白安装手册</h1>
+  <p class="tagline">微软开源 · 命令行 AI 编程助手 · 推荐 DeepSeek API Key</p>
   <p class="meta">
-    <span>版本 v3.0.6</span><span>|</span><span>支持 Windows / Mac</span>
+    <span>版本 v3.0.7</span><span>|</span><span>支持 Windows / Mac</span>
   </p>
 </div>
 
@@ -104,7 +104,7 @@
   <h2>适用对象</h2>
   <p>本手册适合<strong>第一次接触命令行</strong>的新手用户。如果你平时只用鼠标操作电脑，从没打开过"终端"或"PowerShell"，本手册会手把手带你完成安装。</p>
   <div class="tip-box">
-    <strong>✅ 内置免费模型，无需 API Key！</strong> 安装完就能直接使用。安装脚本会自动检测并安装 Node.js（需要 v22.19+，推荐 v24+），你不需要手动安装任何依赖。
+    <strong>✅ 安装阶段不需要 API Key。</strong>首次配置或正式使用时，推荐使用 DeepSeek API Key（国内获取方便、价格便宜）。安装脚本会自动检测并安装 Node.js（需要 v22.19+，推荐 v24+），你不需要手动安装任何依赖。
   </div>
 </div>
 
@@ -112,8 +112,8 @@
 <div class="section">
   <h2>安装前准备</h2>
   <div class="card">
-    <h4>🔑 不需要账号</h4>
-    <p>OpenClaw <strong>内置免费模型</strong>，无需注册、无需 API Key、无需付费订阅。如果你有 OpenAI / Claude 等第三方 API Key，也可以在安装后自行配置。</p>
+    <h4>🔑 推荐准备 DeepSeek API Key</h4>
+    <p>安装阶段不需要 API Key。首次配置或正式使用时，推荐使用 DeepSeek API Key（在 platform.deepseek.com 注册获取，以 sk- 开头）。也可以使用 OpenAI / Claude 等第三方 API Key。</p>
   </div>
   <div class="card">
     <h4>💻 电脑系统要求</h4>
@@ -181,16 +181,16 @@
   <h2>第二步：复制安装命令</h2>
   <div class="warn-box" style="border-left-color: #7c3aed; background: #f5f0fa;">
     <strong>⚠️ 重要提醒：</strong>PDF 里的长命令有时会因换行，复制后被拆成两段。<br>
-    如果你看到命令里出现类似 <code>@v3.0.</code> 和下一行 <code>5/scripts/...</code>，说明命令被拆坏了。<br>
+    如果你看到命令里出现类似 <code>@v3.0.</code> 和下一行 <code>7/scripts/...</code>，说明命令被拆坏了。<br>
     <strong>请优先打开交付包里的《06-一键复制命令.txt》，从里面复制完整命令。</strong>
   </div>
 
   <div style="background: #fff; border: 2px dashed #ff4d4f; padding: 12px 16px; border-radius: 8px; margin: 14px 0;">
     <strong style="color: #ff4d4f;">正确命令必须是一整行</strong><br>
     <span style="color: #ff4d4f;">❌ 错误（被拆断）：</span><br>
-    <code style="word-break: break-all;">@v3.0.<br>5/scripts/...</code><br>
+    <code style="word-break: break-all;">@v3.0.<br>7/scripts/...</code><br>
     <span style="color: #52c41a;">✅ 正确（完整）：</span><br>
-    <code style="word-break: break-all;">@v3.0.6/scripts/...</code>
+    <code style="word-break: break-all;">@v3.0.7/scripts/...</code>
   </div>
 
   <p style="margin-top: 16px;">选中下面 <strong>对应你电脑系统</strong> 的那行命令，完整复制（用鼠标选中 → 右键复制，或按 Ctrl+C / Command+C）：</p>
@@ -199,13 +199,13 @@
   <h3>🪟 Windows 用户（在 PowerShell 中运行）</h3>
   <div class="cmd-box">
     <span class="label">Windows PowerShell</span>
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.ps1" | iex
+iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.ps1" | iex
   </div>
 
   <h3>🍎 Mac 用户（在终端中运行）</h3>
   <div class="cmd-box">
     <span class="label">macOS 终端</span>
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
   </div>
 
   <div class="tip-box">
@@ -254,32 +254,34 @@ curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scri
   </ol>
   <div class="tip-box">
     <strong>💡 如果中途出现红色报错：</strong>不要慌。把错误截图保存下来，然后访问故障排查页面：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html</a>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html</a>
   </div>
 </div>
 
-<!-- ====== Step 5: 启动 OpenClaw ====== -->
+<!-- ====== Step 5: 首次配置 DeepSeek API Key ====== -->
 <div class="section">
-  <h2>第五步：启动 OpenClaw</h2>
+  <h2>第五步：首次配置（推荐 DeepSeek API Key）</h2>
   <p>安装完成后，关掉当前的终端/PowerShell 窗口，<strong>重新打开一个新窗口</strong>，然后：</p>
 
   <div class="cmd-box">
-    <span class="label">在终端 / PowerShell 中输入（交互式对话）</span>
-openclaw
+    <span class="label">在终端 / PowerShell 中运行（按提示输入 DeepSeek API Key）</span>
+openclaw onboard --auth-choice deepseek-api-key
   </div>
 
-  <p style="margin-top: 10px;">或者启动 Web 控制台（图形化界面，对新手更友好）：</p>
+  <p style="margin-top: 10px;">验证配置是否成功：</p>
+  <div class="cmd-box">
+    <span class="label">查看可用模型</span>
+openclaw models list --provider deepseek
+  </div>
+
+  <p style="margin-top: 10px;">启动 Web 控制台（图形化界面，对新手更友好）：</p>
   <div class="cmd-box">
     <span class="label">在终端 / PowerShell 中输入（Web 控制台）</span>
 openclaw dashboard
   </div>
 
   <div class="tip-box">
-    <strong>💡 推荐初始化步骤（可选，但建议执行）：</strong><br>
-    <code>openclaw config set gateway.mode local</code><br>
-    <code>openclaw gateway install</code><br>
-    <code>openclaw gateway start</code><br>
-    然后浏览器访问 <strong>http://localhost:18789</strong> 使用图形界面。
+    <strong>💡 DeepSeek API Key 获取方式：</strong>打开浏览器访问 <strong>platform.deepseek.com</strong>，注册 → API Keys → 创建 Key（以 sk- 开头）。
   </div>
 </div>
 
@@ -288,8 +290,9 @@ openclaw dashboard
   <h2>怎么知道安装成功了？</h2>
   <ul style="padding-left: 20px; line-height: 2.2;">
     <li>在终端输入 <code>openclaw --version</code>，能看到版本号</li>
-    <li>输入 <code>openclaw</code> 能进入对话界面，直接和 AI 对话（无需登录）</li>
+    <li>输入 <code>openclaw</code> 能进入对话界面</li>
     <li>输入 <code>openclaw dashboard</code> 能看到 Web 控制台地址</li>
+    <li>输入 <code>openclaw models list --provider deepseek</code> 能列出可用模型</li>
   </ul>
 </div>
 
@@ -309,7 +312,21 @@ openclaw dashboard
 
   <div class="faq-item">
     <p class="q">Q: 需要 API Key 吗？</p>
-    <p class="a">A: 不需要。OpenClaw 内置免费模型，装上就能用。如果你想用 Claude 或 GPT 等其他模型，可以在 Web 控制台自行配置 API Key。</p>
+    <p class="a">A: 安装阶段不需要 API Key。首次配置或正式使用时，推荐使用 DeepSeek API Key，在 platform.deepseek.com 注册获取（以 sk- 开头）。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: npm install 报 EACCES / permission denied？</p>
+    <p class="a">A: 这是 npm 缓存权限异常，通常是以前用 sudo npm 或安装器异常导致 ~/.npm 目录中部分文件不属于当前用户。修复方法：<br><br>
+    <code>sudo chown -R "$(id -u):$(id -g)" "$HOME/.npm"</code><br>
+    <code>chmod -R u+rwX "$HOME/.npm"</code><br>
+    <code>npm cache verify</code><br><br>
+    然后重新运行安装命令。详见故障排查页面。</p>
+  </div>
+
+  <div class="faq-item">
+    <p class="q">Q: OpenAI Codex OAuth 报 unsupported_region？</p>
+    <p class="a">A: 这是 OpenAI Codex OAuth 在当前国家、地区或网络路线下无法完成认证，不是 OpenClaw 安装失败。大陆用户建议改用 DeepSeek API Key：<code>openclaw onboard --auth-choice deepseek-api-key</code></p>
   </div>
 
   <div class="faq-item">
@@ -325,7 +342,7 @@ openclaw dashboard
   <div class="faq-item">
     <p class="q">Q: 安装失败了怎么办？</p>
     <p class="a">A: 打开故障排查页面，按步骤检查：<br>
-    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html</a></p>
+    <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html">https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html</a></p>
   </div>
 </div>
 
@@ -333,16 +350,17 @@ openclaw dashboard
 <div class="section">
   <h2>安装好了，接下来做什么？</h2>
   <ol style="padding-left: 20px; line-height: 2.2;">
-    <li>在终端输入 <code>openclaw</code> 启动对话，无需登录直接使用</li>
-    <li>试试问它："帮我写一个计算器程序"</li>
-    <li>输入 <code>openclaw dashboard</code> 打开 Web 控制台，体验图形化界面</li>
+    <li>运行 <code>openclaw onboard --auth-choice deepseek-api-key</code> 配置 DeepSeek API Key</li>
+    <li>运行 <code>openclaw models list --provider deepseek</code> 验证配置</li>
+    <li>运行 <code>openclaw dashboard</code> 打开 Web 控制台</li>
+    <li>在终端输入 <code>openclaw</code> 启动对话，试试问它："帮我写一个计算器程序"</li>
     <li>探索更多功能：<code>openclaw --help</code> 查看所有可用命令</li>
   </ol>
 </div>
 
 <div class="footer">
-  <p>OpenClaw 安装手册 v3.0.6 · 遇到问题请访问</p>
-  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/docs/support.html">故障排查页面</a></p>
+  <p>OpenClaw + DeepSeek 安装手册 v3.0.7 · 遇到问题请访问</p>
+  <p><a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html">故障排查页面</a></p>
 </div>
 
 </body>

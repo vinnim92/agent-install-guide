@@ -345,7 +345,7 @@
   <tr>
     <td><strong class="agent-name-oc">OpenClaw</strong></td>
     <td>想体验开源 Agent 工作流的用户</td>
-    <td>无需 API Key 也能用（内置免费模型）</td>
+    <td>推荐 DeepSeek API Key（国内获取方便）</td>
     <td>微软开源，支持 75+ 模型提供商，可玩性高</td>
   </tr>
 </table>
@@ -385,7 +385,7 @@ dry-run = 预演模式。<br>
 AI Agent 本质上是把 AI 能力接入你的电脑。<br>
 Claude Code 需要 Claude 的账号（去 claude.ai 注册）。<br>
 Codex 需要 OpenAI 的账号（去 chatgpt.com 注册）。<br>
-OpenClaw 内置免费模型，不配置也能先跑起来。<br>
+OpenClaw 推荐 DeepSeek API Key（国内获取方便）。<br>
 <strong>安装脚本只负责把工具装好，不包含账号注册。</strong>
 </p>
 
@@ -397,12 +397,12 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <h3>macOS / Linux：预演</h3>
 <p>以 Codex 为例：</p>
-<pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash -s -- --dry-run</code></pre>
+<pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash -s -- --dry-run</code></pre>
 <p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可预演其他 Agent。</p>
 
 <h3>Windows：预演</h3>
 <p>以 Codex 为例（两步）：</p>
-<pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.ps1 -OutFile install-codex.ps1
+<pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.ps1 -OutFile install-codex.ps1
 .\install-codex.ps1 -DryRun</code></pre>
 <p>把 <code>install-codex</code> 换成 <code>install-claude-code</code> 或 <code>install-openclaw</code> 即可。</p>
 
@@ -419,17 +419,17 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <div class="agent-block">
   <h3 class="agent-name-cc">Claude Code</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.sh | AGENT_INSTALL_YES=1 bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-cx">Codex</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-oc">OpenClaw</h3>
-  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.sh | AGENT_INSTALL_YES=1 bash</code></pre>
+  <pre><code>curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh | AGENT_INSTALL_YES=1 bash</code></pre>
 </div>
 
 <div class="tip">
@@ -445,17 +445,17 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 
 <div class="agent-block">
   <h3 class="agent-name-cc">Claude Code</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-claude-code.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.ps1 | iex</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-cx">Codex</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-codex.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.ps1 | iex</code></pre>
 </div>
 
 <div class="agent-block">
   <h3 class="agent-name-oc">OpenClaw</h3>
-  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.6/scripts/install-openclaw.ps1 | iex</code></pre>
+  <pre><code>iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.ps1 | iex</code></pre>
 </div>
 
 <div class="tip">
@@ -549,7 +549,7 @@ OpenClaw 内置免费模型，不配置也能先跑起来。<br>
 <p class="faq-a">可以。脚本会检查是否已经安装过了，不会重复安装。想升级到最新版，重新运行一次就行。</p>
 
 <p class="faq-q">Q5：安装后还需要账号吗？</p>
-<p class="faq-a">需要。安装脚本只负责把 Claude Code、Codex 或 OpenClaw 装进你的电脑。实际使用时：Claude Code 需要 Claude 账号；Codex 需要 OpenAI/ChatGPT 账号；OpenClaw 内置免费模型，可以先跑起来。</p>
+<p class="faq-a">需要。安装脚本只负责把 Claude Code、Codex 或 OpenClaw 装进你的电脑。实际使用时：Claude Code 需要 Claude 账号；Codex 需要 OpenAI/ChatGPT 账号；OpenClaw 推荐 DeepSeek API Key（从 platform.deepseek.com 获取）。</p>
 
 <p class="faq-q">Q6：国内网络能不能用？</p>
 <p class="faq-a">安装脚本通过 jsDelivr CDN 分发，对国内用户更友好。具体 Agent 的登录和模型访问取决于对应服务本身的网络情况。</p>
