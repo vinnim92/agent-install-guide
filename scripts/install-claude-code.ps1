@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.ps1 | iex
 #   .\install-claude-code.ps1 -Help
 #   .\install-claude-code.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1
@@ -17,6 +17,13 @@ param(
     [switch]$Help,
     [switch]$DryRun
 )
+
+try {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $OutputEncoding = [System.Text.Encoding]::UTF8
+    chcp 65001 > $null
+} catch {
+}
 
 $ErrorActionPreference = "Stop"
 $AgentName = "Claude Code"
@@ -49,7 +56,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -71,6 +78,36 @@ function Confirm-Action {
 }
 
 function Write-DryRun { Write-Host "    [预演] 将执行: $args" -ForegroundColor Yellow }
+
+# ---- npm 调用辅助（避免 npm.ps1 执行策略拦截） ----
+function Get-NpmCmd {
+    $npmCmd = Get-Command npm.cmd -ErrorAction SilentlyContinue
+    if ($npmCmd) {
+        return $npmCmd.Source
+    }
+
+    $npmExe = Get-Command npm.exe -ErrorAction SilentlyContinue
+    if ($npmExe) {
+        return $npmExe.Source
+    }
+
+    return $null
+}
+
+function Invoke-Npm {
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$Arguments
+    )
+
+    $npm = Get-NpmCmd
+
+    if (-not $npm) {
+        throw "未找到 npm.cmd。请确认 Node.js 已安装，并重新打开 PowerShell。"
+    }
+
+    & $npm @Arguments
+}
 
 # ============ 安装前自动检查 ============
 function Start-PreCheck {
@@ -128,7 +165,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
         exit 0
     }
 }
@@ -222,7 +259,7 @@ function Start-Install {
 
     $installed = $false
     $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
-    $hasNpm = Get-Command npm -ErrorAction SilentlyContinue
+    $hasNpm = Get-NpmCmd
 
     # 方法1: winget
     if ($hasWinget -and -not $installed) {
@@ -248,8 +285,12 @@ function Start-Install {
     # 方法3: npm fallback
     if (-not $installed -and $hasNpm) {
         Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
-        npm install -g @anthropic-ai/claude-code@latest 2>$null
-        if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+        try {
+            Invoke-Npm install -g @anthropic-ai/claude-code@latest
+            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+        } catch {
+            Write-Host "  [!] npm 安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
     }
 
     if ($installed) {
@@ -259,7 +300,7 @@ function Start-Install {
         Write-Host ""
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -282,7 +323,7 @@ function Start-Verify {
     } else {
         Write-Host "  [FAIL] 找不到 claude 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }

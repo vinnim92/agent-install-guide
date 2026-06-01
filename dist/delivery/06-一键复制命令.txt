@@ -1,10 +1,10 @@
-AI Agent 小白安装包 v3.0.7
+AI Agent 小白安装包 v3.0.8
 一键复制命令
 
 使用说明：
 1. 请根据你的系统和要安装的 Agent，复制对应命令。
 2. 每条命令都必须完整复制为一整行。
-3. 不要把 @v3.0.7 拆成 @v3.0. 和 7/scripts。
+3. 不要把 @v3.0.8 拆成 @v3.0. 和 7/scripts。
 4. 如果你从 PDF 中复制命令失败，请改从本 txt 文件复制。
 5. 命令开头是 curl，不是 url。
 6. Mac 命令已包含 AGENT_INSTALL_YES=1，脚本会自动确认，无需手动输入 Y/N。
@@ -16,11 +16,11 @@ Claude Code + DeepSeek
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.sh" | AGENT_INSTALL_YES=1 bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-claude-code.ps1" | iex
+iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.ps1" | iex
 
 
 ==============================
@@ -29,11 +29,11 @@ Codex
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-codex.sh" | AGENT_INSTALL_YES=1 bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-codex.ps1" | iex
+iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-codex.ps1" | iex
 
 
 ==============================
@@ -42,22 +42,22 @@ OpenClaw
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.ps1" | iex
+iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-openclaw.ps1" | iex
 
 
 故障排查页面：
-https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html
+https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html
 
 
 ---- 手动确认模式 ----
 如果你想在安装过程中手动确认每一步（输入 Y/N），请先下载脚本再运行：
 
 1. 下载脚本：
-   curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.sh" -o install-openclaw.sh
+   curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-openclaw.sh" -o install-openclaw.sh
 
 2. 运行脚本：
    bash install-openclaw.sh

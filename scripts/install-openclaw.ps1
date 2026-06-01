@@ -6,7 +6,7 @@
 # 安装阶段不需要 API Key；首次配置或正式使用时需要模型服务的 API Key
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/scripts/install-openclaw.ps1 | iex
+#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-openclaw.ps1 | iex
 #   .\install-openclaw.ps1 -Help
 #   .\install-openclaw.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-openclaw.ps1
@@ -16,6 +16,13 @@ param(
     [switch]$Help,
     [switch]$DryRun
 )
+
+try {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $OutputEncoding = [System.Text.Encoding]::UTF8
+    chcp 65001 > $null
+} catch {
+}
 
 $ErrorActionPreference = "Stop"
 $AgentName = "OpenClaw"
@@ -49,7 +56,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
+    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -71,6 +78,36 @@ function Confirm-Action {
 }
 
 function Write-DryRun { Write-Host "    [预演] 将执行: $args" -ForegroundColor Yellow }
+
+# ---- npm 调用辅助（避免 npm.ps1 执行策略拦截） ----
+function Get-NpmCmd {
+    $npmCmd = Get-Command npm.cmd -ErrorAction SilentlyContinue
+    if ($npmCmd) {
+        return $npmCmd.Source
+    }
+
+    $npmExe = Get-Command npm.exe -ErrorAction SilentlyContinue
+    if ($npmExe) {
+        return $npmExe.Source
+    }
+
+    return $null
+}
+
+function Invoke-Npm {
+    param(
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string[]]$Arguments
+    )
+
+    $npm = Get-NpmCmd
+
+    if (-not $npm) {
+        throw "未找到 npm.cmd。请确认 Node.js 已安装，并重新打开 PowerShell。"
+    }
+
+    & $npm @Arguments
+}
 
 # ============ 安装前自动检查 ============
 function Start-PreCheck {
@@ -149,7 +186,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html"
+        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
         exit 0
     }
 }
@@ -212,7 +249,7 @@ function Start-Install {
 
     if ($DryRun) {
         Write-DryRun "官方脚本: Invoke-RestMethod $OfficialUrl | Invoke-Expression"
-        Write-DryRun "fallback: npm install -g openclaw@latest"
+        Write-DryRun "fallback: Invoke-Npm install -g openclaw@latest"
         Write-DryRun "验证: Get-Command $AgentBin"
         return
     }
@@ -233,31 +270,47 @@ function Start-Install {
 
     # 方法2: npm fallback
     if (-not $installed) {
-        $hasNpm = Get-Command npm -ErrorAction SilentlyContinue
+        $hasNpm = Get-NpmCmd
         if ($hasNpm) {
             Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
 
             # 测试包是否存在
-            $pkgVer = npm view openclaw version --registry=https://registry.npmjs.org/ 2>$null
-            if ($pkgVer) {
-                Write-Host "    openclaw 包存在，最新版本: $pkgVer" -ForegroundColor Green
+            try {
+                $pkgVer = Invoke-Npm view openclaw version --registry=https://registry.npmjs.org/
+                if ($pkgVer) {
+                    Write-Host "    openclaw 包存在，最新版本: $pkgVer" -ForegroundColor Green
+                }
+            } catch {
+                Write-Host "  [!] 无法查询 npm 包信息: $($_.Exception.Message)" -ForegroundColor Yellow
             }
 
-            npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>$null
-            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
-                $installed = $true
-            } else {
-                # npm cache clean and retry
-                npm cache clean --force 2>$null
-                npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund 2>$null
-                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            try {
+                Invoke-Npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
+                    $installed = $true
+                } else {
+                    # npm cache clean and retry
+                    try {
+                        Invoke-Npm cache clean --force
+                    } catch {
+                        Write-Host "  [!] npm cache 清理失败: $($_.Exception.Message)" -ForegroundColor Yellow
+                    }
+                    Invoke-Npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund
+                    if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+                }
+            } catch {
+                Write-Host "  [!] npm 官方源安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
             }
 
             # fallback: npmmirror
             if (-not $installed) {
                 Write-Host "  [!] 官方源安装失败，尝试国内镜像..." -ForegroundColor Yellow
-                npm install -g openclaw@latest --registry=https://registry.npmmirror.com --no-audit --no-fund 2>$null
-                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+                try {
+                    Invoke-Npm install -g openclaw@latest --registry=https://registry.npmmirror.com --no-audit --no-fund
+                    if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+                } catch {
+                    Write-Host "  [!] npm 镜像源安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+                }
             }
         }
     }
@@ -272,7 +325,7 @@ function Start-Install {
         Write-Host "  2. 检查 Node.js: node -v (需要 >= 22.19)" -ForegroundColor Yellow
         Write-Host "  3. 如果报 EACCES / permission denied，说明 npm 缓存权限异常" -ForegroundColor Yellow
         Write-Host "     查看故障排查页面的 EACCES 修复指引" -ForegroundColor Yellow
-        Write-Host "  4. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  4. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -351,7 +404,7 @@ function Start-Verify {
     } else {
         Write-Host "  [FAIL] 找不到 openclaw 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.7/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }

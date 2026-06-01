@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.0.8 (2026-06-01)
+
+- 修复 Windows PowerShell 中 npm.ps1 执行策略拦截问题
+- Windows ps1 脚本统一使用 Invoke-Npm（优先调用 npm.cmd，其次 npm.exe）
+- Windows ps1 脚本新增 UTF-8 输出设置，修复中文乱码
+- npm 安装失败时显示错误摘要（不再用 2>$null 吞掉全部输出）
+- support.html 新增 npm.ps1 执行策略拦截 FAQ
+
+---
+
 ## v3.0.7 (2026-05-30)
 
 - 修复 PDF 长命令复制断行问题，新增 06-一键复制命令.txt
