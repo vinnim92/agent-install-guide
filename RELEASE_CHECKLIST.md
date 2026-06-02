@@ -71,4 +71,4 @@ git push origin "${VERSION}"
 
 ---
 
-## 当前版本: v3.0.8
+## 当前版本: v3.0.9

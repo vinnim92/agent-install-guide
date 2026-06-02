@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.0.9 (2026-06-02)
+
+- 修复 Windows PowerShell 5.1 输出中文显示为 ??? 问题
+- Windows ps1 脚本保存为 UTF-8 with BOM，新增 InputEncoding 设置
+- support.html 新增 Windows PowerShell ??? 乱码 FAQ
+
+---
+
 ## v3.0.8 (2026-06-01)
 
 - 修复 Windows PowerShell 中 npm.ps1 执行策略拦截问题

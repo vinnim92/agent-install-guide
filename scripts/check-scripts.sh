@@ -328,10 +328,10 @@ fi
 
 # ---- 禁止 @main 未版本化 URL ----
 echo ""
-echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.8 等版本标签） ---"
+echo "--- 检查: 禁止 @main 未版本化 URL（应使用 @v3.0.9 等版本标签） ---"
 AT_MAIN_HITS=$(grep -rn '@main' "${SCRIPT_DIR}" --include="*.sh" --include="*.ps1" 2>/dev/null | grep -v "check-scripts.sh" || true)
 if [ -n "$AT_MAIN_HITS" ]; then
-    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.8 等版本标签）"
+    check_fail "发现 @main 未版本化 URL（应固定为 @v3.0.9 等版本标签）"
     echo "$AT_MAIN_HITS" | while read line; do echo "       $line"; done
 else
     check_pass "未发现 @main URL（已版本化）"
@@ -466,15 +466,15 @@ else
     check_fail "install-openclaw.sh 缺少 npm cache verify"
 fi
 
-# ---- 正式交付命令必须使用 @v3.0.8 ----
+# ---- 正式交付命令必须使用 @v3.0.9 ----
 echo ""
-echo "--- 检查: 正式交付命令必须使用 @v3.0.8 ---"
+echo "--- 检查: 正式交付命令必须使用 @v3.0.9 ---"
 V3_OLDER_DELIVERY=$(grep -rn '@v3\.0\.[0-6]' "${REPO_ROOT}/README.md" "${REPO_ROOT}/pdf/" "${REPO_ROOT}/dist/delivery/" "${REPO_ROOT}/docs/" 2>/dev/null | grep -v "CHANGELOG\|check-scripts\|RELEASE_CHECKLIST" || true)
 if [ -n "$V3_OLDER_DELIVERY" ]; then
-    check_fail "发现活动旧版本交付命令（应使用 @v3.0.8）"
+    check_fail "发现活动旧版本交付命令（应使用 @v3.0.9）"
     echo "$V3_OLDER_DELIVERY" | while read line; do echo "       $line"; done
 else
-    check_pass "正式交付命令均使用 @v3.0.8"
+    check_pass "正式交付命令均使用 @v3.0.9"
 fi
 
 # ---- 禁止 @main ----

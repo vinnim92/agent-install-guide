@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.sh | bash
+#   curl -fsSL https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-claude-code.sh | bash
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -89,10 +89,10 @@ show_help() {
     echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh"
     echo ""
     echo "推荐一行安装命令:"
-    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.sh\" | AGENT_INSTALL_YES=1 bash"
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-claude-code.sh\" | AGENT_INSTALL_YES=1 bash"
     echo ""
     echo "如需手动确认，请先下载脚本再运行:"
-    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/scripts/install-claude-code.sh\" -o install-claude-code.sh"
+    echo "  curl -fsSL \"https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-claude-code.sh\" -o install-claude-code.sh"
     echo "  bash install-claude-code.sh"
     echo ""
     echo "安装后启动:"
@@ -100,7 +100,7 @@ show_help() {
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
+    echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
     echo ""
     exit 0
 }
@@ -185,7 +185,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
+        echo "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
         exit 0
     fi
 }
@@ -230,13 +230,13 @@ do_install() {
             run_cmd "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null" && print_success "npm 安装成功" || {
                 print_error "安装失败"
                 echo ""
-                echo "  排查: 访问 https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
+                echo "  排查: 访问 https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
                 exit 1
             }
         else
             print_error "安装失败，且未找到 npm"
             echo "  手动安装: 访问 https://claude.ai/download"
-            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
+            echo "  排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
             exit 1
         fi
     fi
@@ -252,7 +252,7 @@ do_install() {
         print_error "找不到 ${AGENT_BIN} 命令"
         echo ""
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.8/docs/support.html"
+        echo "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
         exit 1
     fi
 }
