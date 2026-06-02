@@ -71,6 +71,31 @@
   </ul>
 </div>
 
+<!-- 2b: 国内网络 -->
+<div class="section">
+  <h2>国内网络访问 GitHub / jsDelivr 不稳定</h2>
+  <ul>
+    <li><strong>现象：</strong>安装命令报错"基础连接已经关闭""发送时发生错误"或"Failed to fetch from GitHub"。</li>
+    <li><strong>原因：</strong>GitHub Pages 和 jsDelivr CDN 在中国大陆可能被限制或速度极慢。jsDelivr 依赖 GitHub 回源，在国内也不是独立可用的 CDN。</li>
+    <li><strong>推荐方案 — 使用 Gitee 国内镜像：</strong>
+      <div class="cmd-block"># Windows PowerShell
+$env:GITEE_ACCOUNT="<你的Gitee账号>"
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
+
+# macOS / Linux
+export GITEE_ACCOUNT="<你的Gitee账号>"
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash</div>
+      设置 <code>GITEE_ACCOUNT</code> 环境变量后，脚本会优先从 Gitee 国内镜像下载安装脚本，速度更快、更稳定。</li>
+    <li><strong>如果 irm 仍然失败：</strong>可改用 curl.exe 下载后执行：
+      <div class="cmd-block">$u="https://gitee.com/<账号>/agent-install-guide/raw/main/docs/i/codex.ps1"
+$p="$env:TEMP\codex.ps1"
+curl.exe -L $u -o $p
+powershell -ExecutionPolicy Bypass -File $p</div>
+    </li>
+    <li><strong>搭建 Gitee 镜像：</strong>参见仓库中的 <code>GITEE_MIRROR.md</code> 文档。</li>
+  </ul>
+</div>
+
 <!-- 3 -->
 <div class="section">
   <h2>权限错误（Permission denied / EACCES）</h2>

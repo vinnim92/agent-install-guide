@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.1.2 (2026-06-02)
+
+- 国内镜像入口方案：支持 Gitee/GitCode 作为中国大陆默认下载源
+- docs/i 入口增加三源 fallback：Gitee → jsDelivr CDN → GitHub raw
+- 通过 GITEE_ACCOUNT 环境变量配置国内镜像账号，不硬编码
+- GITEE_ACCOUNT 未设置时自动降级为 jsDelivr → GitHub raw（向后兼容）
+- 06-一键复制命令.txt 增加中国大陆推荐入口和海外备用入口
+- troubleshooting.html 增加国内网络环境说明
+- 新增 docs/GITEE_MIRROR.md 镜像搭建指南
+
+---
+
 ## v3.1.1 (2026-06-02)
 
 - 新增 claude-code.ps1 / claude-code.sh 兼容别名，统一主入口为 claude.ps1 / claude.sh

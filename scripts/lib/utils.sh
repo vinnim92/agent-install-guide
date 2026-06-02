@@ -16,7 +16,12 @@ NC='\033[0m' # No Color
 
 # ---------- 全局变量 ----------
 REPO_URL="https://github.com/vinnim92/agent-install-guide"
-RAW_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.1.1"
+RAW_BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.1.2"
+GITEE_ACCOUNT="${GITEE_ACCOUNT:-}"
+if [ -n "$GITEE_ACCOUNT" ]; then
+    GITEE_BASE="https://gitee.com/${GITEE_ACCOUNT}/agent-install-guide/raw/main"
+fi
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/vinnim92/agent-install-guide/v3.1.2"
 OS_TYPE=""
 OS_ARCH=""
 

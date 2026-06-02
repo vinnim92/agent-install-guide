@@ -1,23 +1,45 @@
-AI Agent 小白安装包 v3.1.1
+AI Agent 小白安装包 v3.1.2
 一键复制命令
 
 使用说明：
 1. 请根据你的系统和要安装的 Agent，复制对应命令。
 2. 每条命令都必须完整复制为一整行。
-3. PDF 中的短命令会自动使用最新稳定版本，普通用户无需关心版本号。
-4. 本文件汇总所有安装命令，方便需要集中复制命令的用户使用。
-5. 如需跳过确认自动安装，请见下方 -- 自动确认模式 --。
-6. 命令开头是 curl（Mac）或 irm（Windows），不是 url。
+3. 中国大陆用户请优先使用 Gitee 镜像入口（需要先配置 GITEE_ACCOUNT 环境变量）。
+4. 海外用户可直接使用 GitHub Pages 入口。
+5. 本文件汇总所有安装命令，方便需要集中复制命令的用户使用。
+6. 如需跳过确认自动安装，请见下方 -- 自动确认模式 --。
+7. 命令开头是 curl（Mac）或 irm（Windows），不是 url。
+
+==============================
+入口选择说明
+==============================
+
+中国大陆推荐入口（需要 Gitee 账号配置）：
+  设置 GITEE_ACCOUNT 环境变量后，脚本自动从 Gitee 国内镜像下载。
+  详见 GITEE_MIRROR.md。
+
+海外 / 备用入口（GitHub Pages）：
+  以下命令默认使用 GitHub Pages，如果不可用会自动 fallback。
 
 ==============================
 Claude Code + DeepSeek
 ==============================
 
-macOS / Linux：
+macOS / Linux（中国大陆 — Gitee 镜像）：
+
+export GITEE_ACCOUNT="<你的Gitee账号>"
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
+
+macOS / Linux（海外 / 备用）：
 
 curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
 
-Windows PowerShell：
+Windows PowerShell（中国大陆 — Gitee 镜像）：
+
+$env:GITEE_ACCOUNT="<你的Gitee账号>"
+irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
+
+Windows PowerShell（海外 / 备用）：
 
 irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 
@@ -26,11 +48,21 @@ irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 Codex
 ==============================
 
-macOS / Linux：
+macOS / Linux（中国大陆 — Gitee 镜像）：
+
+export GITEE_ACCOUNT="<你的Gitee账号>"
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
+
+macOS / Linux（海外 / 备用）：
 
 curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
 
-Windows PowerShell：
+Windows PowerShell（中国大陆 — Gitee 镜像）：
+
+$env:GITEE_ACCOUNT="<你的Gitee账号>"
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
+
+Windows PowerShell（海外 / 备用）：
 
 irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
 
@@ -39,17 +71,27 @@ irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
 OpenClaw
 ==============================
 
-macOS / Linux：
+macOS / Linux（中国大陆 — Gitee 镜像）：
+
+export GITEE_ACCOUNT="<你的Gitee账号>"
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh | bash
+
+macOS / Linux（海外 / 备用）：
 
 curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh | bash
 
-Windows PowerShell：
+Windows PowerShell（中国大陆 — Gitee 镜像）：
+
+$env:GITEE_ACCOUNT="<你的Gitee账号>"
+irm https://vinnim92.github.io/agent-install-guide/i/openclaw.ps1 | iex
+
+Windows PowerShell（海外 / 备用）：
 
 irm https://vinnim92.github.io/agent-install-guide/i/openclaw.ps1 | iex
 
 
 故障排查页面：
-https://vinnim92.github.io/agent-install-guide/docs/support.html
+https://vinnim92.github.io/agent-install-guide/troubleshooting.html
 
 
 ---- 自动确认模式 ----
