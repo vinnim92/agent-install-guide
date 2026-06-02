@@ -145,9 +145,9 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
   <ul>
     <li><strong>现象：</strong>安装过程中出现红色报错，包含 <code>npm.ps1 cannot be loaded</code> 或 <code>UnauthorizedAccess</code>，提示 <code>因为在此系统上禁止运行脚本</code>。</li>
     <li><strong>原因：</strong>Windows PowerShell 默认执行策略可能禁止运行 <code>.ps1</code> 脚本。旧版本脚本直接调用 <code>npm</code> 时，PowerShell 可能会优先解析到 <code>C:\Program Files\nodejs\npm.ps1</code>，从而被系统拦截。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.0.9 或更新版本。新版脚本会优先调用 <code>npm.cmd</code>，避免触发 npm.ps1 执行策略问题。
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.0 或更新版本。新版脚本会优先调用 <code>npm.cmd</code>，避免触发 npm.ps1 执行策略问题。
       <div class="cmd-block"># 使用最新版安装命令（已内置 npm.cmd 优先调用）
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-codex.ps1 | iex</div>
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
     </li>
     <li><strong>临时解决方案（如果暂时不想升级）：</strong>
       <div class="cmd-block">Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force</div>
@@ -163,9 +163,9 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/script
   <ul>
     <li><strong>现象：</strong>安装过程中输出的中文文字变成了一串 <code>?????????????</code>，但安装流程仍在继续。</li>
     <li><strong>原因：</strong>这是 Windows PowerShell 5.1 控制台编码与脚本文件编码不一致导致的。默认控制台代码页不是 UTF-8，而脚本含中文，PowerShell 按旧 ANSI 编码误读后将中文替换为问号。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.0.9 或更新版本。新版脚本保存为 UTF-8 with BOM，并已自动设置控制台为 UTF-8 编码。
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.0 或更新版本。新版脚本保存为 UTF-8 with BOM，并已自动设置控制台为 UTF-8 编码。
       <div class="cmd-block"># 使用最新版安装命令（已内置 UTF-8 编码修复）
-iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-codex.ps1 | iex</div>
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
     </li>
     <li><strong>临时解决方案（如果暂时不想升级）：</strong>
       <div class="cmd-block">chcp 65001</div>
@@ -182,7 +182,7 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/script
     <li><strong>Claude Code 已安装，但 DeepSeek API 配置失败：</strong>关掉终端重新打开（环境变量需新窗口才能加载），再试 <code>claude</code>。如果仍不生效，检查 <code>~/.zshrc</code>（Mac/Linux）或系统环境变量（Windows）中是否正确写入了 <code>ANTHROPIC_BASE_URL</code> 和 <code>ANTHROPIC_AUTH_TOKEN</code>。</li>
     <li><strong>DeepSeek API Key 粘贴后没反应：</strong>输入 Key 时光标不会移动是正常的（安全输入模式），粘贴后直接回车即可。如果粘贴失败，右键粘贴后再按回车。</li>
     <li><strong>Claude Code 启动后仍提示 Anthropic / Claude 登录：</strong>说明环境变量未生效。确认 <code>ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic</code> 已设置。Mac/Linux 用户运行 <code>source ~/.zshrc</code> 然后重试。</li>
-    <li><strong>如何手动重新配置 DeepSeek：</strong>重新运行安装脚本，或参考 <a href="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/agents/claude-code.md">Claude Code 教程</a> 手动设置环境变量。</li>
+    <li><strong>如何手动重新配置 DeepSeek：</strong>重新运行安装脚本，或参考 <a href="https://vinnim92.github.io/agent-install-guide/docs/agents/claude-code.md">Claude Code 教程</a> 手动设置环境变量。</li>
   </ul>
 </div>
 
@@ -203,11 +203,11 @@ iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/script
   <ul>
     <li><strong>原因：</strong>使用 <code>curl | bash</code> 时，脚本的标准输入来自 curl 管道，有时无法从键盘读取确认输入。</li>
     <li><strong>解决方法一（推荐）：</strong>使用交付包中的自动确认命令：
-      <div class="cmd-block">curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash</div>
+      <div class="cmd-block">curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh | bash</div>
       把命令中的脚本名换成你要安装的 Agent（install-claude-code.sh / install-codex.sh / install-openclaw.sh）。加上 <code>AGENT_INSTALL_YES=1</code> 后脚本会自动跳过确认。
     </li>
     <li><strong>解决方法二：</strong>先下载脚本再运行（可以手动确认）：
-      <div class="cmd-block">curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.sh" -o install-openclaw.sh
+      <div class="cmd-block">curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh -o openclaw.sh
 bash install-openclaw.sh</div>
     </li>
   </ul>

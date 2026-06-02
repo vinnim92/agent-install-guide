@@ -6,7 +6,7 @@
 # 安装阶段不需要 API Key；首次配置或正式使用时需要模型服务的 API Key
 #
 # 用法:
-#   iwr -useb https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.ps1 | iex
+#   irm https://vinnim92.github.io/agent-install-guide/i/openclaw.ps1 | iex
 #   .\install-openclaw.ps1 -Help
 #   .\install-openclaw.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-openclaw.ps1
@@ -57,7 +57,7 @@ if ($Help) {
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
+    Write-Host "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
     Write-Host ""
     exit 0
 }
@@ -187,7 +187,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html"
+        Write-Host "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
         exit 0
     }
 }
@@ -326,7 +326,7 @@ function Start-Install {
         Write-Host "  2. 检查 Node.js: node -v (需要 >= 22.19)" -ForegroundColor Yellow
         Write-Host "  3. 如果报 EACCES / permission denied，说明 npm 缓存权限异常" -ForegroundColor Yellow
         Write-Host "     查看故障排查页面的 EACCES 修复指引" -ForegroundColor Yellow
-        Write-Host "  4. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  4. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -405,7 +405,7 @@ function Start-Verify {
     } else {
         Write-Host "  [FAIL] 找不到 openclaw 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html" -ForegroundColor Yellow
         exit 1
     }
 }

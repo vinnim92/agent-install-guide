@@ -1,14 +1,13 @@
-AI Agent 小白安装包 v3.0.9
+AI Agent 小白安装包 v3.1.0
 一键复制命令
 
 使用说明：
 1. 请根据你的系统和要安装的 Agent，复制对应命令。
 2. 每条命令都必须完整复制为一整行。
-3. 不要把 @v3.0.9 拆成 @v3.0. 和 7/scripts。
+3. PDF 中的短命令会自动使用最新稳定版本，普通用户无需关心版本号。
 4. 如果你从 PDF 中复制命令失败，请改从本 txt 文件复制。
-5. 命令开头是 curl，不是 url。
-6. Mac 命令已包含 AGENT_INSTALL_YES=1，脚本会自动确认，无需手动输入 Y/N。
-   如果你想手动确认，请先下载脚本再运行（见使用说明末尾）。
+5. Mac 命令默认带 AGENT_INSTALL_YES=1 自动确认（见 -- 手动确认模式 --）。
+6. 命令开头是 curl（Mac）或 irm（Windows），不是 url。
 
 ==============================
 Claude Code + DeepSeek
@@ -16,11 +15,11 @@ Claude Code + DeepSeek
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-claude-code.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-claude-code.ps1" | iex
+irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 
 
 ==============================
@@ -29,11 +28,11 @@ Codex
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-codex.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-codex.ps1" | iex
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
 
 
 ==============================
@@ -42,24 +41,35 @@ OpenClaw
 
 macOS / Linux：
 
-curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.sh" | AGENT_INSTALL_YES=1 bash
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh | bash
 
 Windows PowerShell：
 
-iwr -useb "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.ps1" | iex
+irm https://vinnim92.github.io/agent-install-guide/i/openclaw.ps1 | iex
 
 
 故障排查页面：
-https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/docs/support.html
+https://vinnim92.github.io/agent-install-guide/docs/support.html
+
+
+---- 自动确认模式 ----
+如果你想跳过确认直接安装（自动输入 Y），在 Mac/Linux 命令中加入 AGENT_INSTALL_YES=1：
+
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | AGENT_INSTALL_YES=1 bash
+
+Windows PowerShell：
+
+$env:AGENT_INSTALL_YES = "1"
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
 
 
 ---- 手动确认模式 ----
-如果你想在安装过程中手动确认每一步（输入 Y/N），请先下载脚本再运行：
+如果你想在安装过程中手动确认每一步（输入 Y/N），请先下载脚本再运行（Mac/Linux）：
 
 1. 下载脚本：
-   curl -fsSL "https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.0.9/scripts/install-openclaw.sh" -o install-openclaw.sh
+   curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh -o openclaw.sh
 
 2. 运行脚本：
-   bash install-openclaw.sh
+   bash openclaw.sh
 
-（把命令中的脚本名换成你要安装的 Agent：install-claude-code.sh / install-codex.sh / install-openclaw.sh）
+（把命令中的脚本名换成你要安装的 Agent：claude.sh / codex.sh / openclaw.sh）

@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.1.0 (2026-06-02)
+
+- 新增短命令入口文件（docs/i/），解决 PDF 复制长 CDN URL 断行问题
+- 安装命令改为永久短 URL 格式（如 `vinnim92.github.io/agent-install-guide/i/codex.sh`）
+- 短入口文件自动重定向到对应最新稳定版安装脚本
+- Windows 短命令使用 irm（Invoke-RestMethod）替代 iwr
+- 全部文档、PDF 手册、教程中的安装命令更新为短 URL 格式
+- 交付文档 06-一键复制命令.txt 重写，新增自动/手动确认模式说明
+
+---
+
 ## v3.0.9 (2026-06-02)
 
 - 修复 Windows PowerShell 5.1 输出中文显示为 ??? 问题
