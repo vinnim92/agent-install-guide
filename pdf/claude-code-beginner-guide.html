@@ -81,6 +81,11 @@
     padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
     font-size: 0.93em;
   }
+  .info-box {
+    background: #f0f5ff; border-left: 4px solid #1677ff;
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0;
+    font-size: 0.93em;
+  }
 
   /* ===== FAQ ===== */
   .faq-item { margin: 14px 0; }
@@ -192,18 +197,9 @@
 <!-- ====== Step 2: 复制命令 ====== -->
 <div class="section page-break">
   <h2>第二步：复制安装命令</h2>
-  <div class="warn-box" style="border-left-color: #d4532a; background: #fff5f0;">
-    <strong>⚠️ 重要提醒：</strong>PDF 里的长命令有时会因换行，复制后被拆成两段。<br>
-    如果你看到命令里出现类似 <code>@v3.0.</code> 和下一行 <code>5/scripts/...</code>，说明命令被拆坏了。<br>
-    <strong>请优先打开交付包里的《06-一键复制命令.txt》，从里面复制完整命令。</strong>
-  </div>
 
-  <div style="background: #fff; border: 2px dashed #ff4d4f; padding: 12px 16px; border-radius: 8px; margin: 14px 0;">
-    <strong style="color: #ff4d4f;">正确命令必须是一整行</strong><br>
-    <span style="color: #ff4d4f;">❌ 错误（被拆断）：</span><br>
-    <code style="word-break: break-all;">@v3.0.<br>5/scripts/...</code><br>
-    <span style="color: #52c41a;">✅ 正确（完整）：</span><br>
-    <code style="word-break: break-all;">@v3.1.1/scripts/...</code>
+  <div class="warn-box">
+    <strong>⚠️ 重要：</strong>请复制整行命令。如果粘贴后变成两行，请删除换行，让它保持一整行。
   </div>
 
   <p style="margin-top: 16px;">选中下面 <strong>对应你电脑系统</strong> 的那行命令，完整复制（用鼠标选中 → 右键复制，或按 Ctrl+C / Command+C）：</p>
@@ -221,12 +217,12 @@ irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
   </div>
 
-  <div class="tip-box">
-    <strong>💡 Mac 命令中的 AGENT_INSTALL_YES=1：</strong>脚本会自动检查电脑环境。为了避免命令行管道读取不到键盘输入，交付命令默认使用自动确认模式。如果想手动确认每一步，可以先下载脚本再运行：<code>curl -fsSL "..." -o install-claude-code.sh && bash install-claude-code.sh</code>
+  <div class="info-box">
+    <strong>📌 关于这条短命令：</strong>这条短命令会自动获取最新稳定版安装脚本，普通用户不需要关心版本号。如果 CDN 暂时访问失败，脚本会自动尝试备用下载地址。
   </div>
 
-  <div class="warn-box">
-    <strong>⚠️ 注意：</strong>请完整复制整行命令，不要手动输入（容易打错字母）。不要漏掉开头的 <code>irm</code>（Windows）或 <code>curl</code>（Mac）。
+  <div class="tip-box">
+    <strong>💡 Mac 命令中的 AGENT_INSTALL_YES=1：</strong>脚本会自动检查电脑环境。为了避免命令行管道读取不到键盘输入，交付命令默认使用自动确认模式。如果想手动确认每一步，可以先下载脚本再运行：<code>curl -fsSL "..." -o claude.sh && bash claude.sh</code>
   </div>
 </div>
 
@@ -303,14 +299,39 @@ curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
 <div class="section">
   <h2>怎么知道安装成功了？</h2>
   <ul style="padding-left: 20px; line-height: 2.2;">
-    <li>在终端输入 <code>claude --version</code>，能看到版本号（如 <code>v1.0.x</code>）</li>
+    <li>在终端输入 <code>claude --version</code>，能看到版本号</li>
     <li>输入 <code>claude</code> 能进入对话界面，直接和 AI 对话</li>
     <li>如果已配置 DeepSeek API，Claude Code 将使用 DeepSeek 作为后端模型</li>
   </ul>
 </div>
 
-<!-- ====== 常见问题 ====== -->
+<!-- ====== 为什么更稳定 ====== -->
 <div class="section page-break">
+  <h2>为什么这版安装脚本更稳定？</h2>
+
+  <div class="card">
+    <h4>✅ Windows npm 执行策略问题已修复</h4>
+    <p>新版脚本会优先调用 npm.cmd，减少 Windows 执行策略导致的安装失败。</p>
+  </div>
+
+  <div class="card">
+    <h4>✅ Windows 中文显示问号问题已优化</h4>
+    <p>新版脚本已优化 PowerShell 中文显示，减少输出变成问号的情况。</p>
+  </div>
+
+  <div class="card">
+    <h4>✅ 短命令入口已加固</h4>
+    <p>如果 CDN 暂时访问失败，脚本会自动尝试备用下载地址。</p>
+  </div>
+
+  <div class="card">
+    <h4>✅ winget 首次使用卡住问题已优化</h4>
+    <p>新版脚本已优化 Windows 软件源确认流程，减少首次安装卡住的情况。</p>
+  </div>
+</div>
+
+<!-- ====== 常见问题 ====== -->
+<div class="section">
   <h2>常见问题</h2>
 
   <div class="faq-item">
@@ -354,6 +375,17 @@ curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
     <li>用 <code>claude "解释这段代码"</code> 让 Claude 分析你当前目录的代码</li>
     <li>探索更多功能：<code>claude --help</code> 查看所有可用命令</li>
   </ol>
+</div>
+
+<!-- ====== 安全说明 ====== -->
+<div class="section">
+  <h2>安全说明</h2>
+  <ul style="padding-left: 20px; line-height: 2.2;">
+    <li>脚本只安装 Claude Code，不会多装其他东西</li>
+    <li>脚本支持 --dry-run 预演，安装前可以先看清楚每一步</li>
+    <li>涉及环境修改时会提示你确认</li>
+    <li>所有脚本在 GitHub 开源，代码随时可查看</li>
+  </ul>
 </div>
 
 <div class="footer">
