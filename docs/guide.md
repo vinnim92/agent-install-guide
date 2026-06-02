@@ -51,7 +51,7 @@
 **安装 Claude Code：**
 
 ```bash
-curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude-code.sh | bash
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
 ```
 
 **安装 Codex：**
@@ -73,7 +73,7 @@ curl -fsSL https://vinnim92.github.io/agent-install-guide/i/openclaw.sh | bash
 **安装 Claude Code：**
 
 ```powershell
-irm https://vinnim92.github.io/agent-install-guide/i/claude-code.ps1 | iex
+irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 ```
 
 **安装 Codex：**

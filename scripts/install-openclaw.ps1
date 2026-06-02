@@ -222,7 +222,7 @@ function Install-NodeIfNeeded {
         $hasChoco = Get-Command choco -ErrorAction SilentlyContinue
 
         if ($hasWinget) {
-            winget install OpenJS.NodeJS.LTS --silent --accept-package-agreements 2>$null
+            winget install OpenJS.NodeJS.LTS --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>$null
             $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
         } elseif ($hasScoop) {
             scoop install nodejs 2>$null
@@ -266,7 +266,8 @@ function Start-Install {
         $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
         if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
     } catch {
-        Write-Host "  [!] 官方脚本不可用，改用 npm..." -ForegroundColor Yellow
+        Write-Host "  [!] 官方脚本安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+        Write-Host "  [!] 将尝试 npm fallback 安装..." -ForegroundColor Yellow
     }
 
     # 方法2: npm fallback

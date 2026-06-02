@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude-code.sh | bash
+#   curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -89,11 +89,11 @@ show_help() {
     echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh"
     echo ""
     echo "推荐一行安装命令:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude-code.sh | bash"
+    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash"
     echo ""
     echo "如需手动确认，请先下载脚本再运行:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude-code.sh -o claude-code.sh"
-    echo "  bash install-claude-code.sh"
+    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh -o claude.sh"
+    echo "  bash claude.sh"
     echo ""
     echo "安装后启动:"
     echo "  终端输入: claude"

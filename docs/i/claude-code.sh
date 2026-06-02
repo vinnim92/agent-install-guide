@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Codex macOS/Linux short entry — auto-redirects to latest stable installer
-# Usage: curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
-#   Or:  bash codex.sh --help / --dry-run
+# Claude Code macOS/Linux compatibility alias — forwards to claude.sh
+# 推荐主入口: curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
+# 此别名保留用于兼容旧版文档中的 claude-code.sh 链接。
 
 set -euo pipefail
 
 VERSION="v3.1.1"
 BASE="https://cdn.jsdelivr.net/gh/vinnim92/agent-install-guide@${VERSION}/scripts"
-SCRIPT="install-codex.sh"
+SCRIPT="install-claude-code.sh"
 
 PRIMARY="${BASE}/${SCRIPT}"
 FALLBACK="https://raw.githubusercontent.com/vinnim92/agent-install-guide/${VERSION}/scripts/${SCRIPT}"

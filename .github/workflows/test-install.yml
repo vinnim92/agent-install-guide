@@ -9,6 +9,14 @@ on:
       - 'scripts/install-claude-code.ps1'
       - 'scripts/install-codex.ps1'
       - 'scripts/install-openclaw.ps1'
+      - 'docs/i/claude.sh'
+      - 'docs/i/claude.ps1'
+      - 'docs/i/claude-code.sh'
+      - 'docs/i/claude-code.ps1'
+      - 'docs/i/codex.sh'
+      - 'docs/i/codex.ps1'
+      - 'docs/i/openclaw.sh'
+      - 'docs/i/openclaw.ps1'
       - 'scripts/lib/**'
       - 'scripts/check-scripts.sh'
   workflow_dispatch:
@@ -22,7 +30,15 @@ jobs:
 
       - name: Syntax check (bash)
         run: |
-          for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
+          for f in \
+            scripts/install-claude-code.sh \
+            scripts/install-codex.sh \
+            scripts/install-openclaw.sh \
+            docs/i/claude.sh \
+            docs/i/claude-code.sh \
+            docs/i/codex.sh \
+            docs/i/openclaw.sh
+          do
             bash -n "$f" || exit 1
             echo "$f: syntax OK"
           done
@@ -31,16 +47,23 @@ jobs:
         run: |
           bash scripts/check-scripts.sh
 
-      - name: Test --help
+      - name: Test --help (real install scripts)
         run: |
           for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
             echo "=== $f --help ==="
             bash "$f" --help 2>&1 | head -3
           done
 
-      - name: Test --dry-run
+      - name: Test --dry-run (real install scripts)
         run: |
           for f in scripts/install-claude-code.sh scripts/install-codex.sh scripts/install-openclaw.sh; do
+            echo "=== $f --dry-run ==="
+            AGENT_INSTALL_YES=1 bash "$f" --dry-run 2>&1 | tail -3
+          done
+
+      - name: Test --dry-run (short entry scripts)
+        run: |
+          for f in docs/i/claude.sh docs/i/claude-code.sh docs/i/codex.sh docs/i/openclaw.sh; do
             echo "=== $f --dry-run ==="
             AGENT_INSTALL_YES=1 bash "$f" --dry-run 2>&1 | tail -3
           done
@@ -51,7 +74,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Syntax check (PowerShell)
+      - name: Syntax check (PowerShell) — real install scripts
         shell: pwsh
         run: |
           $scripts = @(
@@ -60,20 +83,29 @@ jobs:
             'scripts/install-openclaw.ps1'
           )
           foreach ($s in $scripts) {
-            $tokens = $null
-            $errors = $null
-            $ast = [System.Management.Automation.Language.Parser]::ParseFile(
-              (Join-Path $pwd $s), [ref]$tokens, [ref]$errors
-            )
-            if ($errors.Count -gt 0) {
-              Write-Host "$s : SYNTAX ERROR"
-              $errors | ForEach-Object { Write-Host "  $_" }
-              exit 1
-            }
+            $path = Join-Path $pwd $s
+            $content = Get-Content $path -Raw
+            $block = [scriptblock]::Create($content)
             Write-Host "$s : syntax OK"
           }
 
-      - name: Test -Help
+      - name: Syntax check (PowerShell) — short entry scripts
+        shell: pwsh
+        run: |
+          $scripts = @(
+            'docs/i/claude.ps1',
+            'docs/i/claude-code.ps1',
+            'docs/i/codex.ps1',
+            'docs/i/openclaw.ps1'
+          )
+          foreach ($s in $scripts) {
+            $path = Join-Path $pwd $s
+            $content = Get-Content $path -Raw
+            $block = [scriptblock]::Create($content)
+            Write-Host "$s : syntax OK"
+          }
+
+      - name: Test -Help (real install scripts)
         shell: pwsh
         run: |
           $scripts = @(
@@ -86,13 +118,28 @@ jobs:
             & $s -Help 2>&1 | Select-Object -First 3
           }
 
-      - name: Test -DryRun
+      - name: Test -DryRun (real install scripts)
         shell: pwsh
         run: |
           $scripts = @(
             'scripts/install-claude-code.ps1',
             'scripts/install-codex.ps1',
             'scripts/install-openclaw.ps1'
+          )
+          foreach ($s in $scripts) {
+            Write-Host "=== $s -DryRun ==="
+            $env:AGENT_INSTALL_YES = '1'
+            & $s -DryRun 2>&1 | Select-Object -Last 3
+          }
+
+      - name: Test -DryRun (short entry scripts)
+        shell: pwsh
+        run: |
+          $scripts = @(
+            'docs/i/claude.ps1',
+            'docs/i/claude-code.ps1',
+            'docs/i/codex.ps1',
+            'docs/i/openclaw.ps1'
           )
           foreach ($s in $scripts) {
             Write-Host "=== $s -DryRun ==="

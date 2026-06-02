@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   irm https://vinnim92.github.io/agent-install-guide/i/claude-code.ps1 | iex
+#   irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
 #   .\install-claude-code.ps1 -Help
 #   .\install-claude-code.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1
@@ -265,7 +265,7 @@ function Start-Install {
     # 方法1: winget
     if ($hasWinget -and -not $installed) {
         Write-Host "  尝试 winget 安装..." -ForegroundColor Cyan
-        winget install Anthropic.ClaudeCode --silent --accept-package-agreements 2>$null
+        winget install Anthropic.ClaudeCode --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>$null
         $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
         if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
     }
@@ -279,7 +279,8 @@ function Start-Install {
             $env:Path = "$localBin;$env:Path"
             if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
         } catch {
-            Write-Host "  [!] 官方脚本不可用，改用 npm..." -ForegroundColor Yellow
+            Write-Host "  [!] 官方脚本安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+            if ($hasNpm) { Write-Host "  [!] 将尝试 npm fallback 安装..." -ForegroundColor Yellow }
         }
     }
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.1.1 (2026-06-02)
+
+- 新增 claude-code.ps1 / claude-code.sh 兼容别名，统一主入口为 claude.ps1 / claude.sh
+- docs/i 短入口增加 CDN fallback（jsDelivr → GitHub raw），并显示中文错误提示
+- PowerShell 短入口增加 BOM 裁剪（TrimStart）避免脚本解析错误
+- 修复 winget install 缺少 --accept-source-agreements --disable-interactivity 参数
+- 减少静默吞错：Invoke-RestMethod 官方脚本失败时显示错误信息和 fallback 提示
+- 修复 GitHub Actions 测试目标，改为测试当前真实入口和短入口
+- 全仓库统一 irm 替代 iwr，claude.ps1/claude.sh 替代 claude-code.ps1/claude-code.sh
+- 支持文档中的安装命令均更新为 claude.ps1 / claude.sh 主入口
+
+---
+
 ## v3.1.0 (2026-06-02)
 
 - 新增短命令入口文件（docs/i/），解决 PDF 复制长 CDN URL 断行问题

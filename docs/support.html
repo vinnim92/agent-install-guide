@@ -64,10 +64,10 @@
 
 <!-- 2 -->
 <div class="section">
-  <h2>下载失败（curl / iwr 报错）</h2>
+  <h2>下载失败（curl / irm 报错）</h2>
   <ul>
     <li><strong>macOS / Linux：</strong>确认命令以 <code>curl -fsSL</code> 开头，不要漏掉 <code>-fsSL</code> 参数。</li>
-    <li><strong>Windows PowerShell：</strong>确认命令以 <code>iwr -useb</code> 开头。</li>
+    <li><strong>Windows PowerShell：</strong>确认命令以 <code>irm</code> 开头（不是 iwr）。</li>
     <li><strong>确保命令完整复制：</strong>整行命令从网页上完整复制，不要手动输入（容易打错）。</li>
     <li><strong>关闭防火墙 / 安全软件：</strong>部分安全软件会拦截来自 Internet 的脚本。暂时关闭后再试。</li>
     <li><strong>如果反复失败：</strong>可能是 jsDelivr CDN 被运营商限制。尝试切换手机热点。</li>
@@ -145,7 +145,7 @@ Set-ExecutionPolicy RemoteSigned -Scope CurrentUser</div>
   <ul>
     <li><strong>现象：</strong>安装过程中出现红色报错，包含 <code>npm.ps1 cannot be loaded</code> 或 <code>UnauthorizedAccess</code>，提示 <code>因为在此系统上禁止运行脚本</code>。</li>
     <li><strong>原因：</strong>Windows PowerShell 默认执行策略可能禁止运行 <code>.ps1</code> 脚本。旧版本脚本直接调用 <code>npm</code> 时，PowerShell 可能会优先解析到 <code>C:\Program Files\nodejs\npm.ps1</code>，从而被系统拦截。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.1.0 或更新版本。新版脚本会优先调用 <code>npm.cmd</code>，避免触发 npm.ps1 执行策略问题。
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本会优先调用 <code>npm.cmd</code>，避免触发 npm.ps1 执行策略问题。
       <div class="cmd-block"># 使用最新版安装命令（已内置 npm.cmd 优先调用）
 irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
     </li>
@@ -163,7 +163,7 @@ irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
   <ul>
     <li><strong>现象：</strong>安装过程中输出的中文文字变成了一串 <code>?????????????</code>，但安装流程仍在继续。</li>
     <li><strong>原因：</strong>这是 Windows PowerShell 5.1 控制台编码与脚本文件编码不一致导致的。默认控制台代码页不是 UTF-8，而脚本含中文，PowerShell 按旧 ANSI 编码误读后将中文替换为问号。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.1.0 或更新版本。新版脚本保存为 UTF-8 with BOM，并已自动设置控制台为 UTF-8 编码。
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本保存为 UTF-8 with BOM，并已自动设置控制台为 UTF-8 编码。
       <div class="cmd-block"># 使用最新版安装命令（已内置 UTF-8 编码修复）
 irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
     </li>
