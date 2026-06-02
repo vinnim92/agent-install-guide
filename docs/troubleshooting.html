@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 安装故障排查</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5; color: #333; line-height: 1.8; padding: 20px;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 1.8em; margin: 24px 0 8px; color: #1a1a1a; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 28px; font-size: 0.95em; }
+  .section {
+    background: #fff; border-radius: 10px; padding: 22px 26px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .section h2 { font-size: 1.15em; color: #d4380d; margin-bottom: 8px; }
+  .section ul { padding-left: 20px; }
+  .section li { margin-bottom: 6px; }
+  code {
+    background: #f0f0f0; padding: 2px 6px; border-radius: 4px;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 0.92em;
+  }
+  .cmd-block {
+    background: #1e1e1e; color: #d4d4d4; padding: 10px 16px;
+    border-radius: 6px; font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 0.9em;
+    margin: 8px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+  }
+  .note {
+    background: #fff7e6; border-left: 4px solid #faad14;
+    padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0;
+    font-size: 0.93em;
+  }
+  .footer {
+    background: #fff; border-radius: 10px; padding: 22px 26px;
+    margin-top: 24px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .footer strong { color: #d4380d; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>AI Agent 安装故障排查</h1>
+<p class="subtitle">遇到问题了？按下面的错误类型找到对应解决方法</p>
+
+<!-- 1 -->
+<div class="section">
+  <h2>命令没有反应 / 卡住了</h2>
+  <ul>
+    <li><strong>等待 2–3 分钟：</strong>首次安装需要下载文件，请耐心等待，不要关闭窗口。</li>
+    <li><strong>检查网络：</strong>公司或学校 Wi-Fi 可能屏蔽了 GitHub / npm 等网站。尝试切换手机热点再试。</li>
+    <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
+    <li><strong>按 Ctrl+C 取消后重试：</strong>偶尔网络波动会导致下载中断，重新运行安装命令即可。</li>
+    <li><strong>换个网络环境：</strong>比如从公司网络切换到家庭 Wi-Fi 或手机热点。</li>
+  </ul>
+</div>
+
+<!-- 2 -->
+<div class="section">
+  <h2>下载失败（curl / irm 报错）</h2>
+  <ul>
+    <li><strong>macOS / Linux：</strong>确认命令以 <code>curl -fsSL</code> 开头，不要漏掉 <code>-fsSL</code> 参数。</li>
+    <li><strong>Windows PowerShell：</strong>确认命令以 <code>irm</code> 开头（不是 iwr）。</li>
+    <li><strong>确保命令完整复制：</strong>从 PDF 或网页上完整复制整行命令，不要手动输入。</li>
+    <li><strong>关闭防火墙 / 安全软件：</strong>部分安全软件会拦截来自 Internet 的脚本。暂时关闭后再试。</li>
+    <li><strong>如果反复失败：</strong>可能是 CDN 被运营商限制。尝试切换手机热点。</li>
+  </ul>
+</div>
+
+<!-- 3 -->
+<div class="section">
+  <h2>权限错误（Permission denied / EACCES）</h2>
+  <ul>
+    <li><strong>macOS / Linux：</strong>安装过程中如果遇到 <code>Permission denied</code>，按照提示选择 "Y" 即可。</li>
+    <li><strong>macOS 额外步骤：</strong>某些 Mac 可能需要先允许终端访问"开发工具"。系统提示时点"允许"即可。</li>
+    <li><strong>Windows：</strong>右键点击 PowerShell 图标 → 选择"以管理员身份运行"，然后重新执行安装命令。</li>
+    <li><strong>不要用 sudo：</strong>在 Mac/Linux 上，不要用 <code>sudo npm install -g</code>。</li>
+  </ul>
+</div>
+
+<!-- 4 -->
+<div class="section">
+  <h2>找不到命令（command not found / 无法识别）</h2>
+  <ul>
+    <li><strong>第一步：关闭终端 / PowerShell 窗口，重新打开。</strong>这是最常见的问题——安装成功但 PATH 未立即生效。</li>
+    <li><strong>macOS / Linux：</strong>
+      <div class="cmd-block"># 检查是否已安装（在终端粘贴运行）
+which claude      # Claude Code
+which codex       # Codex
+which openclaw    # OpenClaw</div>
+      如果有输出路径但运行报错，说明 PATH 问题。关掉终端重新打开。
+    </li>
+    <li><strong>Windows：</strong>
+      <div class="cmd-block"># 在 PowerShell 中检查
+Get-Command claude     # Claude Code
+Get-Command codex      # Codex
+Get-Command openclaw   # OpenClaw</div>
+    </li>
+    <li><strong>重新运行安装脚本：</strong>如果关闭重开终端后依然找不到命令，重新运行安装脚本即可。</li>
+  </ul>
+</div>
+
+<!-- 5 -->
+<div class="section">
+  <h2>Node.js 版本问题</h2>
+  <ul>
+    <li><strong>Claude Code：</strong>自带运行时，不需要 Node.js。</li>
+    <li><strong>Codex：</strong>需要 Node.js ≥ v22。安装脚本会自动检查和安装。</li>
+    <li><strong>OpenClaw：</strong>需要 Node.js ≥ v22.19（推荐 v24+）。同样由脚本自动安装。</li>
+    <li><strong>检查当前版本：</strong>
+      <div class="cmd-block">node -v</div>
+      如果版本号小于 v22.0.0，则需要升级 Node.js。
+    </li>
+    <li><strong>手动安装 Node.js：</strong>访问 <a href="https://nodejs.org" target="_blank">https://nodejs.org</a>，下载左侧推荐的 LTS 版本安装。</li>
+  </ul>
+</div>
+
+<!-- 6 -->
+<div class="section">
+  <h2>Windows — npm.ps1 cannot be loaded</h2>
+  <ul>
+    <li><strong>现象：</strong>安装过程中出现红色报错，包含 <code>npm.ps1 cannot be loaded</code> 或 <code>因为在此系统上禁止运行脚本</code>。</li>
+    <li><strong>原因：</strong>Windows PowerShell 默认执行策略可能禁止运行 <code>.ps1</code> 脚本。</li>
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本优先调用 <code>npm.cmd</code>，从根本上避免此问题。
+      <div class="cmd-block">irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
+    </li>
+    <li><strong>临时解决方案：</strong>
+      <div class="cmd-block">Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force</div>
+      然后重新运行安装命令。此设置<strong>仅当前窗口有效</strong>，关闭后自动失效。
+    </li>
+  </ul>
+</div>
+
+<!-- 7 -->
+<div class="section">
+  <h2>Windows PowerShell 显示问号（???）</h2>
+  <ul>
+    <li><strong>现象：</strong>安装过程中输出的中文文字变成了一串 <code>?????????????</code>。</li>
+    <li><strong>原因：</strong>Windows PowerShell 5.1 控制台编码与脚本编码不一致。</li>
+    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本保存为 UTF-8 with BOM，并自动设置控制台为 UTF-8。
+      <div class="cmd-block">irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
+    </li>
+    <li><strong>临时解决方案：</strong>
+      <div class="cmd-block">chcp 65001</div>
+      然后在同一个 PowerShell 窗口重新运行安装命令。
+    </li>
+    <li><strong>说明：</strong>问号乱码不影响安装逻辑的正确性。即使看到 ???，安装操作本身仍在正常执行。</li>
+  </ul>
+</div>
+
+<!-- 8 -->
+<div class="section">
+  <h2>Claude Code — DeepSeek API 配置问题</h2>
+  <ul>
+    <li><strong>Claude Code 已安装，但 DeepSeek API 配置失败：</strong>关掉终端重新打开（环境变量需新窗口才能加载），再试 <code>claude</code>。</li>
+    <li><strong>DeepSeek API Key 粘贴后没反应：</strong>输入 Key 时光标不会移动是正常的（安全输入模式），粘贴后直接回车即可。</li>
+    <li><strong>Claude Code 启动后仍提示 Anthropic / Claude 登录：</strong>说明环境变量未生效。确认 <code>ANTHROPIC_BASE_URL=https://api.deepseek.com/anthropic</code> 已设置。Mac/Linux 用户运行 <code>source ~/.zshrc</code> 然后重试。</li>
+    <li><strong>如何手动重新配置：</strong>重新运行安装脚本，或手动设置 <code>ANTHROPIC_BASE_URL</code> 和 <code>ANTHROPIC_AUTH_TOKEN</code> 环境变量。</li>
+  </ul>
+</div>
+
+<!-- 9 -->
+<div class="section">
+  <h2>Codex — 登录 / API Key 问题</h2>
+  <ul>
+    <li><strong>Codex 官方网页登录失败：</strong>确认 ChatGPT 账号有 Plus/Pro/Team 订阅。免费版不支持 Codex。</li>
+    <li><strong>API Key 登录失败：</strong>确认 <code>OPENAI_API_KEY</code> 环境变量已正确设置。Key 以 <code>sk-</code> 开头。</li>
+    <li><strong>API Key 已设置但 Codex 不识别：</strong>关掉终端重新打开（环境变量需新窗口加载）。</li>
+    <li><strong>API Key 提示余额不足：</strong>登录 <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> 检查用量和余额。</li>
+  </ul>
+</div>
+
+<!-- 10 -->
+<div class="section">
+  <h2>OpenClaw — EACCES / permission denied</h2>
+  <ul>
+    <li><strong>现象：</strong><code>npm error EACCES: permission denied</code>，路径里出现 <code>~/.npm/_cacache</code>。</li>
+    <li><strong>原因：</strong>npm 缓存目录权限异常，通常是以前用 <code>sudo npm</code> 导致文件不属于当前用户。</li>
+    <li><strong>macOS / Linux 修复：</strong>
+      <div class="cmd-block">sudo chown -R "$(id -u):$(id -g)" "$HOME/.npm"
+chmod -R u+rwX "$HOME/.npm"
+npm cache verify
+npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund</div>
+    </li>
+    <li><strong>Windows：</strong>以管理员身份运行 PowerShell：
+      <div class="cmd-block">npm cache clean --force
+npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit --no-fund</div>
+    </li>
+  </ul>
+</div>
+
+<!-- 11 -->
+<div class="section">
+  <h2>OpenClaw — DeepSeek 配置问题</h2>
+  <ul>
+    <li><strong>安装阶段不需要 API Key。</strong>首次使用时推荐 DeepSeek API Key。</li>
+    <li><strong>配置命令：</strong>
+      <div class="cmd-block">openclaw onboard --auth-choice deepseek-api-key</div>
+      按终端提示输入你的 DeepSeek API Key（在 platform.deepseek.com 注册获取）。
+    </li>
+    <li><strong>验证：</strong>
+      <div class="cmd-block">openclaw models list --provider deepseek</div>
+    </li>
+  </ul>
+</div>
+
+<!-- 12 -->
+<div class="section">
+  <h2>如何截图反馈</h2>
+  <ul>
+    <li><strong>Windows：</strong>按 <code>⊞ + Shift + S</code> 截图，或按 <code>Print Screen</code> 键。</li>
+    <li><strong>Mac：</strong>按 <code>Command + Shift + 4</code> 截取屏幕区域，截图保存在桌面。</li>
+    <li><strong>发送截图时请附上：</strong>① 完整的错误截图（含命令和报错文字） ② Windows 还是 Mac ③ 安装的是哪款工具。</li>
+  </ul>
+</div>
+
+<!-- 通用排查 -->
+<div class="note">
+  <strong>通用排查思路：</strong><br>
+  1. 关掉终端 → 重新打开 → 重试<br>
+  2. 切换网络（手机热点）→ 重试<br>
+  3. 重启电脑 → 重试<br>
+  4. 大部分安装问题都可以通过以上三步解决。
+</div>
+
+<div class="footer">
+  <p>以上方法都试过了还是不行？</p>
+  <p><strong>请把错误截图和你使用的系统发给卖家。</strong></p>
+  <p style="color: #999; font-size: 0.88em; margin-top: 8px;">发送时请附上：① 完整的错误截图（含命令和报错文字） ② Windows 还是 Mac ③ 安装的是哪款工具</p>
+</div>
+
+</div>
+</body>
+</html>
