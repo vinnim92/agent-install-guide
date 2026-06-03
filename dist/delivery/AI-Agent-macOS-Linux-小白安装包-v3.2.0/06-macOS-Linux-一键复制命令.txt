@@ -1,0 +1,38 @@
+AI Agent 小白安装包 v3.2.0
+macOS / Linux 版 — 一键复制命令
+
+=========================================
+安装命令
+=========================================
+
+打开终端，进入 mac-linux 文件夹后执行：
+
+  bash install-claude-code.sh    → Claude Code + DeepSeek API
+  bash install-codex.sh          → Codex
+  bash install-openclaw.sh       → OpenClaw + DeepSeek
+
+如果提示权限问题，请先执行：
+
+  chmod +x install-claude-code.sh install-codex.sh install-openclaw.sh
+
+=========================================
+跳过确认自动安装（可选）
+=========================================
+
+如果想跳过确认直接安装：
+
+  AGENT_INSTALL_YES=1 bash install-claude-code.sh
+  AGENT_INSTALL_YES=1 bash install-codex.sh
+  AGENT_INSTALL_YES=1 bash install-openclaw.sh
+
+=========================================
+安装后启动
+=========================================
+
+关闭终端，重新打开，输入：
+
+  claude      → 启动 Claude Code
+  codex       → 启动 Codex
+  openclaw    → 启动 OpenClaw
+
+如果提示"找不到命令"，关掉终端重新打开即可。

@@ -1,0 +1,40 @@
+AI Agent 小白安装包 v3.2.0
+Windows 版 — 一键启动说明
+
+=========================================
+推荐方式（双击运行）
+=========================================
+
+打开 windows 文件夹，双击对应 .cmd 文件即可启动安装：
+
+  install-claude.cmd     → Claude Code + DeepSeek API
+  install-codex.cmd      → Codex
+  install-openclaw.cmd   → OpenClaw + DeepSeek
+
+=========================================
+备用方式（命令行运行）
+=========================================
+
+在 windows 文件夹中，按住 Shift 键，右键空白处 → "在此处打开 PowerShell 窗口"，然后输入：
+
+  .\install-claude.cmd
+  .\install-codex.cmd
+  .\install-openclaw.cmd
+
+也可以直接运行 PowerShell 脚本：
+
+  powershell -ExecutionPolicy Bypass -File install-claude-code.ps1
+  powershell -ExecutionPolicy Bypass -File install-codex.ps1
+  powershell -ExecutionPolicy Bypass -File install-openclaw.ps1
+
+=========================================
+安装后启动
+=========================================
+
+安装完成后，关闭当前窗口，重新打开 PowerShell 或 命令提示符，输入：
+
+  claude      → 启动 Claude Code
+  codex       → 启动 Codex
+  openclaw    → 启动 OpenClaw
+
+如果提示"找不到命令"，关掉窗口重新打开即可。

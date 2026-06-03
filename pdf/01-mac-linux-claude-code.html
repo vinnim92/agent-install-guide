@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>macOS/Linux Claude Code + DeepSeek API 小白安装手册 v3.2.0</title>
+<style>
+  @media print { body { -webkit-print-color-adjust: exact; } .page-break { page-break-before: always; } }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; color: #1a1a1a; line-height: 1.9; font-size: 15px; }
+  .cover { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; background: linear-gradient(135deg, #faf5f0 0%, #f0e6da 40%, #e8d5c4 100%); padding: 40px; }
+  .cover .badge { display: inline-block; background: #d4532a; color: #fff; padding: 6px 22px; border-radius: 20px; font-size: 0.9em; margin-bottom: 20px; }
+  .cover h1 { font-size: 2.5em; margin: 10px 0 6px; font-weight: 700; }
+  .cover .tagline { font-size: 1.05em; color: #555; margin-bottom: 30px; }
+  .cover .meta { font-size: 0.88em; color: #777; }
+  .section { max-width: 700px; margin: 0 auto; padding: 36px 28px; }
+  .section h2 { font-size: 1.35em; border-left: 4px solid #d4532a; padding-left: 12px; margin-bottom: 16px; }
+  .card { background: #fafaf8; border-radius: 10px; padding: 20px 24px; margin: 12px 0; border: 1px solid #eee; }
+  .cmd-box { background: #1e1e1e; color: #e0e0e0; padding: 14px 18px; border-radius: 8px; font-family: "SF Mono", "Fira Code", "Consolas", monospace; font-size: 0.9em; margin: 10px 0; overflow-x: auto; white-space: pre-wrap; word-break: break-all; line-height: 1.7; }
+  .step-row { display: flex; gap: 14px; align-items: flex-start; margin: 20px 0; }
+  .step-num { flex-shrink: 0; width: 36px; height: 36px; background: #d4532a; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1em; }
+  .step-body { flex: 1; }
+  .tip-box { background: #fff8e8; border-left: 4px solid #faad14; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.93em; }
+  .warn-box { background: #fff2f0; border-left: 4px solid #ff4d4f; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.93em; }
+  .info-box { background: #f0f5ff; border-left: 4px solid #1677ff; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.93em; }
+  .faq-item { margin: 14px 0; } .faq-item .q { font-weight: 600; color: #d4532a; } .faq-item .a { margin-top: 4px; color: #444; }
+  .footer { text-align: center; padding: 28px; color: #999; font-size: 0.85em; border-top: 1px solid #eee; } .footer a { color: #1677ff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="badge">Claude Code</div>
+  <h1>Claude Code + DeepSeek API<br>macOS / Linux 小白安装手册</h1>
+  <p class="tagline">Anthropic 出品 · DeepSeek API 优先 · 本地脚本一键安装</p>
+  <p class="meta"><span>版本 v3.2.0</span><span>|</span><span>macOS / Linux</span></p>
+</div>
+
+<div class="section page-break">
+  <h2>适用对象</h2>
+  <p>本手册适合<strong>macOS 和 Linux 用户</strong>。如果你平时只用鼠标操作电脑，从没打开过"终端"，本手册会手把手带你完成安装。</p>
+  <div class="info-box"><strong>本安装包已内置安装脚本</strong>，不需要从 GitHub 复制远程命令。但安装过程中仍需要网络，用于下载 Agent 工具和相关依赖。</div>
+  <div class="tip-box"><strong>Claude Code 不需要安装 Node.js</strong> — 它自带运行时，装上就能用。本手册默认采用 DeepSeek API 方案（国内获取方便、价格便宜）。</div>
+</div>
+
+<div class="section">
+  <h2>安装前准备</h2>
+  <div class="card"><h4>🔑 需要准备一个 DeepSeek API Key</h4><p>获取地址：<strong>platform.deepseek.com</strong>（在浏览器打开）<br>用手机号注册 → 点左侧"API Keys" → 创建 Key（以 sk- 开头）。</p></div>
+  <div class="card"><h4>💻 系统要求</h4><p>macOS 10.15+ 或 Linux</p></div>
+  <div class="card"><h4>🌐 需要网络连接</h4><p>安装过程需要联网下载。如果公司/学校网络较严，切换到手机热点。</p></div>
+</div>
+
+<div class="section page-break">
+  <h2>第一步：解压安装包</h2>
+  <div class="step-row"><div class="step-num">1</div><div class="step-body"><h3>找到下载的 zip 文件</h3><p>文件名：<strong>AI-Agent-macOS-Linux-小白安装包-v3.2.0.zip</strong></p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h3>双击解压</h3><p>Mac 上双击 zip 即可解压到当前文件夹。</p></div></div>
+  <div class="step-row"><div class="step-num">3</div><div class="step-body"><h3>记住解压位置</h3><p>解压后会得到一个文件夹，记住它的位置。</p></div></div>
+</div>
+
+<div class="section page-break">
+  <h2>第二步：打开终端，进入安装目录</h2>
+  <div class="step-row"><div class="step-num">1</div><div class="step-body"><h3>打开终端</h3><p>按 <code>Command + 空格</code>，输入"终端"，回车。</p></div></div>
+  <div class="step-row"><div class="step-num">2</div><div class="step-body"><h3>进入 mac-linux 文件夹</h3><p>在终端输入 <code>cd </code>（cd 后面有个空格），然后把 <strong>mac-linux</strong> 文件夹拖到终端窗口，回车。</p></div></div>
+  <div class="tip-box"><strong>💡 拖拽技巧：</strong>直接把文件夹图标拖进终端窗口，会自动填入完整路径，不需要手动敲。</div>
+</div>
+
+<div class="section page-break">
+  <h2>第三步：运行安装脚本</h2>
+  <p>在终端中粘贴以下命令，回车：</p>
+  <div class="cmd-box">bash install-claude-code.sh</div>
+  <p>脚本会自动检查环境并安装 Claude Code。</p>
+  <div class="warn-box"><strong>⚠️ 如果提示 "Permission denied"：</strong>先运行 <code>chmod +x install-claude-code.sh</code>，然后再 <code>bash install-claude-code.sh</code>。</div>
+  <div class="info-box"><strong>💡 想跳过确认自动安装？</strong>运行：<code>AGENT_INSTALL_YES=1 bash install-claude-code.sh</code></div>
+</div>
+
+<div class="section">
+  <h2>第四步：跟着提示操作</h2>
+  <ol style="padding-left: 24px; line-height: 2.2;">
+    <li>脚本显示 <strong>"正在检查你的电脑环境…"</strong></li>
+    <li>检查系统、网络、是否已安装过 Claude Code</li>
+    <li>自动下载并安装 Claude Code（自带运行时）</li>
+    <li>看到 <strong>"✅ Claude Code 安装成功"</strong> 就完成了</li>
+  </ol>
+  <div class="tip-box"><strong>💡 如果中途出现红色报错：</strong>截图完整终端窗口，然后访问故障排查页面或联系技术支持。</div>
+</div>
+
+<div class="section">
+  <h2>第五步：配置 DeepSeek API</h2>
+  <p>安装完成后，脚本会自动询问<strong>是否配置 DeepSeek API</strong>。输入 <code>y</code> 并粘贴你的 API Key 即可。</p>
+</div>
+
+<div class="section">
+  <h2>怎么知道安装成功了？</h2>
+  <ul style="padding-left: 20px; line-height: 2.2;">
+    <li>关闭终端，重新打开</li>
+    <li>输入 <code>claude --version</code>，能看到版本号</li>
+    <li>输入 <code>claude</code> 能进入对话界面</li>
+  </ul>
+</div>
+
+<div class="section page-break">
+  <h2>为什么这版安装包更稳定？</h2>
+  <div class="card"><h4>✅ 本地脚本包，不依赖远程入口</h4><p>安装脚本已内置在 zip 包中，不需要复制远程命令或访问 GitHub Pages/jsDelivr。</p></div>
+  <div class="card"><h4>✅ 拖拽进终端即可</h4><p>不需要手动输入长路径。把文件夹拖进终端窗口就能自动填入路径。</p></div>
+  <div class="card"><h4>✅ 自动确认模式</h4><p>默认支持 AGENT_INSTALL_YES=1 自动确认，新手也能顺利完成安装。</p></div>
+</div>
+
+<div class="section">
+  <h2>常见问题</h2>
+  <div class="faq-item"><p class="q">Q: 安装后输入 claude 提示"找不到命令"？</p><p class="a">A: 关闭终端重新打开即可。如果仍有问题，重新运行一遍安装脚本。</p></div>
+  <div class="faq-item"><p class="q">Q: 需要安装 Node.js 吗？</p><p class="a">A: 不需要。Claude Code 自带运行时。</p></div>
+  <div class="faq-item"><p class="q">Q: 在哪里获取 DeepSeek API Key？</p><p class="a">A: 浏览器打开 <strong>platform.deepseek.com</strong>，手机号注册后创建 API Key。</p></div>
+  <div class="faq-item"><p class="q">Q: 权限错误 Permission denied？</p><p class="a">A: 运行 <code>chmod +x install-claude-code.sh</code>，然后再运行安装命令。</p></div>
+  <div class="faq-item"><p class="q">Q: 安装失败怎么办？</p><p class="a">A: 打开故障排查页面：<br><a href="https://vinnim92.github.io/agent-install-guide/troubleshooting.html">https://vinnim92.github.io/agent-install-guide/troubleshooting.html</a></p></div>
+</div>
+
+<div class="section">
+  <h2>关于 GitHub 仓库</h2>
+  <p>GitHub 仓库是开发仓库和云端更新库。本安装包已内置安装脚本，<strong>不需要从 GitHub 复制远程命令</strong>。如需获取最新版安装包，请访问 GitHub Releases 页面或联系购买渠道。</p>
+</div>
+
+<div class="section">
+  <h2>安全说明</h2>
+  <ul style="padding-left: 20px; line-height: 2.2;"><li>脚本只安装 Claude Code，不会多装其他东西</li><li>所有脚本在 GitHub 开源，代码随时可查看</li><li>涉及环境修改时会提示你确认</li></ul>
+</div>
+
+<div class="footer">
+  <p>Claude Code + DeepSeek API macOS/Linux 安装手册 v3.2.0</p>
+  <p><a href="https://vinnim92.github.io/agent-install-guide/troubleshooting.html">故障排查页面</a></p>
+</div>
+
+</body>
+</html>

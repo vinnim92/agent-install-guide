@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.2.0 (2026-06-03)
+
+- 产品形态调整为本地脚本包交付，不再要求小白用户从远程入口安装
+- Windows 与 macOS/Linux 分成两个独立安装包
+- Windows 用户双击 .cmd 即可安装，不需要复制 irm / iwr / curl 命令
+- macOS/Linux 用户使用本地 .sh 脚本安装，支持拖拽文件夹进终端
+- 6 份 PDF 手册按平台拆分，Windows 手册只讲 Windows，macOS/Linux 手册只讲 macOS/Linux
+- 新增 windows/install-*.cmd 启动器，包含中文提示和 pause
+- 新增 README-先看我.txt、06 一键启动说明、07 检查更新等交付文档
+- 新增 GITEE_MIRROR.md 国内镜像搭建指南
+- troubleshooting.html 新增 .cmd 双击问题、Windows 安全提示等排查内容
+- GitHub 仓库定位为开发仓库和云端更新库
+
+---
+
 ## v3.1.2 (2026-06-02)
 
 - 国内镜像入口方案：支持 Gitee/GitCode 作为中国大陆默认下载源

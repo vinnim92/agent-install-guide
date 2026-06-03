@@ -59,15 +59,37 @@
   </ul>
 </div>
 
+<!-- 1b: Windows .cmd 问题 -->
+<div class="section">
+  <h2>双击 .cmd 没反应 / 窗口一闪而过（Windows）</h2>
+  <ul>
+    <li><strong>不要在压缩包预览中运行：</strong>请先完整解压 zip 文件，再打开文件夹双击 .cmd。</li>
+    <li><strong>检查是否解压完整：</strong>确保 windows 文件夹里的 .ps1 文件和 .cmd 文件在同一目录。</li>
+    <li><strong>右键以管理员身份运行：</strong>右键点击 .cmd 文件 → "以管理员身份运行"。</li>
+    <li><strong>从命令行运行看错误信息：</strong>在 windows 文件夹中按住 Shift + 右键空白处 → "在此处打开 PowerShell 窗口"，输入 <code>.\install-codex.cmd</code> 回车，窗口不会闪退就能看到错误信息。</li>
+  </ul>
+</div>
+
+<!-- 1c: Windows 安全提示 -->
+<div class="section">
+  <h2>Windows 弹出 "已保护你的电脑" 提示</h2>
+  <ul>
+    <li><strong>现象：</strong>双击 .cmd 或运行脚本时，Windows SmartScreen 弹出蓝色或黄色警告框。</li>
+    <li><strong>这是正常的安全提醒：</strong>因为脚本文件来自互联网（通过 zip 下载），Windows 会默认提醒。</li>
+    <li><strong>解决方法：</strong>点击"更多信息"，然后点击"仍要运行"。本安装包开源，代码可在 GitHub 上查看。</li>
+    <li><strong>如果"仍要运行"按钮不出现：</strong>右键点击 .cmd 文件 → "属性" → 勾选"解除锁定" → "确定"，然后重新双击。</li>
+  </ul>
+</div>
+
 <!-- 2 -->
 <div class="section">
-  <h2>下载失败（curl / irm 报错）</h2>
+  <h2>安装过程中下载失败</h2>
   <ul>
-    <li><strong>macOS / Linux：</strong>确认命令以 <code>curl -fsSL</code> 开头，不要漏掉 <code>-fsSL</code> 参数。</li>
-    <li><strong>Windows PowerShell：</strong>确认命令以 <code>irm</code> 开头（不是 iwr）。</li>
-    <li><strong>确保命令完整复制：</strong>从 PDF 或网页上完整复制整行命令，不要手动输入。</li>
-    <li><strong>关闭防火墙 / 安全软件：</strong>部分安全软件会拦截来自 Internet 的脚本。暂时关闭后再试。</li>
-    <li><strong>如果反复失败：</strong>可能是 CDN 被运营商限制。尝试切换手机热点。</li>
+    <li><strong>v3.2.0 本地安装包：</strong>本安装包已内置安装脚本，但安装过程仍需网络（用于下载 Node.js、Agent 工具等依赖）。</li>
+    <li><strong>检查网络连接：</strong>确保电脑能正常上网。公司/学校 Wi-Fi 可能屏蔽了 npm 或 GitHub。</li>
+    <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
+    <li><strong>换个网络环境：</strong>比如从公司网络切换到家庭 Wi-Fi 或手机热点。</li>
+    <li><strong>关闭防火墙 / 安全软件：</strong>部分安全软件会拦截安装脚本的网络请求。暂时关闭后再试。</li>
   </ul>
 </div>
 
