@@ -4,26 +4,35 @@
 
 ---
 
-## 当前主交付方式：本地脚本包
+## 快速开始
 
-从 v3.2.0 开始，**小白用户的默认安装方式改为本地脚本包**：
+本项目的售卖交付物是 **Windows / macOS-Linux 两个本地脚本安装包**。安装包已内置所有安装脚本，不需要从 GitHub 复制远程命令。
 
-**Windows：**
-下载 Windows zip → 解压 → 打开 windows 文件夹 → 双击 install-xxx.cmd
+### Windows
 
-**macOS / Linux：**
-下载 macOS/Linux zip → 解压 → 打开终端 → 进入 mac-linux 文件夹 → bash install-xxx.sh
+1. 下载 `AI-Agent-Windows-v3.2.1.zip`
+2. 解压到文件夹（不要在压缩包预览里直接双击）
+3. 打开 `windows` 文件夹
+4. 双击对应 Agent 的 .cmd 文件：
+   - Claude Code → `install-claude.cmd`
+   - Codex → `install-codex.cmd`
+   - OpenClaw → `install-openclaw.cmd`
 
-安装包已内置所有安装脚本，不需要从 GitHub Pages / jsDelivr 复制远程命令。
+### macOS / Linux
+
+1. 下载 `AI-Agent-macOS-Linux-v3.2.1.zip`
+2. 双击解压
+3. 打开终端，输入 `cd `（后面有个空格），把 `mac-linux` 文件夹拖进终端窗口，回车
+4. 运行对应 Agent 的安装脚本：
+   - Claude Code → `bash install-claude-code.sh`
+   - Codex → `bash install-codex.sh`
+   - OpenClaw → `bash install-openclaw.sh`
 
 ---
 
 ## 下载
 
-访问 [Releases](https://github.com/vinnim92/agent-install-guide/releases) 页面，下载最新版本的安装包：
-
-- `AI-Agent-Windows-vX.X.X.zip` — Windows 安装包（含 .cmd 启动器 + PDF 手册）
-- `AI-Agent-macOS-Linux-vX.X.X.zip` — macOS/Linux 安装包（含 .sh 脚本 + PDF 手册）
+访问 [Releases](https://github.com/vinnim92/agent-install-guide/releases) 页面下载最新版本。
 
 ---
 
