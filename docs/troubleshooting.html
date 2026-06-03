@@ -18,6 +18,8 @@
     margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
   .section h2 { font-size: 1.15em; color: #d4380d; margin-bottom: 8px; }
+  .section.win h2 { color: #1677ff; }
+  .section.mac h2 { color: #7c3aed; }
   .section ul { padding-left: 20px; }
   .section li { margin-bottom: 6px; }
   code {
@@ -34,6 +36,11 @@
     padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0;
     font-size: 0.93em;
   }
+  .info-box {
+    background: #f0f5ff; border-left: 4px solid #1677ff;
+    padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0;
+    font-size: 0.93em;
+  }
   .footer {
     background: #fff; border-radius: 10px; padding: 22px 26px;
     margin-top: 24px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
@@ -47,32 +54,20 @@
 <h1>AI Agent 安装故障排查</h1>
 <p class="subtitle">遇到问题了？按下面的错误类型找到对应解决方法</p>
 
-<!-- 1 -->
-<div class="section">
-  <h2>命令没有反应 / 卡住了</h2>
-  <ul>
-    <li><strong>等待 2–3 分钟：</strong>首次安装需要下载文件，请耐心等待，不要关闭窗口。</li>
-    <li><strong>检查网络：</strong>公司或学校 Wi-Fi 可能屏蔽了 GitHub / npm 等网站。尝试切换手机热点再试。</li>
-    <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
-    <li><strong>按 Ctrl+C 取消后重试：</strong>偶尔网络波动会导致下载中断，重新运行安装命令即可。</li>
-    <li><strong>换个网络环境：</strong>比如从公司网络切换到家庭 Wi-Fi 或手机热点。</li>
-  </ul>
-</div>
+<!-- ===== Windows 故障排查 ===== -->
 
-<!-- 1b: Windows .cmd 问题 -->
-<div class="section">
-  <h2>双击 .cmd 没反应 / 窗口一闪而过（Windows）</h2>
+<div class="section win">
+  <h2>Windows — 双击 .cmd 没反应 / 窗口一闪而过</h2>
   <ul>
-    <li><strong>不要在压缩包预览中运行：</strong>请先完整解压 zip 文件，再打开文件夹双击 .cmd。</li>
-    <li><strong>检查是否解压完整：</strong>确保 windows 文件夹里的 .ps1 文件和 .cmd 文件在同一目录。</li>
+    <li><strong>不要在压缩包预览中运行：</strong>请先完整解压 zip 文件到文件夹，再打开文件夹双击 .cmd。在压缩包预览窗口里直接双击会导致脚本找不到同目录的 .ps1 文件。</li>
+    <li><strong>检查是否解压完整：</strong>确保 windows 文件夹里的 .ps1 文件和 .cmd 文件在同一目录。如果缺少 .ps1 文件，重新解压 zip。</li>
     <li><strong>右键以管理员身份运行：</strong>右键点击 .cmd 文件 → "以管理员身份运行"。</li>
-    <li><strong>从命令行运行看错误信息：</strong>在 windows 文件夹中按住 Shift + 右键空白处 → "在此处打开 PowerShell 窗口"，输入 <code>.\install-codex.cmd</code> 回车，窗口不会闪退就能看到错误信息。</li>
+    <li><strong>从命令行运行看错误信息：</strong>在 windows 文件夹地址栏输入 <code>cmd</code> 回车，然后输入 <code>install-codex.cmd</code> 回车，窗口不会闪退就能看到错误信息。</li>
   </ul>
 </div>
 
-<!-- 1c: Windows 安全提示 -->
-<div class="section">
-  <h2>Windows 弹出 "已保护你的电脑" 提示</h2>
+<div class="section win">
+  <h2>Windows — 弹出"已保护你的电脑"提示（SmartScreen）</h2>
   <ul>
     <li><strong>现象：</strong>双击 .cmd 或运行脚本时，Windows SmartScreen 弹出蓝色或黄色警告框。</li>
     <li><strong>这是正常的安全提醒：</strong>因为脚本文件来自互联网（通过 zip 下载），Windows 会默认提醒。</li>
@@ -81,79 +76,161 @@
   </ul>
 </div>
 
-<!-- 2 -->
-<div class="section">
-  <h2>安装过程中下载失败</h2>
+<div class="section win">
+  <h2>Windows — zip 没有完整解压</h2>
   <ul>
-    <li><strong>v3.2.0 本地安装包：</strong>本安装包已内置安装脚本，但安装过程仍需网络（用于下载 Node.js、Agent 工具等依赖）。</li>
+    <li><strong>现象：</strong>双击 .cmd 后提示"找不到 install-xxx.ps1"或"系统找不到指定的路径"。</li>
+    <li><strong>原因：</strong>Windows 自带的 zip 预览功能允许不完整解压。你可能只提取了部分文件。</li>
+    <li><strong>解决方法：</strong>右键 zip 文件 → "全部解压缩" → 选择目标文件夹 → 确保"完成时显示提取的文件"已勾选 → 点击"提取"。</li>
+    <li><strong>验证：</strong>解压后打开 windows 文件夹，确认里面有 6 个文件（3 个 .cmd + 3 个 .ps1）。</li>
+  </ul>
+</div>
+
+<div class="section win">
+  <h2>Windows — PowerShell 执行策略 / npm.ps1 cannot be loaded</h2>
+  <ul>
+    <li><strong>现象：</strong>安装过程中出现红色报错，包含 <code>npm.ps1 cannot be loaded</code> 或 <code>因为在此系统上禁止运行脚本</code>。</li>
+    <li><strong>原因：</strong>Windows PowerShell 默认执行策略禁止运行 .ps1 脚本。</li>
+    <li><strong>本安装包已解决此问题：</strong>安装脚本内置了执行策略处理和 npm.cmd 优先调用。</li>
+    <li><strong>如果仍然出现：</strong>
+      <div class="cmd-block">Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force</div>
+      然后重新双击 .cmd 文件。此设置<strong>仅当前窗口有效</strong>，关闭后自动失效。
+    </li>
+  </ul>
+</div>
+
+<div class="section win">
+  <h2>Windows — 安装过程中下载依赖失败</h2>
+  <ul>
+    <li><strong>本安装包已内置安装脚本，但安装过程仍需网络</strong>（用于下载 Node.js、Agent 工具等依赖）。</li>
     <li><strong>检查网络连接：</strong>确保电脑能正常上网。公司/学校 Wi-Fi 可能屏蔽了 npm 或 GitHub。</li>
     <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
     <li><strong>换个网络环境：</strong>比如从公司网络切换到家庭 Wi-Fi 或手机热点。</li>
     <li><strong>关闭防火墙 / 安全软件：</strong>部分安全软件会拦截安装脚本的网络请求。暂时关闭后再试。</li>
+    <li><strong>等待 2–3 分钟：</strong>首次安装需要下载文件，请耐心等待。</li>
   </ul>
 </div>
 
-<!-- 2b: 国内网络 -->
-<div class="section">
-  <h2>国内网络访问 GitHub / jsDelivr 不稳定</h2>
+<div class="section win">
+  <h2>Windows — Node.js 安装失败</h2>
   <ul>
-    <li><strong>现象：</strong>安装命令报错"基础连接已经关闭""发送时发生错误"或"Failed to fetch from GitHub"。</li>
-    <li><strong>原因：</strong>GitHub Pages 和 jsDelivr CDN 在中国大陆可能被限制或速度极慢。jsDelivr 依赖 GitHub 回源，在国内也不是独立可用的 CDN。</li>
-    <li><strong>推荐方案 — 使用 Gitee 国内镜像：</strong>
-      <div class="cmd-block"># Windows PowerShell
-$env:GITEE_ACCOUNT="<你的Gitee账号>"
-irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex
-
-# macOS / Linux
-export GITEE_ACCOUNT="<你的Gitee账号>"
-curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash</div>
-      设置 <code>GITEE_ACCOUNT</code> 环境变量后，脚本会优先从 Gitee 国内镜像下载安装脚本，速度更快、更稳定。</li>
-    <li><strong>如果 irm 仍然失败：</strong>可改用 curl.exe 下载后执行：
-      <div class="cmd-block">$u="https://gitee.com/<账号>/agent-install-guide/raw/main/docs/i/codex.ps1"
-$p="$env:TEMP\codex.ps1"
-curl.exe -L $u -o $p
-powershell -ExecutionPolicy Bypass -File $p</div>
+    <li><strong>现象：</strong>安装脚本在"安装 Node.js"步骤卡住或报错。</li>
+    <li><strong>脚本通过 winget 自动安装 Node.js。</strong>如果 winget 不可用或卡住：</li>
+    <li><strong>手动安装 Node.js：</strong>访问 <a href="https://nodejs.org" target="_blank">https://nodejs.org</a>，下载左侧推荐的 LTS 版本（.msi 安装包），双击安装。安装完成后重新运行 .cmd。</li>
+    <li><strong>检查 Node.js 版本：</strong>
+      <div class="cmd-block">node -v</div>
+      Codex 需要 ≥ v22，OpenClaw 需要 ≥ v22.19（推荐 v24+）。Claude Code 自带运行时，不需要 Node.js。
     </li>
-    <li><strong>搭建 Gitee 镜像：</strong>参见仓库中的 <code>GITEE_MIRROR.md</code> 文档。</li>
   </ul>
 </div>
 
-<!-- 3 -->
-<div class="section">
-  <h2>权限错误（Permission denied / EACCES）</h2>
+<div class="section win">
+  <h2>Windows — winget 卡住或不可用</h2>
   <ul>
-    <li><strong>macOS / Linux：</strong>安装过程中如果遇到 <code>Permission denied</code>，按照提示选择 "Y" 即可。</li>
-    <li><strong>macOS 额外步骤：</strong>某些 Mac 可能需要先允许终端访问"开发工具"。系统提示时点"允许"即可。</li>
-    <li><strong>Windows：</strong>右键点击 PowerShell 图标 → 选择"以管理员身份运行"，然后重新执行安装命令。</li>
-    <li><strong>不要用 sudo：</strong>在 Mac/Linux 上，不要用 <code>sudo npm install -g</code>。</li>
+    <li><strong>现象：</strong>安装脚本调用 winget 时长时间无响应。</li>
+    <li><strong>原因：</strong>winget 在某些 Windows 版本上可能未安装或版本过旧。</li>
+    <li><strong>解决方法：</strong>跳过 winget，手动安装 Node.js（见上一节"Node.js 安装失败"）。</li>
+    <li><strong>或者从 Microsoft Store 更新 winget：</strong>搜索"应用安装程序"并更新。</li>
   </ul>
 </div>
 
-<!-- 4 -->
-<div class="section">
-  <h2>找不到命令（command not found / 无法识别）</h2>
+<div class="section win">
+  <h2>Windows — 安装后找不到命令（command not found）</h2>
   <ul>
-    <li><strong>第一步：关闭终端 / PowerShell 窗口，重新打开。</strong>这是最常见的问题——安装成功但 PATH 未立即生效。</li>
-    <li><strong>macOS / Linux：</strong>
-      <div class="cmd-block"># 检查是否已安装（在终端粘贴运行）
-which claude      # Claude Code
+    <li><strong>第一步：关闭 PowerShell 窗口，重新打开。</strong>这是最常见的问题——安装成功但 PATH 未立即生效。</li>
+    <li><strong>在 PowerShell 中检查：</strong>
+      <div class="cmd-block">Get-Command claude     # Claude Code
+Get-Command codex      # Codex
+Get-Command openclaw   # OpenClaw</div>
+    </li>
+    <li><strong>如果仍然找不到：</strong>重新运行安装 .cmd 即可。</li>
+  </ul>
+</div>
+
+<!-- ===== macOS/Linux 故障排查 ===== -->
+
+<div class="section mac">
+  <h2>macOS / Linux — bash install-xxx.sh 找不到文件</h2>
+  <ul>
+    <li><strong>请确认已进入 mac-linux 文件夹：</strong>在终端输入 <code>cd </code>（cd 后面有个空格），然后把 <strong>mac-linux</strong> 文件夹拖到终端窗口，回车。</li>
+    <li><strong>验证当前目录：</strong>
+      <div class="cmd-block">ls</div>
+      应该能看到 <code>install-claude-code.sh</code>、<code>install-codex.sh</code>、<code>install-openclaw.sh</code>。
+    </li>
+    <li><strong>常见错误：</strong>在"下载"目录直接运行 <code>bash install-codex.sh</code>，但脚本在 mac-linux 子文件夹里。必须先 cd 进去。</li>
+  </ul>
+</div>
+
+<div class="section mac">
+  <h2>macOS / Linux — Permission denied</h2>
+  <ul>
+    <li><strong>现象：</strong>运行 <code>bash install-xxx.sh</code> 时提示 <code>Permission denied</code>。</li>
+    <li><strong>解决方法：</strong>
+      <div class="cmd-block">chmod +x install-codex.sh
+bash install-codex.sh</div>
+    </li>
+    <li><strong>不要用 sudo：</strong>在 Mac/Linux 上，不要用 <code>sudo bash install-xxx.sh</code>。</li>
+  </ul>
+</div>
+
+<div class="section mac">
+  <h2>macOS / Linux — 安装过程中下载失败</h2>
+  <ul>
+    <li><strong>本安装包已内置安装脚本，但安装过程仍需网络</strong>（用于下载 Node.js、Agent 工具等依赖）。</li>
+    <li><strong>检查网络连接：</strong>确保电脑能正常上网。公司/学校 Wi-Fi 可能屏蔽了 npm 或 GitHub。</li>
+    <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
+    <li><strong>换个网络环境：</strong>比如从公司网络切换到家庭 Wi-Fi 或手机热点。</li>
+    <li><strong>等待 2–3 分钟：</strong>首次安装需要下载文件，请耐心等待，不要关闭终端窗口。</li>
+  </ul>
+</div>
+
+<div class="section mac">
+  <h2>macOS / Linux — Node.js / npm 安装失败</h2>
+  <ul>
+    <li><strong>Claude Code：</strong>自带运行时，不需要 Node.js。</li>
+    <li><strong>Codex：</strong>需要 Node.js ≥ v22。脚本会自动检查和安装。</li>
+    <li><strong>OpenClaw：</strong>需要 Node.js ≥ v22.19（推荐 v24+）。脚本会自动检查。</li>
+    <li><strong>手动检查版本：</strong>
+      <div class="cmd-block">node -v</div>
+    </li>
+    <li><strong>手动安装 Node.js：</strong>访问 <a href="https://nodejs.org" target="_blank">https://nodejs.org</a>，下载左侧推荐的 LTS 版本安装；或使用 <code>brew install node</code>（Mac）。</li>
+    <li><strong>npm 缓存权限异常（EACCES）：</strong>
+      <div class="cmd-block">sudo chown -R "$(id -u):$(id -g)" "$HOME/.npm"
+chmod -R u+rwX "$HOME/.npm"
+npm cache verify</div>
+    </li>
+  </ul>
+</div>
+
+<div class="section mac">
+  <h2>macOS / Linux — 安装后 command not found</h2>
+  <ul>
+    <li><strong>第一步：关闭终端，重新打开。</strong>安装成功但 PATH 未立即生效。</li>
+    <li><strong>检查是否已安装：</strong>
+      <div class="cmd-block">which claude      # Claude Code
 which codex       # Codex
 which openclaw    # OpenClaw</div>
       如果有输出路径但运行报错，说明 PATH 问题。关掉终端重新打开。
     </li>
-    <li><strong>Windows：</strong>
-      <div class="cmd-block"># 在 PowerShell 中检查
-Get-Command claude     # Claude Code
-Get-Command codex      # Codex
-Get-Command openclaw   # OpenClaw</div>
-    </li>
-    <li><strong>重新运行安装脚本：</strong>如果关闭重开终端后依然找不到命令，重新运行安装脚本即可。</li>
+    <li><strong>如果仍然找不到命令：</strong>重新运行安装脚本即可。</li>
+    <li><strong>Mac 额外步骤：</strong>某些 Mac 可能需要先允许终端访问"开发工具"。系统提示时点"允许"即可。</li>
   </ul>
 </div>
 
-<!-- 5 -->
+<!-- ===== 通用 ===== -->
+
 <div class="section">
-  <h2>Node.js 版本问题</h2>
+  <h2>通用 — 安装命令没有反应 / 卡住了</h2>
+  <ul>
+    <li><strong>等待 2–3 分钟：</strong>首次安装需要下载文件，请耐心等待，不要关闭窗口。</li>
+    <li><strong>检查网络：</strong>公司或学校 Wi-Fi 可能屏蔽了 GitHub / npm 等网站。尝试切换手机热点再试。</li>
+    <li><strong>关闭代理 / VPN：</strong>如果你开了 VPN 或代理，先关闭后再试一次。</li>
+    <li><strong>按 Ctrl+C 取消后重试：</strong>偶尔网络波动会导致下载中断，重新运行安装命令即可。</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>通用 — Node.js 版本问题</h2>
   <ul>
     <li><strong>Claude Code：</strong>自带运行时，不需要 Node.js。</li>
     <li><strong>Codex：</strong>需要 Node.js ≥ v22。安装脚本会自动检查和安装。</li>
@@ -166,40 +243,15 @@ Get-Command openclaw   # OpenClaw</div>
   </ul>
 </div>
 
-<!-- 6 -->
 <div class="section">
-  <h2>Windows — npm.ps1 cannot be loaded</h2>
+  <h2>通用 — 权限错误（Permission denied / EACCES）</h2>
   <ul>
-    <li><strong>现象：</strong>安装过程中出现红色报错，包含 <code>npm.ps1 cannot be loaded</code> 或 <code>因为在此系统上禁止运行脚本</code>。</li>
-    <li><strong>原因：</strong>Windows PowerShell 默认执行策略可能禁止运行 <code>.ps1</code> 脚本。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本优先调用 <code>npm.cmd</code>，从根本上避免此问题。
-      <div class="cmd-block">irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
-    </li>
-    <li><strong>临时解决方案：</strong>
-      <div class="cmd-block">Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force</div>
-      然后重新运行安装命令。此设置<strong>仅当前窗口有效</strong>，关闭后自动失效。
-    </li>
+    <li><strong>macOS / Linux：</strong>安装过程中如果遇到 <code>Permission denied</code>，运行 <code>chmod +x install-xxx.sh</code> 再试。</li>
+    <li><strong>Windows：</strong>右键点击 .cmd 文件 → 选择"以管理员身份运行"。</li>
+    <li><strong>不要用 sudo：</strong>在 Mac/Linux 上，不要用 <code>sudo bash install-xxx.sh</code>。</li>
   </ul>
 </div>
 
-<!-- 7 -->
-<div class="section">
-  <h2>Windows PowerShell 显示问号（???）</h2>
-  <ul>
-    <li><strong>现象：</strong>安装过程中输出的中文文字变成了一串 <code>?????????????</code>。</li>
-    <li><strong>原因：</strong>Windows PowerShell 5.1 控制台编码与脚本编码不一致。</li>
-    <li><strong>推荐解决方案：</strong>升级到 v3.1.1 或更新版本。新版脚本保存为 UTF-8 with BOM，并自动设置控制台为 UTF-8。
-      <div class="cmd-block">irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
-    </li>
-    <li><strong>临时解决方案：</strong>
-      <div class="cmd-block">chcp 65001</div>
-      然后在同一个 PowerShell 窗口重新运行安装命令。
-    </li>
-    <li><strong>说明：</strong>问号乱码不影响安装逻辑的正确性。即使看到 ???，安装操作本身仍在正常执行。</li>
-  </ul>
-</div>
-
-<!-- 8 -->
 <div class="section">
   <h2>Claude Code — DeepSeek API 配置问题</h2>
   <ul>
@@ -210,7 +262,6 @@ Get-Command openclaw   # OpenClaw</div>
   </ul>
 </div>
 
-<!-- 9 -->
 <div class="section">
   <h2>Codex — 登录 / API Key 问题</h2>
   <ul>
@@ -221,7 +272,6 @@ Get-Command openclaw   # OpenClaw</div>
   </ul>
 </div>
 
-<!-- 10 -->
 <div class="section">
   <h2>OpenClaw — EACCES / permission denied</h2>
   <ul>
@@ -240,7 +290,6 @@ npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit
   </ul>
 </div>
 
-<!-- 11 -->
 <div class="section">
   <h2>OpenClaw — DeepSeek 配置问题</h2>
   <ul>
@@ -255,20 +304,44 @@ npm install -g openclaw@latest --registry=https://registry.npmjs.org/ --no-audit
   </ul>
 </div>
 
-<!-- 12 -->
+<!-- ===== 高级备用 ===== -->
+
 <div class="section">
-  <h2>如何截图反馈</h2>
+  <h2>高级备用：开发者在线安装入口</h2>
   <ul>
-    <li><strong>Windows：</strong>按 <code>⊞ + Shift + S</code> 截图，或按 <code>Print Screen</code> 键。</li>
-    <li><strong>Mac：</strong>按 <code>Command + Shift + 4</code> 截取屏幕区域，截图保存在桌面。</li>
-    <li><strong>发送截图时请附上：</strong>① 完整的错误截图（含命令和报错文字） ② Windows 还是 Mac ③ 安装的是哪款工具。</li>
+    <li><strong>默认安装方式是本地脚本包</strong>（下载 zip → 解压 → 双击 .cmd 或运行 .sh）。以下在线入口仅供开发者或自动化场景使用。</li>
+    <li><strong>在线入口通过 GitHub Pages + jsDelivr CDN 分发，</strong>国内用户可能遇到网络不稳定。</li>
+    <li><strong>GitHub Pages 入口：</strong>
+      <div class="cmd-block"># macOS / Linux
+curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
+
+# Windows PowerShell
+irm https://vinnim92.github.io/agent-install-guide/i/codex.ps1 | iex</div>
+    </li>
+    <li><strong>Gitee 国内镜像（需配置 GITEE_ACCOUNT 环境变量）：</strong>
+      <div class="cmd-block">export GITEE_ACCOUNT="你的Gitee账号"    # macOS / Linux
+$env:GITEE_ACCOUNT="你的Gitee账号"       # Windows PowerShell</div>
+      参见仓库中的 <code>GITEE_MIRROR.md</code> 文档。
+    </li>
   </ul>
 </div>
 
-<!-- 通用排查 -->
+<!-- ===== 截图反馈 ===== -->
+
+<div class="section">
+  <h2>如何截图反馈</h2>
+  <ul>
+    <li><strong>Windows：</strong>按 <code>Win + Shift + S</code> 截图，或按 <code>Print Screen</code> 键。</li>
+    <li><strong>Mac：</strong>按 <code>Command + Shift + 4</code> 截取屏幕区域，截图保存在桌面。</li>
+    <li><strong>发送截图时请附上：</strong>① 完整的错误截图（含命令和报错文字） ② Windows 还是 Mac ③ 安装的是哪款工具（Claude Code / Codex / OpenClaw）。</li>
+  </ul>
+</div>
+
+<!-- ===== 通用排查 ===== -->
+
 <div class="note">
   <strong>通用排查思路：</strong><br>
-  1. 关掉终端 → 重新打开 → 重试<br>
+  1. 关掉终端 / PowerShell → 重新打开 → 重试<br>
   2. 切换网络（手机热点）→ 重试<br>
   3. 重启电脑 → 重试<br>
   4. 大部分安装问题都可以通过以上三步解决。

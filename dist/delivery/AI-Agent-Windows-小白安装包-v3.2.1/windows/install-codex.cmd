@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title OpenClaw 小白安装器
+title Codex 小白安装器
 
 echo ==========================================
-echo   OpenClaw 安装
-echo   版本 v3.2.0
+echo   Codex 安装
+echo   版本 v3.2.1
 echo ==========================================
 echo.
 echo 正在启动安装脚本...
@@ -12,7 +12,7 @@ echo 如果弹出 Windows 安全提示，请选择"仍要运行"。
 echo.
 
 set SCRIPT_DIR=%~dp0
-powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%install-openclaw.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPT_DIR%install-codex.ps1"
 
 echo.
 echo ==========================================

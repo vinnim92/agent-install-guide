@@ -4,7 +4,7 @@ title Claude Code + DeepSeek API 小白安装器
 
 echo ==========================================
 echo   Claude Code + DeepSeek API 安装
-echo   版本 v3.2.0
+echo   版本 v3.2.1
 echo ==========================================
 echo.
 echo 正在启动安装脚本...
