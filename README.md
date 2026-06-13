@@ -8,9 +8,11 @@
 
 本项目的售卖交付物是 **Windows / macOS-Linux 两个本地脚本安装包**。安装包已内置所有安装脚本，不需要从 GitHub 复制远程命令。
 
+> 本安装包不是离线安装包，安装依赖（Node.js、Agent 工具等）仍需要联网下载。
+
 ### Windows
 
-1. 下载 `AI-Agent-Windows-v3.2.2.zip`
+1. 下载 `AI-Agent-Windows-v3.2.3.zip`
 2. 解压到文件夹（不要在压缩包预览里直接双击）
 3. 打开 `windows` 文件夹
 4. 双击对应 Agent 的 .cmd 文件：
@@ -20,7 +22,7 @@
 
 ### macOS / Linux
 
-1. 下载 `AI-Agent-macOS-Linux-v3.2.2.zip`
+1. 下载 `AI-Agent-macOS-Linux-v3.2.3.zip`
 2. 双击解压
 3. 打开终端，输入 `cd `（后面有个空格），把 `mac-linux` 文件夹拖进终端窗口，回车
 4. 运行对应 Agent 的安装脚本：

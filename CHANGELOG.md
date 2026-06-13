@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.2.3 (2026-06-13)
+
+- Hardening: .cmd exit code capture (set INSTALL_EXIT, exit /b)
+- Rename Chinese delivery filenames to English-stable (README.txt, CHECK-UPDATE.txt)
+- README add "not offline, network required" disclaimer
+- Troubleshooting: replace "close proxy/VPN" with network-switching strategy
+- macOS path testing: Desktop/Downloads/spaces/Chinese paths all pass
+- Cross-contamination verified: no .sh in Windows zip, no .cmd in macOS zip
+
+---
+
 ## v3.2.2 (2026-06-03)
 
 - Fix Windows .cmd launcher encoding/parsing issue (Chinese chars broken by cmd.exe)
