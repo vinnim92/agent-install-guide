@@ -12,7 +12,7 @@
 
 ### Windows
 
-1. 下载 `AI-Agent-Windows-v3.2.5.zip`
+1. 下载 `AI-Agent-Windows-v3.2.6.zip`
 2. 解压到文件夹（不要在压缩包预览里直接双击）
 3. 打开 `windows` 文件夹
 4. 双击对应 Agent 的 .cmd 文件：
@@ -20,13 +20,11 @@
    - Codex → `install-codex.cmd`
    - OpenClaw → `install-openclaw.cmd`
 
-> **普通模式会自动 fallback**：即使官方安装器不通，脚本也会自动尝试 npm 官方源和国内镜像，一般不需要手动切换网络。
->
-> **国内用户**：如果所有路径都失败，可双击 `install-xxx-china.cmd` 强制走国内镜像。详见故障排查页面。
+> **普通模式会自动 fallback**：即使官方安装器不通，脚本也会自动尝试 npm 官方源和国内镜像，一般不需要手动切换网络。详见故障排查页面。
 
 ### macOS / Linux
 
-1. 下载 `AI-Agent-macOS-Linux-v3.2.5.zip`
+1. 下载 `AI-Agent-macOS-Linux-v3.2.6.zip`
 2. 双击解压
 3. 打开终端，输入 `cd `（后面有个空格），把 `mac-linux` 文件夹拖进终端窗口，回车
 4. 运行对应 Agent 的安装脚本：

@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.2.6 (2026-06-13)
+
+- Emergency fix: removed separate China .cmd launchers from beginner package (install-xxx-china.cmd)
+- Unified entry: Windows 3 .cmd only, macOS 3 .sh only; `-China`/`--china` retained as internal parameter
+- Fixed incorrect PS1 filename reference in install-claude-china.cmd (was pointing to install-claude.ps1)
+- Fixed PowerShell backtick-escaped `$null` in codex.ps1 and openclaw.ps1 logging lines
+- All .cmd files verified: ASCII-only, CRLF, multi-line format
+- README: removed China launcher mentions; auto-fallback is the only beginner path
+- RELEASE_CHECKLIST updated for v3.2.6 (3 .cmd, not 6)
+
+---
+
 ## v3.2.5 (2026-06-13)
 
 - Normal mode: 3-tier auto-fallback (official installer -> npm official -> npmmirror)

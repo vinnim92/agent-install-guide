@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 # OpenClaw 安装脚本（Windows PowerShell）
 #
 # 支持系统: Windows 10/11
@@ -153,7 +153,7 @@ function Start-PreCheck {
         Write-Host "    [!]  Node.js 未安装，需要 >= 22.19（推荐 v24+）" -ForegroundColor Yellow
         "Node.js: NOT FOUND" | Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
-    if (Get-NpmCmd) { "npm: $(npm -v 2>`$null)" | Out-File -FilePath $LogFile -Append -Encoding UTF8 }
+    if (Get-NpmCmd) { $npmVer = (npm -v 2>$null); "npm: $npmVer" | Out-File -FilePath $LogFile -Append -Encoding UTF8 }
 
     # 已安装？
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
