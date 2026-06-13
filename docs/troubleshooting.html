@@ -222,35 +222,43 @@ which openclaw    # OpenClaw</div>
 
 
 <div class="section">
-  <h2>国内网络 — 使用 --china 模式</h2>
-  <ul>
-    <li><strong>如果你在国内且没有 VPN：</strong>安装时使用 <code>--china</code> 参数可以跳过官方安装器，直接通过国内 npm 镜像安装，速度更快更稳定。</li>
-    <li><strong>macOS / Linux：</strong>
-      <div class="cmd-block">bash install-claude-code.sh --china
-bash install-codex.sh --china
-bash install-openclaw.sh --china</div>
-    </li>
-    <li><strong>Windows PowerShell：</strong>
-      <div class="cmd-block">.\install-claude-code.ps1 -China
-.\install-codex.ps1 -China
-.\install-openclaw.ps1 -China</div>
-    </li>
-    <li><strong>一键自动确认模式（推荐）：</strong>
-      <div class="cmd-block"># macOS / Linux
-AGENT_INSTALL_YES=1 bash install-codex.sh --china
+      <h2>普通模式会自动 fallback 吗？</h2>
+      <ul>
+        <li><strong>会自动 fallback。</strong>普通模式（不加 <code>--china</code> / <code>-China</code>）会按以下顺序自动尝试：</li>
+        <li><strong>路径 1：</strong>官方安装器（claude.ai / chatgpt.com / openclaw.ai）</li>
+        <li><strong>路径 2（自动 fallback）：</strong>npm 官方源（registry.npmjs.org）</li>
+        <li><strong>路径 3（自动 fallback）：</strong>npm 国内镜像（registry.npmmirror.com）</li>
+        <li><strong>全部不可达时：</strong>会给出网络排查建议 + 日志路径。</li>
+        <li><strong>也就是说：</strong>默认双击 .cmd 或运行 .sh 就是普通模式。安装脚本会自动探测网络，选出可用的安装路径。大部分情况下不需要用户手动判断网络状态。</li>
+      </ul>
+    </div>
 
-# Windows PowerShell
-$env:AGENT_INSTALL_YES="1"; .\install-codex.ps1 -China</div>
-    </li>
-    <li><strong>安装日志：</strong>如果安装失败，查看日志文件：
-      <div class="cmd-block"># macOS / Linux 日志在 HOME 目录
-cat ~/agent-install-codex.log
+    <div class="section">
+      <h2>什么时候使用 China 模式（--china / -China）？</h2>
+      <ul>
+        <li><strong>普通模式已包含自动 fallback 到国内镜像。</strong>大多数情况不需要手动指定 China 模式。</li>
+        <li><strong>适用场景：</strong>当你明确知道自己的网络环境无法访问国外网站，想跳过探测直接走国内镜像时。</li>
+        <li><strong>macOS / Linux：</strong>
+          <div class="cmd-block">bash install-claude-code.sh --china</div>
+        </li>
+        <li><strong>Windows：</strong>双击 <code>install-claude-china.cmd</code>（同样有 codex/openclaw 的对应文件）。</li>
+        <li><strong>China 模式做了什么：</strong>跳过官方安装器，直接使用 npmmirror 安装。安装前会检测 npm 是否可用和镜像是否可达。</li>
+      </ul>
+    </div>
 
-# Windows 日志在 TEMP 目录
-type %TEMP%\agent-install-codex.log</div>
-    </li>
-  </ul>
-</div>
+    <div class="section">
+      <h2>国内网络 — 安装日志排查</h2>
+      <ul>
+        <li><strong>安装日志记录了：</strong>安装模式、5 个端点的可达性、安装路径决策、Node/npm 版本、安装命令、错误信息、最终结果。</li>
+        <li><strong>macOS / Linux：</strong>
+          <div class="cmd-block">cat ~/agent-install-codex.log</div>
+        </li>
+        <li><strong>Windows：</strong>
+          <div class="cmd-block">type %TEMP%\agent-install-codex.log</div>
+        </li>
+        <li><strong>看日志里的 Network Probe 段落：</strong>可以确认哪些端点可达、脚本选择了哪条路径。</li>
+      </ul>
+    </div>
 
 <!-- ===== 通用 ===== -->
 

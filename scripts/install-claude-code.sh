@@ -7,7 +7,8 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   bash install-claude-code.sh --china   国内网络模式
+#   bash install-claude-code.sh           普通模式（自动 fallback）
+#   bash install-claude-code.sh --china   国内镜像模式（强制 npmmirror）
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -27,8 +28,9 @@ AGENT_NAME="Claude Code"
 AGENT_BIN="claude"
 OFFICIAL_URL="https://claude.ai/install.sh"
 LOGFILE="$HOME/agent-install-claude-code.log"
+INSTALL_PATH=""  # will be set to: official | npm-official | npm-mirror
 
-# ---------- 输出函数 ----------
+# ---------- 输出函数（同时写日志）----------
 print_step()    { echo -e "${BLUE}[→]${NC} $1" | tee -a "$LOGFILE"; }
 print_success() { echo -e "    ${GREEN}✅ $1${NC}" | tee -a "$LOGFILE"; }
 print_error()   { echo -e "    ${RED}❌ $1${NC}" | tee -a "$LOGFILE"; }
@@ -84,16 +86,13 @@ show_help() {
     echo "      无需单独安装 Node.js（Claude Code 自带运行时）"
     echo ""
     echo "用法:"
-    echo "  bash install-claude-code.sh           正常安装（自动检查环境）"
-    echo "  bash install-claude-code.sh --china   国内网络模式（跳过官方源，使用镜像）"
+    echo "  bash install-claude-code.sh           普通模式（官方→npm→镜像 自动 fallback）"
+    echo "  bash install-claude-code.sh --china   国内镜像模式（强制 npmmirror）"
     echo "  bash install-claude-code.sh --help    显示帮助"
     echo "  bash install-claude-code.sh --dry-run 排查/预览（只看不装）"
     echo ""
     echo "跳过确认:"
     echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh"
-    echo ""
-    echo "国内网络一键安装:"
-    echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh --china"
     echo ""
     echo "安装后启动:"
     echo "  终端输入: claude"
@@ -105,40 +104,10 @@ show_help() {
     exit 0
 }
 
-# ---------- 多端点网络检测 ----------
-check_network() {
-    if [ "$DRY_RUN" = true ]; then
-        print_dryrun "检查网络连通性（4 个端点）"
-        return 0
-    fi
-
-    print_step "检查网络连通性..."
-    local ok=0
-
-    for endpoint in "https://registry.npmmirror.com" "https://registry.npmjs.org" "https://api.deepseek.com" "https://github.com"; do
-        if curl -fsSL --connect-timeout 5 "$endpoint" >/dev/null 2>&1; then
-            print_success "可访问: $endpoint"
-            ok=$((ok + 1))
-        else
-            print_warning "无法访问: $endpoint"
-        fi
-    done
-
-    if [ "$ok" -eq 0 ]; then
-        print_error "所有端点均无法访问，请检查网络连接"
-        print_tip "可尝试切换手机热点、关闭/开启代理"
-        if [ "$CHINA_MODE" = false ]; then
-            print_tip "或使用国内网络模式: bash install-claude-code.sh --china"
-        fi
-    elif [ "$ok" -le 2 ]; then
-        print_warning "部分端点不可达，安装可能受限"
-        if [ "$CHINA_MODE" = false ]; then
-            print_tip "建议使用国内网络模式: bash install-claude-code.sh --china"
-        fi
-    else
-        print_success "网络连通性良好 ($ok/4)"
-    fi
-    echo ""
+# ---------- 端点连通性检测 ----------
+check_endpoint() {
+    local url="$1"
+    curl -fsSL --connect-timeout 5 "$url" >/dev/null 2>&1
 }
 
 # ============ 安装前自动检查 ============
@@ -146,6 +115,15 @@ run_precheck() {
     echo ""
     echo -e "${CYAN}  正在检查你的电脑环境...${NC}" | tee -a "$LOGFILE"
     echo ""
+
+    # 初始化日志
+    {
+        echo "===== $(date) ====="
+        echo "Agent: $AGENT_NAME"
+        echo "Mode: $([ "$CHINA_MODE" = true ] && echo 'China (force npmmirror)' || echo 'Normal (auto-fallback)')"
+        echo "System: $(uname -s) · $(uname -m)"
+        echo "Shell: ${SHELL:-unknown}"
+    } >> "$LOGFILE"
 
     # 1. 操作系统
     case "$(uname -s)" in
@@ -159,18 +137,24 @@ run_precheck() {
     esac
     print_success "系统: ${OS_TYPE} · 架构: $(uname -m)"
 
-    # 2. Git（仅警告，不阻断）
+    # 2. Git（仅警告）
     if [ "$DRY_RUN" = true ]; then
         print_dryrun "检查 Git 是否安装"
     elif command_exists git; then
         print_success "Git 已安装"
+        echo "Git: $(git --version 2>/dev/null)" >> "$LOGFILE"
     else
         print_warning "Git 未安装（不影响安装，但后续可能需要）"
         print_tip "如需安装: macOS 运行 xcode-select --install，Ubuntu 运行 sudo apt install git"
     fi
 
-    # 3. 多端点网络检测
-    check_network
+    # 3. Node.js / npm 版本
+    if command_exists node; then
+        echo "Node.js: $(node -v 2>/dev/null)" >> "$LOGFILE"
+    fi
+    if command_exists npm; then
+        echo "npm: $(npm -v 2>/dev/null)" >> "$LOGFILE"
+    fi
 
     # 4. 是否已安装
     if command_exists "$AGENT_BIN"; then
@@ -188,28 +172,16 @@ run_precheck() {
         print_step "${AGENT_NAME} 尚未安装"
     fi
 
-    # 5. 安装方式
+    # 5. 安装路径说明
     if [ "$CHINA_MODE" = true ]; then
-        print_tip "国内网络模式：跳过官方安装器，直接使用 npm 镜像源"
+        print_tip "国内镜像模式：跳过官方安装器，直接使用 npmmirror"
     else
-        print_tip "将使用官方安装方式（${OFFICIAL_URL}）"
+        print_tip "普通模式：官方安装器 → npm 官方源 → npmmirror（自动 fallback）"
     fi
     print_success "Claude Code 自带运行时，无需安装 Node.js"
 
     echo ""
     echo -e "${GREEN}  ✅ 系统检查完成${NC}" | tee -a "$LOGFILE"
-    echo -e "${GREEN}  ✅ 网络检查完成${NC}" | tee -a "$LOGFILE"
-    echo -e "${GREEN}  ✅ 安装准备完成${NC}" | tee -a "$LOGFILE"
-    echo ""
-
-    # 6. 总结
-    echo -e "  ${BOLD}接下来将安装:${NC} ${AGENT_NAME}"
-    if [ "$CHINA_MODE" = true ]; then
-        echo -e "  ${BOLD}安装方式:${NC} npm 镜像源（国内网络模式）"
-    else
-        echo -e "  ${BOLD}安装方式:${NC} 官方安装脚本"
-    fi
-    echo -e "  ${BOLD}推荐配置:${NC} DeepSeek API Key（安装后可配置）"
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
@@ -233,15 +205,14 @@ ensure_path() {
     fi
     local rc_file=""
     case "$SHELL" in */zsh) rc_file="$HOME/.zshrc" ;; */bash) rc_file="$HOME/.bashrc" ;; *) rc_file="$HOME/.profile" ;; esac
-    print_step "配置 PATH..."
     if ! grep -q "$dir" "$rc_file" 2>/dev/null; then
         echo "export PATH=\"$dir:\$PATH\"" >> "$rc_file"
     fi
     export PATH="$dir:$PATH"
 }
 
-# ---------- 安装 ----------
-do_install() {
+# ---------- 网络探测 + 安装路径决策 ----------
+probe_and_install() {
     echo ""
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo -e "${CYAN}  开始安装 ${AGENT_NAME}${NC}"
@@ -250,72 +221,186 @@ do_install() {
 
     if [ "$DRY_RUN" = true ]; then
         if [ "$CHINA_MODE" = true ]; then
-            print_dryrun "npm 镜像: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"
+            print_dryrun "China 模式: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"
         else
-            print_dryrun "官方脚本: curl -fsSL ${OFFICIAL_URL} | bash"
+            print_dryrun "普通模式: 官方 installer → npm 官方源 → npmmirror (auto-fallback)"
         fi
-        print_dryrun "验证: command -v ${AGENT_BIN}"
         return 0
     fi
 
-    # 初始化日志
-    echo "===== $(date) =====" > "$LOGFILE"
-    echo "Agent: $AGENT_NAME | China Mode: $CHINA_MODE" >> "$LOGFILE"
+    # --- 网络探测 ---
+    echo "=== Network Probe ===" >> "$LOGFILE"
+    local OFFICIAL_OK=false NPMJS_OK=false NPMIRROR_OK=false
 
-    # China 模式: 直接使用 npm 镜像
+    print_step "检测网络端点..."
+    if check_endpoint "https://claude.ai"; then
+        OFFICIAL_OK=true
+        print_success "官方安装器可达"
+        echo "  official installer: REACHABLE" >> "$LOGFILE"
+    else
+        print_warning "官方安装器不可达"
+        echo "  official installer: UNREACHABLE" >> "$LOGFILE"
+    fi
+
+    if check_endpoint "https://registry.npmjs.org"; then
+        NPMJS_OK=true
+        print_success "npm 官方源可达"
+        echo "  registry.npmjs.org: REACHABLE" >> "$LOGFILE"
+    else
+        print_warning "npm 官方源不可达"
+        echo "  registry.npmjs.org: UNREACHABLE" >> "$LOGFILE"
+    fi
+
+    if check_endpoint "https://registry.npmmirror.com"; then
+        NPMIRROR_OK=true
+        print_success "npmmirror 国内镜像可达"
+        echo "  registry.npmmirror.com: REACHABLE" >> "$LOGFILE"
+    else
+        print_warning "npmmirror 国内镜像不可达"
+        echo "  registry.npmmirror.com: UNREACHABLE" >> "$LOGFILE"
+    fi
+
+    # 顺手测一下 deepseek 和 github（仅日志，不影响决策）
+    check_endpoint "https://api.deepseek.com" && echo "  api.deepseek.com: REACHABLE" >> "$LOGFILE" || echo "  api.deepseek.com: UNREACHABLE" >> "$LOGFILE"
+    check_endpoint "https://github.com" && echo "  github.com: REACHABLE" >> "$LOGFILE" || echo "  github.com: UNREACHABLE" >> "$LOGFILE"
+
+    echo "=========================" >> "$LOGFILE"
+    echo ""
+
+    # --- China 模式：强制 npmmirror ---
     if [ "$CHINA_MODE" = true ]; then
-        print_step "国内网络模式：使用 npm 镜像源安装..."
-        if command_exists npm; then
-            if run_cmd "npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"; then
-                print_success "npm 镜像安装成功"
-            else
-                print_error "npm 镜像安装失败"
-                echo ""
-                echo "  排查: 查看日志 $LOGFILE"
-                echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
-                exit 1
-            fi
-        else
-            print_error "未找到 npm，无法使用国内镜像安装"
+        print_step "国内镜像模式：使用 npmmirror 安装..."
+        echo "Install path: npm-mirror (China mode)" >> "$LOGFILE"
+
+        if ! command_exists npm; then
+            print_error "未找到 npm。国内镜像模式需要 Node.js/npm"
+            echo "ERROR: npm not found, China mode cannot proceed" >> "$LOGFILE"
+            echo ""
             echo "  请先安装 Node.js: https://nodejs.org"
+            echo "  下载 macOS .pkg 或 Linux 二进制包安装后，重新运行本脚本。"
+            echo "  SHA256 校验码可在 https://nodejs.org 查看 SHASUMS256.txt"
             exit 1
         fi
-    else
-        # 方法1: 官方 installer（优先）
-        print_step "使用官方安装脚本..."
-        if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash"; then
-            print_success "官方脚本安装成功"
+
+        if ! $NPMIRROR_OK; then
+            print_error "npmmirror 国内镜像不可达"
+            echo "ERROR: npmmirror unreachable in China mode" >> "$LOGFILE"
+            echo ""
+            echo "  国内网络排查建议:"
+            echo "  1. 切换手机热点 → 重试"
+            echo "  2. 关闭/开启代理 → 重试"
+            echo "  3. 重启路由器 → 重试"
+            echo "  4. 稍后重试（镜像可能临时故障）"
+            echo ""
+            echo "  日志: $LOGFILE"
+            exit 1
+        fi
+
+        echo "  Install command: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com" >> "$LOGFILE"
+        if run_cmd "npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"; then
+            print_success "npm 镜像安装成功"
+            INSTALL_PATH="npm-mirror"
         else
-            print_warning "官方脚本不可用，尝试 npm..."
-            if command_exists npm; then
-                run_cmd "npm install -g @anthropic-ai/claude-code@latest" && print_success "npm 安装成功" || {
-                    print_error "安装失败"
-                    echo ""
-                    echo "  排查: 查看日志 $LOGFILE"
-                    echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
-                    exit 1
-                }
-            else
-                print_error "安装失败，且未找到 npm"
-                echo "  手动安装: 访问 https://claude.ai/download"
-                echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
-                exit 1
+            print_error "npm 镜像安装失败"
+            echo "ERROR: npm mirror install failed" >> "$LOGFILE"
+            echo ""
+            echo "  排查: 查看日志 $LOGFILE"
+            echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+            exit 1
+        fi
+        return 0
+    fi
+
+    # --- 普通模式：3 层自动 fallback ---
+    # Tier 1: 官方安装器
+    if $OFFICIAL_OK; then
+        print_step "路径 1/3：使用官方安装器..."
+        echo "Install path: official installer" >> "$LOGFILE"
+        INSTALL_PATH="official"
+
+        echo "  Install command: curl -fsSL ${OFFICIAL_URL} | bash" >> "$LOGFILE"
+        if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash"; then
+            print_success "官方安装器安装成功"
+            return 0
+        fi
+        print_warning "官方安装器失败，自动尝试下一路径..."
+        echo "  official installer FAILED, falling back" >> "$LOGFILE"
+    fi
+
+    # Tier 2: npm 官方源
+    if $NPMJS_OK; then
+        if command_exists npm; then
+            print_step "路径 2/3：使用 npm 官方源安装..."
+            echo "Install path: npm-official" >> "$LOGFILE"
+            INSTALL_PATH="npm-official"
+
+            echo "  Install command: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmjs.org" >> "$LOGFILE"
+            if run_cmd "npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmjs.org"; then
+                print_success "npm 官方源安装成功"
+                return 0
             fi
+            print_warning "npm 官方源安装失败，自动尝试下一路径..."
+            echo "  npm-official FAILED, falling back" >> "$LOGFILE"
+        else
+            print_warning "npm 官方源可达，但未找到 npm，跳过此路径"
+            echo "  npm-official SKIPPED (npm not found)" >> "$LOGFILE"
         fi
     fi
 
-    # 验证
+    # Tier 3: npmmirror 国内镜像
+    if $NPMIRROR_OK; then
+        if command_exists npm; then
+            print_step "路径 3/3：使用 npmmirror 国内镜像安装..."
+            echo "Install path: npm-mirror (auto-fallback)" >> "$LOGFILE"
+            INSTALL_PATH="npm-mirror"
+
+            echo "  Install command: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com" >> "$LOGFILE"
+            if run_cmd "npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"; then
+                print_success "npmmirror 镜像安装成功"
+                return 0
+            fi
+            print_error "npmmirror 安装也失败了"
+            echo "  npm-mirror FAILED" >> "$LOGFILE"
+        else
+            print_warning "npmmirror 可达，但未找到 npm，跳过此路径"
+            echo "  npm-mirror SKIPPED (npm not found)" >> "$LOGFILE"
+        fi
+    fi
+
+    # 全都失败
+    print_error "所有安装路径均不可用"
+    echo "FATAL: All install paths exhausted" >> "$LOGFILE"
+    echo ""
+    echo "  网络排查建议:"
+    echo "  1. 切换手机热点 → 重试"
+    echo "  2. 关闭/开启代理 → 重试"
+    echo "  3. 确认已安装 Node.js: https://nodejs.org"
+    echo "  4. 使用国内镜像模式: bash install-claude-code.sh --china"
+    echo ""
+    echo "  日志文件: $LOGFILE"
+    echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+    exit 1
+}
+
+# ---------- 验证 ----------
+verify_install() {
+    if [ "$DRY_RUN" = true ]; then return 0; fi
+
     ensure_path "$HOME/.local/bin"
     hash -r 2>/dev/null || true
 
     if command_exists "$AGENT_BIN"; then
-        print_success "${AGENT_NAME} 安装完成！"
-        $AGENT_BIN --version 2>/dev/null | head -1 | while read -r v; do echo -e "  ${v}" | tee -a "$LOGFILE"; done
+        local ver
+        ver=$($AGENT_BIN --version 2>/dev/null | head -1 || echo 'ok')
+        print_success "${AGENT_NAME} 安装完成！${ver}"
+        echo "Result: SUCCESS | Version: ${ver} | Install path: ${INSTALL_PATH}" >> "$LOGFILE"
     else
         print_error "找不到 ${AGENT_BIN} 命令"
+        echo "Result: FAILED (binary not found after install)" >> "$LOGFILE"
         echo ""
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+        echo "  2. 日志: $LOGFILE"
+        echo "  3. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 1
     fi
 }
@@ -372,7 +457,6 @@ configure_deepseek() {
     local rc_file=""
     case "$SHELL" in */zsh) rc_file="$HOME/.zshrc" ;; */bash) rc_file="$HOME/.bashrc" ;; *) rc_file="$HOME/.profile" ;; esac
 
-    # 备份以避免重复写入
     if grep -q "ANTHROPIC_BASE_URL.*api.deepseek.com" "$rc_file" 2>/dev/null; then
         print_tip "检测到已有 DeepSeek 配置，将更新 API Key"
         if [ "$(uname -s)" = "Darwin" ]; then
@@ -397,14 +481,12 @@ export CLAUDE_CODE_SUBAGENT_MODEL=deepseek-v4-flash
 export CLAUDE_CODE_EFFORT_LEVEL=max
 SHELLCONF
 
-    # 替换占位符为实际 Key
     if [ "$(uname -s)" = "Darwin" ]; then
         sed -i '' "s|__API_KEY_PLACEHOLDER__|${api_key}|" "$rc_file"
     else
         sed -i "s|__API_KEY_PLACEHOLDER__|${api_key}|" "$rc_file"
     fi
 
-    # 立即生效
     export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
     export ANTHROPIC_AUTH_TOKEN="$api_key"
     export ANTHROPIC_MODEL="deepseek-v4-pro"
@@ -443,14 +525,17 @@ echo -e "${CYAN}  Claude Code 安装助手${NC}"
 echo -e "${CYAN}==========================================${NC}"
 
 if [ "$CHINA_MODE" = true ]; then
-    echo -e "  ${YELLOW}🌏 国内网络模式 — 跳过官方源，使用 npm 镜像${NC}"
+    echo -e "  ${YELLOW}🌏 国内镜像模式 — 强制 npmmirror${NC}"
+else
+    echo -e "  ${GREEN}📡 普通模式 — 官方 → npm → 镜像 自动 fallback${NC}"
 fi
 if [ "$DRY_RUN" = true ]; then
     echo -e "  ${YELLOW}🔍 dry-run 模式 — 只看不装${NC}"
 fi
 
 run_precheck
-do_install
+probe_and_install
+verify_install
 configure_deepseek
 
 echo ""

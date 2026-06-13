@@ -6,7 +6,8 @@
 # 需要: Node.js >= 22（脚本会提示安装）
 #
 # 用法:
-#   .\install-codex.ps1 -China   国内网络模式
+#   .\install-codex.ps1           普通模式（自动 fallback）
+#   .\install-codex.ps1 -China    国内镜像模式（强制 npmmirror）
 #   .\install-codex.ps1 -Help
 #   .\install-codex.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-codex.ps1
@@ -31,6 +32,7 @@ $AgentName = "Codex"
 $AgentBin = "codex"
 $OfficialUrl = "https://chatgpt.com/codex/install.ps1"
 $LogFile = Join-Path $env:TEMP "agent-install-codex.log"
+$InstallPath = ""  # official | npm-official | npm-mirror
 
 # ---- Help ----
 if ($Help) {
@@ -45,8 +47,8 @@ if ($Help) {
     Write-Host "      需要 Node.js >= 22"
     Write-Host ""
     Write-Host "用法:"
-    Write-Host "  .\install-codex.ps1           正常安装（自动检查环境）"
-    Write-Host "  .\install-codex.ps1 -China    国内网络模式（跳过官方源，使用镜像）"
+    Write-Host "  .\install-codex.ps1           普通模式（官方->npm->镜像 自动 fallback）"
+    Write-Host "  .\install-codex.ps1 -China    国内镜像模式（强制 npmmirror）"
     Write-Host "  .\install-codex.ps1 -Help     显示帮助"
     Write-Host "  .\install-codex.ps1 -DryRun   排查/预览（只看不装）"
     Write-Host ""
@@ -79,7 +81,7 @@ $skipConfirm = ($env:AGENT_INSTALL_YES -eq "1")
 function Confirm-Action {
     param([string]$Prompt)
     if ($skipConfirm) {
-        Write-Host "    [自动] $Prompt → 自动确认" -ForegroundColor Cyan
+        Write-Host "    [自动] $Prompt -> 自动确认" -ForegroundColor Cyan
         return $true
     }
     $response = Read-Host "    [?] $Prompt [Y/n]"
@@ -91,18 +93,12 @@ function Confirm-Action {
 
 function Write-DryRun { Write-Host "    [预演] 将执行: $args" -ForegroundColor Yellow }
 
-# ---- npm 调用辅助（避免 npm.ps1 执行策略拦截） ----
+# ---- npm 调用辅助 ----
 function Get-NpmCmd {
     $npmCmd = Get-Command npm.cmd -ErrorAction SilentlyContinue
-    if ($npmCmd) {
-        return $npmCmd.Source
-    }
-
+    if ($npmCmd) { return $npmCmd.Source }
     $npmExe = Get-Command npm.exe -ErrorAction SilentlyContinue
-    if ($npmExe) {
-        return $npmExe.Source
-    }
-
+    if ($npmExe) { return $npmExe.Source }
     return $null
 }
 
@@ -111,109 +107,55 @@ function Invoke-Npm {
         [Parameter(ValueFromRemainingArguments = $true)]
         [string[]]$Arguments
     )
-
     $npm = Get-NpmCmd
-
-    if (-not $npm) {
-        throw "未找到 npm.cmd。请确认 Node.js 已安装，并重新打开 PowerShell。"
-    }
-
+    if (-not $npm) { throw "未找到 npm.cmd。请确认 Node.js 已安装，并重新打开 PowerShell。" }
     & $npm @Arguments 2>&1 | Tee-Object -FilePath $LogFile -Append
 }
 
-# ============ 多端点网络检测 ============
-function Test-NetworkEndpoints {
-    if ($DryRun) {
-        Write-DryRun "检查网络连通性（4 个端点）"
-        return
-    }
-
-    Write-Host "  检查网络连通性..." -ForegroundColor Cyan
-    $ok = 0
-    $endpoints = @(
-        "https://registry.npmmirror.com",
-        "https://registry.npmjs.org",
-        "https://api.deepseek.com",
-        "https://github.com"
-    )
-
-    foreach ($ep in $endpoints) {
-        try {
-            $null = Invoke-WebRequest -Uri $ep -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
-            Write-Host "    [OK] 可访问: $ep" -ForegroundColor Green
-            Write-Log "Network OK: $ep"
-            $ok++
-        } catch {
-            Write-Host "    [!]  无法访问: $ep" -ForegroundColor Yellow
-            Write-Log "Network FAIL: $ep"
-        }
-    }
-
-    if ($ok -eq 0) {
-        Write-Host "    [FAIL] 所有端点均无法访问，请检查网络连接" -ForegroundColor Red
-        Write-Host "    可尝试切换手机热点、关闭/开启代理" -ForegroundColor Yellow
-        if (-not $China) {
-            Write-Host "    或使用国内网络模式: .\install-codex.ps1 -China" -ForegroundColor Yellow
-        }
-    } elseif ($ok -le 2) {
-        Write-Host "    [!]  部分端点不可达，安装可能受限" -ForegroundColor Yellow
-        if (-not $China) {
-            Write-Host "    建议使用国内网络模式: .\install-codex.ps1 -China" -ForegroundColor Yellow
-        }
-    } else {
-        Write-Host "    [OK] 网络连通性良好 ($ok/4)" -ForegroundColor Green
-    }
-    Write-Host ""
+# ---------- 端点检测 ----------
+function Test-Endpoint {
+    param([string]$Url)
+    try { $null = Invoke-WebRequest -Uri $Url -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop; return $true }
+    catch { return $false }
 }
 
-# ============ 安装前自动检查 ============
+# ============ 安装前检查 ============
 function Start-PreCheck {
     Write-Host ""
     Write-Host "  正在检查你的电脑环境..." -ForegroundColor Cyan
     Write-Host ""
 
-    # 初始化日志
+    $modeLabel = if ($China) { "China (force npmmirror)" } else { "Normal (auto-fallback)" }
     "===== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') =====" | Out-File -FilePath $LogFile -Encoding UTF8
-    "Agent: $AgentName | China Mode: $China" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    "Agent: $AgentName" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    "Mode: $modeLabel" | Out-File -FilePath $LogFile -Append -Encoding UTF8
 
-    # 1. 系统
+    # 系统
     $os = Get-CimInstance Win32_OperatingSystem
     Write-Host "    [OK] 系统: $($os.Caption)" -ForegroundColor Green
     Write-Host "    [OK] 架构: $env:PROCESSOR_ARCHITECTURE" -ForegroundColor Green
+    "System: $($os.Caption) | $env:PROCESSOR_ARCHITECTURE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
 
-    # 2. 包管理器
-    if (-not $DryRun) {
-        $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
-        $hasScoop = Get-Command scoop -ErrorAction SilentlyContinue
-        if ($hasWinget) { Write-Host "    [OK] winget 可用" -ForegroundColor Green }
-        if ($hasScoop)  { Write-Host "    [OK] Scoop 可用" -ForegroundColor Green }
-    } else {
-        Write-DryRun "检查 winget/scoop 包管理器"
-    }
-
-    # 3. 多端点网络检测
-    Test-NetworkEndpoints
-
-    # 4. Node.js
-    if ($DryRun) {
-        Write-DryRun "检查 Node.js 版本 (需要 >= 22)"
-    } else {
-        $hasNode = Get-Command node -ErrorAction SilentlyContinue
-        if ($hasNode) {
-            $nodeVer = (node -v).TrimStart('v')
-            $parts = $nodeVer.Split('.')
-            $majorVer = if ($parts.Count -ge 1) { [int]$parts[0] } else { 0 }
-            if ($majorVer -ge 22) {
-                Write-Host "    [OK] Node.js v$nodeVer (满足要求，将跳过安装)" -ForegroundColor Green
-            } else {
-                Write-Host "    [!] Node.js v$nodeVer 版本较低，将提示安装 v22+" -ForegroundColor Yellow
-            }
+    # Node.js 版本
+    $hasNode = Get-Command node -ErrorAction SilentlyContinue
+    if ($hasNode) {
+        $nodeVer = (node -v)
+        "Node.js: $nodeVer" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        $nv = $nodeVer.TrimStart('v')
+        $parts = $nv.Split('.')
+        $majorVer = if ($parts.Count -ge 1) { [int]$parts[0] } else { 0 }
+        if ($majorVer -ge 22) {
+            Write-Host "    [OK] Node.js $nodeVer (满足要求，将跳过安装)" -ForegroundColor Green
         } else {
-            Write-Host "    [!] Node.js 未安装，将提示安装 v22+" -ForegroundColor Yellow
+            Write-Host "    [!]  Node.js $nodeVer 版本较低，需要 >= 22" -ForegroundColor Yellow
         }
+    } else {
+        Write-Host "    [!]  Node.js 未安装，将提示安装 v22+" -ForegroundColor Yellow
+        "Node.js: NOT FOUND" | Out-File -FilePath $LogFile -Append -Encoding UTF8
     }
+    if (Get-NpmCmd) { "npm: $(npm -v 2>`$null)" | Out-File -FilePath $LogFile -Append -Encoding UTF8 }
 
-    # 5. 是否已安装
+    # 已安装？
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
         $ver = (& $AgentBin --version 2>&1 | Select-Object -First 1) -join ''
         if (-not $ver) { $ver = "未知版本" }
@@ -226,24 +168,18 @@ function Start-PreCheck {
             exit 0
         }
     } else {
-        Write-Host "    [→] $AgentName 尚未安装" -ForegroundColor Cyan
+        Write-Host "    [->] $AgentName 尚未安装" -ForegroundColor Cyan
     }
 
-    # 6. 安装方式
+    # 安装路径说明
     if ($China) {
-        Write-Host "    [i] 国内网络模式：跳过官方安装器，直接使用 npm 镜像源" -ForegroundColor Cyan
+        Write-Host "    [i] 国内镜像模式：跳过官方安装器，直接使用 npmmirror" -ForegroundColor Cyan
     } else {
-        Write-Host "    [i] 将优先使用官方安装方式 ($OfficialUrl)" -ForegroundColor Cyan
+        Write-Host "    [i] 普通模式：官方安装器 -> npm 官方源 -> npmmirror（自动 fallback）" -ForegroundColor Cyan
     }
 
     Write-Host ""
     Write-Host "  [OK] 系统检查完成" -ForegroundColor Green
-    Write-Host "  [OK] 安装准备完成" -ForegroundColor Green
-    Write-Host ""
-
-    Write-Host "  接下来将安装: $AgentName" -ForegroundColor White
-    Write-Host "  可能需要: 安装 Node.js（如果版本不满足要求）" -ForegroundColor White
-    Write-Host "  需要准备: ChatGPT 账号或 OpenAI API Key" -ForegroundColor White
     Write-Host ""
 
     if ($DryRun) {
@@ -258,22 +194,22 @@ function Start-PreCheck {
     }
 }
 
-# ---- 安装 Node.js ----
-function Install-NodeIfNeeded {
+# ---- Node.js 安装 ----
+function Ensure-NodeJs {
     if ($DryRun) {
-        Write-DryRun "检查 node 版本 (需要 >= 22)，如需安装则提示手动下载 MSI"
+        $hasNode = Get-Command node -ErrorAction SilentlyContinue
+        if ($hasNode) {
+            $nv = (node -v).TrimStart('v'); $parts = $nv.Split('.'); $maj = if ($parts.Count -ge 1) { [int]$parts[0] } else { 0 }
+            if ($maj -ge 22) { Write-DryRun "Node.js $nv 已满足，跳过" } else { Write-DryRun "提示安装 Node.js >= 22" }
+        } else { Write-DryRun "提示安装 Node.js >= 22" }
         return
     }
 
     $needNode = $true
     $hasNode = Get-Command node -ErrorAction SilentlyContinue
     if ($hasNode) {
-        $nodeVer = (node -v).TrimStart('v')
-        $parts = $nodeVer.Split('.')
-        $majorVer = if ($parts.Count -ge 1) { [int]$parts[0] } else { 0 }
-        if ($majorVer -ge 22) {
-            $needNode = $false
-        }
+        $nv = (node -v).TrimStart('v'); $parts = $nv.Split('.'); $maj = if ($parts.Count -ge 1) { [int]$parts[0] } else { 0 }
+        if ($maj -ge 22) { $needNode = $false }
     }
 
     if ($needNode) {
@@ -316,7 +252,7 @@ function Install-NodeIfNeeded {
     }
 }
 
-# ---- 安装 ----
+# ---- 网络探测 + 安装路径决策 ----
 function Start-Install {
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Cyan
@@ -326,96 +262,186 @@ function Start-Install {
 
     if ($DryRun) {
         if ($China) {
-            Write-DryRun "npm 镜像: Invoke-Npm install -g @openai/codex --registry=https://registry.npmmirror.com"
+            Write-DryRun "China 模式: npm install -g @openai/codex --registry=https://registry.npmmirror.com"
         } else {
-            Write-DryRun "官方脚本: Invoke-RestMethod $OfficialUrl | Invoke-Expression"
-            Write-DryRun "fallback: Invoke-Npm install -g @openai/codex"
+            Write-DryRun "普通模式: 官方脚本 -> npm 官方源 -> npmmirror (auto-fallback)"
         }
-        Write-DryRun "验证: Get-Command $AgentBin"
         return
     }
 
-    Install-NodeIfNeeded
+    Ensure-NodeJs
 
-    $installed = $false
+    # --- 网络探测 ---
+    "=== Network Probe ===" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    $OfficialOk = $false; $NpmjsOk = $false; $NpmMirrorOk = $false
 
+    Write-Host "  检测网络端点..." -ForegroundColor Cyan
+
+    if (Test-Endpoint "https://chatgpt.com") {
+        $OfficialOk = $true
+        Write-Host "    [OK] 官方安装器可达" -ForegroundColor Green
+        "  official installer: REACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    } else {
+        Write-Host "    [!]  官方安装器不可达" -ForegroundColor Yellow
+        "  official installer: UNREACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    }
+
+    if (Test-Endpoint "https://registry.npmjs.org") {
+        $NpmjsOk = $true
+        Write-Host "    [OK] npm 官方源可达" -ForegroundColor Green
+        "  registry.npmjs.org: REACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    } else {
+        Write-Host "    [!]  npm 官方源不可达" -ForegroundColor Yellow
+        "  registry.npmjs.org: UNREACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    }
+
+    if (Test-Endpoint "https://registry.npmmirror.com") {
+        $NpmMirrorOk = $true
+        Write-Host "    [OK] npmmirror 国内镜像可达" -ForegroundColor Green
+        "  registry.npmmirror.com: REACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    } else {
+        Write-Host "    [!]  npmmirror 国内镜像不可达" -ForegroundColor Yellow
+        "  registry.npmmirror.com: UNREACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    }
+
+    if (Test-Endpoint "https://api.deepseek.com") { "  api.deepseek.com: REACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8 } else { "  api.deepseek.com: UNREACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8 }
+    if (Test-Endpoint "https://github.com") { "  github.com: REACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8 } else { "  github.com: UNREACHABLE" | Out-File -FilePath $LogFile -Append -Encoding UTF8 }
+
+    "=========================" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    Write-Host ""
+
+    # --- China 模式 ---
     if ($China) {
-        # 国内模式: 跳过官方安装器，直接使用 npm 镜像
+        Write-Host "  国内镜像模式：使用 npmmirror 安装..." -ForegroundColor Cyan
+        "Install path: npm-mirror (China mode)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+
         $hasNpm = Get-NpmCmd
-        if ($hasNpm) {
-            Write-Host "  国内网络模式：使用 npm 镜像源安装..." -ForegroundColor Cyan
-            try {
-                Invoke-Npm install -g @openai/codex --registry=https://registry.npmmirror.com
-                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-            } catch {
-                Write-Host "  [!] npm 镜像安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
-                Write-Log "npm mirror install failed: $($_.Exception.Message)"
-            }
-        } else {
-            Write-Host "  [FAIL] 未找到 npm，无法使用国内镜像安装" -ForegroundColor Red
+        if (-not $hasNpm) {
+            Write-Host "  [FAIL] 未找到 npm。国内镜像模式需要 Node.js/npm" -ForegroundColor Red
+            "ERROR: npm not found" | Out-File -FilePath $LogFile -Append -Encoding UTF8
             Write-Host "  请先安装 Node.js: https://nodejs.org" -ForegroundColor Yellow
             exit 1
         }
-    } else {
-        # 标准模式: 官方安装器优先
-        # 方法1: 官方 PowerShell 脚本
-        Write-Host "  尝试官方脚本安装..." -ForegroundColor Cyan
+        if (-not $NpmMirrorOk) {
+            Write-Host "  [FAIL] npmmirror 不可达" -ForegroundColor Red
+            "ERROR: npmmirror unreachable" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            Write-Host "  国内网络排查建议:" -ForegroundColor Yellow
+            Write-Host "  1. 切换手机热点 -> 重试" -ForegroundColor Yellow
+            Write-Host "  2. 关闭/开启代理 -> 重试" -ForegroundColor Yellow
+            Write-Host "  3. 重启路由器 -> 重试" -ForegroundColor Yellow
+            exit 1
+        }
+
+        "  Install command: npm install -g @openai/codex --registry=https://registry.npmmirror.com" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        try {
+            Invoke-Npm install -g @openai/codex --registry=https://registry.npmmirror.com
+            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $script:InstallPath = "npm-mirror"; Write-Host "  [OK] npm 镜像安装成功" -ForegroundColor Green; return }
+        } catch { Write-Log "npm mirror install failed: $($_.Exception.Message)" }
+        Write-Host "  [FAIL] npm 镜像安装失败" -ForegroundColor Red
+        Write-Host "  排查: 查看日志 $LogFile" -ForegroundColor Yellow
+        exit 1
+    }
+
+    # --- 普通模式：3 层 fallback ---
+    # Tier 1: 官方安装器
+    if ($OfficialOk) {
+        Write-Host "  路径 1/3：使用官方安装器..." -ForegroundColor Cyan
+        "Install path: official installer" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        $script:InstallPath = "official"
+        $installed = $false
+
+        "  Install command: Invoke-RestMethod $OfficialUrl | Invoke-Expression" | Out-File -FilePath $LogFile -Append -Encoding UTF8
         try {
             Invoke-RestMethod -Uri $OfficialUrl -TimeoutSec 30 | Invoke-Expression 2>&1 | Tee-Object -FilePath $LogFile -Append
             $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
             if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-        } catch {
-            Write-Host "  [!] 官方脚本安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
-            Write-Log "Official installer failed: $($_.Exception.Message)"
-        }
+        } catch { Write-Log "Official PS installer failed: $($_.Exception.Message)" }
 
-        # 方法2: npm fallback
-        if (-not $installed) {
-            $hasNpm = Get-NpmCmd
-            if ($hasNpm) {
-                Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
-                try {
-                    Invoke-Npm install -g @openai/codex --registry=https://registry.npmjs.org
-                    if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-                } catch {
-                    Write-Host "  [!] npm 官方源安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
-                    Write-Log "npm install failed: $($_.Exception.Message)"
-                }
+        if ($installed) { Write-Host "  [OK] 官方安装器安装成功" -ForegroundColor Green; return }
+        Write-Host "    [!]  官方安装器失败，自动尝试下一路径..." -ForegroundColor Yellow
+        "  official installer FAILED, falling back" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    }
 
-                # npmmirror fallback
-                if (-not $installed) {
-                    Write-Host "  [!] 尝试国内镜像..." -ForegroundColor Yellow
-                    try {
-                        Invoke-Npm install -g @openai/codex --registry=https://registry.npmmirror.com
-                        if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-                    } catch {
-                        Write-Host "  [!] npm 镜像安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
-                        Write-Log "npm mirror fallback failed: $($_.Exception.Message)"
-                    }
-                }
-            }
+    # Tier 2: npm 官方源
+    if ($NpmjsOk) {
+        $hasNpm = Get-NpmCmd
+        if ($hasNpm) {
+            Write-Host "  路径 2/3：使用 npm 官方源安装..." -ForegroundColor Cyan
+            "Install path: npm-official" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            $script:InstallPath = "npm-official"
+
+            "  Install command: npm install -g @openai/codex --registry=https://registry.npmjs.org" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            try {
+                Invoke-Npm install -g @openai/codex --registry=https://registry.npmjs.org
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { Write-Host "  [OK] npm 官方源安装成功" -ForegroundColor Green; return }
+            } catch { Write-Log "npm-official failed: $($_.Exception.Message)" }
+            Write-Host "    [!]  npm 官方源安装失败，自动尝试下一路径..." -ForegroundColor Yellow
+            "  npm-official FAILED, falling back" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        } else {
+            Write-Host "    [!]  npm 官方源可达，但未找到 npm，跳过此路径" -ForegroundColor Yellow
+            "  npm-official SKIPPED (npm not found)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
         }
     }
 
-    if ($installed) {
-        Write-Host "  [OK] $AgentName 安装成功!" -ForegroundColor Green
+    # Tier 3: npmmirror
+    if ($NpmMirrorOk) {
+        $hasNpm = Get-NpmCmd
+        if ($hasNpm) {
+            Write-Host "  路径 3/3：使用 npmmirror 国内镜像安装..." -ForegroundColor Cyan
+            "Install path: npm-mirror (auto-fallback)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            $script:InstallPath = "npm-mirror"
+
+            "  Install command: npm install -g @openai/codex --registry=https://registry.npmmirror.com" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+            try {
+                Invoke-Npm install -g @openai/codex --registry=https://registry.npmmirror.com
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { Write-Host "  [OK] npmmirror 镜像安装成功" -ForegroundColor Green; return }
+            } catch { Write-Log "npm-mirror failed: $($_.Exception.Message)" }
+            Write-Host "    [FAIL] npmmirror 安装也失败了" -ForegroundColor Red
+            "  npm-mirror FAILED" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        } else {
+            "  npm-mirror SKIPPED (npm not found)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        }
+    }
+
+    # 全失败
+    Write-Host "  [FAIL] 所有安装路径均不可用" -ForegroundColor Red
+    "FATAL: All install paths exhausted" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    Write-Host ""
+    Write-Host "  网络排查建议:" -ForegroundColor Yellow
+    Write-Host "  1. 切换手机热点 -> 重试" -ForegroundColor Yellow
+    Write-Host "  2. 关闭/开启代理 -> 重试" -ForegroundColor Yellow
+    Write-Host "  3. 确认已安装 Node.js >= 22: https://nodejs.org" -ForegroundColor Yellow
+    Write-Host "  4. 使用国内镜像模式: .\install-codex.ps1 -China" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  日志文件: $LogFile" -ForegroundColor Yellow
+    Write-Host "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html" -ForegroundColor Yellow
+    exit 1
+}
+
+# ---- 验证 ----
+function Start-Verify {
+    Write-Host ""
+    Write-Host "--- 验证安装 ---" -ForegroundColor Blue
+
+    if ($DryRun) { Write-DryRun "验证: Get-Command $AgentBin"; return }
+
+    if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
+        $ver = (& $AgentBin --version 2>&1 | Select-Object -First 1) -join ''
+        Write-Host "  [OK] $AgentName 安装完成！$ver" -ForegroundColor Green
+        "Result: SUCCESS | Version: $ver | Install path: $InstallPath" | Out-File -FilePath $LogFile -Append -Encoding UTF8
     } else {
-        Write-Host "  [FAIL] 安装失败" -ForegroundColor Red
-        Write-Host ""
-        Write-Host "  排查建议:" -ForegroundColor Yellow
-        Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
-        Write-Host "  2. 查看安装日志: $LogFile" -ForegroundColor Yellow
+        Write-Host "  [FAIL] 找不到 $AgentBin 命令" -ForegroundColor Red
+        "Result: FAILED (binary not found)" | Out-File -FilePath $LogFile -Append -Encoding UTF8
+        Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
+        Write-Host "  2. 日志: $LogFile" -ForegroundColor Yellow
         Write-Host "  3. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html" -ForegroundColor Yellow
         exit 1
     }
 }
 
-# ---- Codex 登录方式选择 ----
+# ---- Codex 登录方式 ----
 function Start-CodexLoginConfig {
-    if ($DryRun) {
-        Write-Host "    [预演] 将执行: 提示选择 Codex 登录方式" -ForegroundColor Yellow
-        return
-    }
+    if ($DryRun) { Write-Host "    [预演] 将执行: 提示选择 Codex 登录方式" -ForegroundColor Yellow; return }
 
     Write-Host ""
     Write-Host "========================================" -ForegroundColor Cyan
@@ -439,34 +465,6 @@ function Start-CodexLoginConfig {
     Write-Host ""
 }
 
-# ---- 验证 ----
-function Start-Verify {
-    Write-Host ""
-    Write-Host "--- 验证安装 ---" -ForegroundColor Blue
-
-    if ($DryRun) {
-        Write-DryRun "验证: Get-Command $AgentBin"
-        return
-    }
-
-    if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
-        Write-Host "  [OK] $AgentName 安装验证通过" -ForegroundColor Green
-        Write-Host ""
-        Write-Host "  登录方式（二选一）:" -ForegroundColor Green
-        Write-Host "    官方账号: codex login" -ForegroundColor Green
-        Write-Host "    API Key:  codex login --with-api-key" -ForegroundColor Green
-        Write-Host ""
-        Write-Host "  启动:" -ForegroundColor Green
-        Write-Host "    在 PowerShell 输入: codex" -ForegroundColor Green
-    } else {
-        Write-Host "  [FAIL] 找不到 codex 命令" -ForegroundColor Red
-        Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 查看安装日志: $LogFile" -ForegroundColor Yellow
-        Write-Host "  3. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html" -ForegroundColor Yellow
-        exit 1
-    }
-}
-
 # ==================== 主流程 ====================
 
 Write-Host ""
@@ -475,11 +473,11 @@ Write-Host "  Codex 安装助手 (Windows)" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 if ($China) {
-    Write-Host "  国内网络模式 — 跳过官方源，使用 npm 镜像" -ForegroundColor Yellow
+    Write-Host "  国内镜像模式 - 强制 npmmirror" -ForegroundColor Yellow
+} else {
+    Write-Host "  普通模式 - 官方 -> npm -> 镜像 自动 fallback" -ForegroundColor Green
 }
-if ($DryRun) {
-    Write-Host "  [dry-run 模式] 只看不装" -ForegroundColor Yellow
-}
+if ($DryRun) { Write-Host "  [dry-run 模式] 只看不装" -ForegroundColor Yellow }
 
 Start-PreCheck
 Start-Install
@@ -488,7 +486,7 @@ Start-CodexLoginConfig
 
 if ($DryRun) {
     Write-Host ""
-    Write-Host "  [OK] dry-run 完成 — 以上步骤未实际执行" -ForegroundColor Green
+    Write-Host "  [OK] dry-run 完成 - 以上步骤未实际执行" -ForegroundColor Green
     Write-Host ""
     Write-Host "  如需正式安装，请运行:" -ForegroundColor Cyan
     Write-Host "    .\install-codex.ps1" -ForegroundColor Cyan

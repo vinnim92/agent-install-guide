@@ -15,12 +15,14 @@
 - [ ] 所有 PowerShell 脚本 `-DryRun` 正常预览
 - [ ] 所有 PowerShell 脚本 `-China` + `-DryRun` 正常预览
 - [ ] 官方 installer 为第一优先级（非 China 模式下）
-- [ ] China 模式跳过官方 installer，直接使用 npm 镜像
-- [ ] 所有 npm fallback 使用 `--registry https://registry.npmmirror.com`（单次参数，非全局设置）
-- [ ] 无 `npm config set registry`（使用 `--registry` 单次参数）
+- [ ] 普通模式：3-tier auto-fallback（官方 → npm 官方源 → npmmirror）
+- [ ] China 模式：强制 npmmirror（跳过官方安装器 + npm 官方源探测）
+- [ ] 所有 npm 安装使用 `--registry` 单次参数（非全局设置）
+- [ ] 无 `npm config set registry`
 - [ ] 无 `sudo npm install -g`
 - [ ] 无 `@main` 未版本化 URL
-- [ ] 网络检测测试 4 个端点（npmmirror.com, npmjs.org, api.deepseek.com, github.com）
+- [ ] 网络探测 5 个端点（官方域名, npmjs.org, npmmirror.com, api.deepseek.com, github.com）
+- [ ] Windows: 6 个 .cmd 文件（3 普通 + 3 China）均为 ASCII-only + CRLF
 - [ ] Git 依赖仅警告，不 `exit 1`
 - [ ] Node.js 安装引导优先推荐手动下载 MSI/pkg（含 SHA256 校验提示）
 - [ ] Node.js 已满足版本要求时跳过安装
@@ -30,7 +32,7 @@
 
 ## 二、文档层
 
-- [ ] README.md 版本号为 v3.2.4
+- [ ] README.md 版本号为 v3.2.5
 - [ ] README.md 包含国内用户 `--china` / `-China` 提示
 - [ ] troubleshooting.html 命令为一行一条（非多行合并）
 - [ ] troubleshooting.html 包含 `--china` 网络模式说明
@@ -45,20 +47,20 @@
 
 ## 四、版本文件
 
-- [ ] `VERSION` 文件内容为 `v3.2.4`
-- [ ] `CHANGELOG.md` 已更新 v3.2.4 条目
-- [ ] `scripts/lib/utils.sh` RAW_BASE 为 `@v3.2.4`
+- [ ] `VERSION` 文件内容为 `v3.2.5`
+- [ ] `CHANGELOG.md` 已更新 v3.2.5 条目
+- [ ] `scripts/lib/utils.sh` RAW_BASE 为 `@v3.2.5`
 - [ ] 版本号遵循 semver（vX.Y.Z）
 
 ## 五、交付物检查
 
-- [ ] `dist/delivery/AI-Agent-Windows-v3.2.4/` 目录存在且完整
-- [ ] `dist/delivery/AI-Agent-macOS-Linux-v3.2.4/` 目录存在且完整
+- [ ] `dist/delivery/AI-Agent-Windows-v3.2.5/` 目录存在且完整
+- [ ] `dist/delivery/AI-Agent-macOS-Linux-v3.2.5/` 目录存在且完整
 - [ ] Windows zip：无 .sh 文件
 - [ ] macOS zip：无 .cmd / .ps1 文件
 - [ ] Windows .cmd 文件为 ASCII-only + CRLF 换行
 - [ ] 中文文件名已替换（README.txt, CHECK-UPDATE.txt）
-- [ ] 3 份 PDF 手册均为 v3.2.4 版本
+- [ ] 3 份 PDF 手册均为 v3.2.5 版本
 
 ## 六、Git 操作
 
@@ -71,7 +73,7 @@
 
 ```bash
 VERSION=$(cat VERSION)
-git tag -a "${VERSION}" -m "v3.2.4: China Hardening"
+git tag -a "${VERSION}" -m "v3.2.5: China Hardening"
 git push origin "${VERSION}"
 ```
 
@@ -80,7 +82,7 @@ git push origin "${VERSION}"
 
 ## 八、CDN 验证（tag 后）
 
-- [ ] jsDelivr 刷新: `https://purge.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.2.4/scripts/install-claude-code.sh`
+- [ ] jsDelivr 刷新: `https://purge.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.2.5/scripts/install-claude-code.sh`
 - [ ] 6 个安装脚本 CDN 可达（HTTP 200）
 - [ ] CDN 冒烟测试 workflow 通过
 
@@ -89,11 +91,14 @@ git push origin "${VERSION}"
 - [ ] `bash install-claude-code.sh --china --dry-run` 正常输出
 - [ ] `bash install-codex.sh --china --dry-run` 正常输出
 - [ ] `bash install-openclaw.sh --china --dry-run` 正常输出
-- [ ] `bash install-codex.sh --china` 正常安装 Codex
+- [ ] `bash install-claude-code.sh --dry-run` 显示 3-tier auto-fallback 预览
+- [ ] `bash install-codex.sh --dry-run` 显示 3-tier auto-fallback 预览
+- [ ] `bash install-openclaw.sh --dry-run` 显示 3-tier auto-fallback 预览
+- [ ] `bash install-codex.sh --china` 正常安装 Codex（强制镜像）
 - [ ] `AGENT_INSTALL_YES=1 bash install-codex.sh --china` 自动确认安装
-- [ ] 网络不通时显示多端点检测结果和 `--china` 建议
-- [ ] 安装日志写入 `~/agent-install-*.log`
-- [ ] `--help` 输出包含 `--china` 用法
+- [ ] 普通模式下网络不通时自动 fallback 到下一路径
+- [ ] 安装日志记录：mode, 5 endpoints, install path, Node/npm versions, install cmd, errors, result
+- [ ] `--help` 输出包含普通模式和 `--china` 模式说明
 - [ ] Node.js >= 22 时跳过安装
 
 ## 十、商品上架
@@ -104,4 +109,4 @@ git push origin "${VERSION}"
 
 ---
 
-## 当前版本: v3.2.4
+## 当前版本: v3.2.5

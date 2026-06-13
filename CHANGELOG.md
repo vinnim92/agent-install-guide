@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.2.5 (2026-06-13)
+
+- Normal mode: 3-tier auto-fallback (official installer -> npm official -> npmmirror)
+- China mode repositioned as "force domestic mirror" shortcut (auto-fallback already covers it)
+- 5-endpoint network probe with detailed logging (official domain, npmjs, npmmirror, deepseek, github)
+- Enhanced logging: mode, all endpoints, install path decision, Node/npm versions, install command, errors, result
+- `INSTALL_PATH` variable tracks which path was actually used (official / npm-official / npm-mirror)
+- All 6 scripts (3 bash + 3 PS1) rewritten with unified probe_and_install() pattern
+- Windows: 3 new China-mode .cmd launchers (install-claude-china.cmd, install-codex-china.cmd, install-openclaw-china.cmd)
+- README: updated for v3.2.5 with auto-fallback explanation and China-mode quick start
+- troubleshooting.html: auto-fallback FAQ, when-to-use-China section, installation log guide
+- VERSION bumped, RELEASE_CHECKLIST updated for v3.2.5
+
+---
+
 ## v3.2.4 (2026-06-13)
 
 - China mode: `--china` / `-China` flag skips official installer, uses npm mirror directly
