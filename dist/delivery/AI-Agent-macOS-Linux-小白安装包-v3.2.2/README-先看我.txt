@@ -1,21 +1,30 @@
-AI Agent 小白安装包 v3.2.1
-Windows 版
+AI Agent 小白安装包 v3.2.2
+macOS / Linux 版
 
-这是 Windows 版安装包，包含 Claude Code、Codex、OpenClaw 三款 AI 编程助手的安装脚本。
+这是 macOS 和 Linux 版安装包，包含 Claude Code、Codex、OpenClaw 三款 AI 编程助手的安装脚本。
 
 =========================================
 使用方法
 =========================================
 
-1. 请先完整解压 zip，不要在压缩包预览中直接运行。
-2. 打开 windows 文件夹。
-3. 根据你要安装的工具，双击：
-   - install-claude.cmd     → Claude Code + DeepSeek API
-   - install-codex.cmd      → Codex
-   - install-openclaw.cmd   → OpenClaw + DeepSeek
-4. 如果 Windows 弹出安全提示，请选择"仍要运行"。
-5. 按提示完成安装。
-6. 如果窗口出现红色错误，请截图完整窗口反馈。
+1. 请先完整解压 zip。
+2. 打开终端（Mac: Command+空格 → 输入"终端"→ 回车）。
+3. 进入 mac-linux 文件夹：
+   cd <解压目录>/AI-Agent-macOS-Linux-小白安装包-v3.2.2/mac-linux
+4. 执行：
+
+   bash install-claude-code.sh    → Claude Code + DeepSeek API
+   bash install-codex.sh          → Codex
+   bash install-openclaw.sh       → OpenClaw + DeepSeek
+
+5. 如果提示权限问题，先执行：
+
+   chmod +x install-claude-code.sh
+   chmod +x install-codex.sh
+   chmod +x install-openclaw.sh
+
+   然后再运行安装命令。
+6. 按提示完成安装。
 
 =========================================
 重要提示

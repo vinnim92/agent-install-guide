@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.2.2 (2026-06-03)
+
+- Fix Windows .cmd launcher encoding/parsing issue (Chinese chars broken by cmd.exe)
+- Make .cmd launchers ASCII-only with CRLF line endings
+- Remove chcp 65001, Chinese text, and emoji from .cmd files
+- Use full path to powershell.exe to avoid PATH resolution issues
+- Sync macOS/Linux zip version to v3.2.2
+
+---
+
 ## v3.2.1 (2026-06-03)
 
 - 收尾修复：main 分支与 tag 版本同步
