@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash
+#   bash install-claude-code.sh --china   国内网络模式
 #   bash install-claude-code.sh --help
 #   bash install-claude-code.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-claude-code.sh
@@ -21,17 +21,19 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 DRY_RUN=false
 SKIP_CONFIRM=false
+CHINA_MODE=false
 OS_TYPE=""
 AGENT_NAME="Claude Code"
 AGENT_BIN="claude"
 OFFICIAL_URL="https://claude.ai/install.sh"
+LOGFILE="$HOME/agent-install-claude-code.log"
 
 # ---------- 输出函数 ----------
-print_step()    { echo -e "${BLUE}[→]${NC} $1"; }
-print_success() { echo -e "    ${GREEN}✅ $1${NC}"; }
-print_error()   { echo -e "    ${RED}❌ $1${NC}"; }
-print_warning() { echo -e "    ${YELLOW}⚠️  $1${NC}"; }
-print_tip()     { echo -e "    ${CYAN}💡 $1${NC}"; }
+print_step()    { echo -e "${BLUE}[→]${NC} $1" | tee -a "$LOGFILE"; }
+print_success() { echo -e "    ${GREEN}✅ $1${NC}" | tee -a "$LOGFILE"; }
+print_error()   { echo -e "    ${RED}❌ $1${NC}" | tee -a "$LOGFILE"; }
+print_warning() { echo -e "    ${YELLOW}⚠️  $1${NC}" | tee -a "$LOGFILE"; }
+print_tip()     { echo -e "    ${CYAN}💡 $1${NC}" | tee -a "$LOGFILE"; }
 print_dryrun()  { echo -e "    ${YELLOW}[预演]${NC} 将执行: $1"; }
 
 command_exists() { command -v "$1" >/dev/null 2>&1; }
@@ -40,7 +42,7 @@ command_exists() { command -v "$1" >/dev/null 2>&1; }
 confirm() {
     local prompt="$1"
     if [ "$SKIP_CONFIRM" = true ]; then
-        echo -e "    ${CYAN}💡${NC} ${prompt} → 自动确认"
+        echo -e "    ${CYAN}💡${NC} ${prompt} → 自动确认" | tee -a "$LOGFILE"
         return 0
     fi
     local yn
@@ -48,7 +50,7 @@ confirm() {
         read -r -p "$(echo -e "${BLUE}[?]${NC} ${prompt} [Y/n]: ")" yn < /dev/tty
     else
         print_warning "当前环境无法读取键盘输入"
-        print_tip "如果你确认继续，请使用：curl ... | AGENT_INSTALL_YES=1 bash"
+        print_tip "如果你确认继续，请使用：AGENT_INSTALL_YES=1 bash install-claude-code.sh --china"
         return 1
     fi
     yn=${yn:-y}
@@ -63,7 +65,8 @@ run_cmd() {
         print_dryrun "$*"
         return 0
     else
-        eval "$@"
+        echo "  [RUN] $*" >> "$LOGFILE"
+        eval "$@" 2>>"$LOGFILE"
     fi
 }
 
@@ -82,33 +85,66 @@ show_help() {
     echo ""
     echo "用法:"
     echo "  bash install-claude-code.sh           正常安装（自动检查环境）"
+    echo "  bash install-claude-code.sh --china   国内网络模式（跳过官方源，使用镜像）"
     echo "  bash install-claude-code.sh --help    显示帮助"
     echo "  bash install-claude-code.sh --dry-run 排查/预览（只看不装）"
     echo ""
     echo "跳过确认:"
     echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh"
     echo ""
-    echo "推荐一行安装命令:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh | bash"
-    echo ""
-    echo "如需手动确认，请先下载脚本再运行:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/claude.sh -o claude.sh"
-    echo "  bash claude.sh"
+    echo "国内网络一键安装:"
+    echo "  AGENT_INSTALL_YES=1 bash install-claude-code.sh --china"
     echo ""
     echo "安装后启动:"
     echo "  终端输入: claude"
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+    echo "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
     echo ""
     exit 0
+}
+
+# ---------- 多端点网络检测 ----------
+check_network() {
+    if [ "$DRY_RUN" = true ]; then
+        print_dryrun "检查网络连通性（4 个端点）"
+        return 0
+    fi
+
+    print_step "检查网络连通性..."
+    local ok=0
+
+    for endpoint in "https://registry.npmmirror.com" "https://registry.npmjs.org" "https://api.deepseek.com" "https://github.com"; do
+        if curl -fsSL --connect-timeout 5 "$endpoint" >/dev/null 2>&1; then
+            print_success "可访问: $endpoint"
+            ok=$((ok + 1))
+        else
+            print_warning "无法访问: $endpoint"
+        fi
+    done
+
+    if [ "$ok" -eq 0 ]; then
+        print_error "所有端点均无法访问，请检查网络连接"
+        print_tip "可尝试切换手机热点、关闭/开启代理"
+        if [ "$CHINA_MODE" = false ]; then
+            print_tip "或使用国内网络模式: bash install-claude-code.sh --china"
+        fi
+    elif [ "$ok" -le 2 ]; then
+        print_warning "部分端点不可达，安装可能受限"
+        if [ "$CHINA_MODE" = false ]; then
+            print_tip "建议使用国内网络模式: bash install-claude-code.sh --china"
+        fi
+    else
+        print_success "网络连通性良好 ($ok/4)"
+    fi
+    echo ""
 }
 
 # ============ 安装前自动检查 ============
 run_precheck() {
     echo ""
-    echo -e "${CYAN}  正在检查你的电脑环境...${NC}"
+    echo -e "${CYAN}  正在检查你的电脑环境...${NC}" | tee -a "$LOGFILE"
     echo ""
 
     # 1. 操作系统
@@ -123,28 +159,18 @@ run_precheck() {
     esac
     print_success "系统: ${OS_TYPE} · 架构: $(uname -m)"
 
-    # 2. Git
+    # 2. Git（仅警告，不阻断）
     if [ "$DRY_RUN" = true ]; then
         print_dryrun "检查 Git 是否安装"
     elif command_exists git; then
         print_success "Git 已安装"
     else
-        print_error "Git 未安装"
-        echo ""
-        echo "  请先安装 Git:"
-        echo "    macOS:  xcode-select --install"
-        echo "    Ubuntu: sudo apt install git"
-        exit 1
+        print_warning "Git 未安装（不影响安装，但后续可能需要）"
+        print_tip "如需安装: macOS 运行 xcode-select --install，Ubuntu 运行 sudo apt install git"
     fi
 
-    # 3. 网络
-    if [ "$DRY_RUN" = true ]; then
-        print_dryrun "检查网络连通性"
-    elif curl -fsSL --connect-timeout 5 https://github.com >/dev/null 2>&1; then
-        print_success "网络连接正常"
-    else
-        print_warning "网络访问受限，安装可能受影响"
-    fi
+    # 3. 多端点网络检测
+    check_network
 
     # 4. 是否已安装
     if command_exists "$AGENT_BIN"; then
@@ -163,18 +189,26 @@ run_precheck() {
     fi
 
     # 5. 安装方式
-    print_tip "将使用官方安装方式（${OFFICIAL_URL}）"
+    if [ "$CHINA_MODE" = true ]; then
+        print_tip "国内网络模式：跳过官方安装器，直接使用 npm 镜像源"
+    else
+        print_tip "将使用官方安装方式（${OFFICIAL_URL}）"
+    fi
     print_success "Claude Code 自带运行时，无需安装 Node.js"
 
     echo ""
-    echo -e "${GREEN}  ✅ 系统检查完成${NC}"
-    echo -e "${GREEN}  ✅ 网络检查完成${NC}"
-    echo -e "${GREEN}  ✅ 安装准备完成${NC}"
+    echo -e "${GREEN}  ✅ 系统检查完成${NC}" | tee -a "$LOGFILE"
+    echo -e "${GREEN}  ✅ 网络检查完成${NC}" | tee -a "$LOGFILE"
+    echo -e "${GREEN}  ✅ 安装准备完成${NC}" | tee -a "$LOGFILE"
     echo ""
 
     # 6. 总结
     echo -e "  ${BOLD}接下来将安装:${NC} ${AGENT_NAME}"
-    echo -e "  ${BOLD}安装方式:${NC} 官方安装脚本"
+    if [ "$CHINA_MODE" = true ]; then
+        echo -e "  ${BOLD}安装方式:${NC} npm 镜像源（国内网络模式）"
+    else
+        echo -e "  ${BOLD}安装方式:${NC} 官方安装脚本"
+    fi
     echo -e "  ${BOLD}推荐配置:${NC} DeepSeek API Key（安装后可配置）"
     echo ""
 
@@ -185,7 +219,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+        echo "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 0
     fi
 }
@@ -215,29 +249,58 @@ do_install() {
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
-        print_dryrun "官方脚本: curl -fsSL ${OFFICIAL_URL} | bash"
+        if [ "$CHINA_MODE" = true ]; then
+            print_dryrun "npm 镜像: npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"
+        else
+            print_dryrun "官方脚本: curl -fsSL ${OFFICIAL_URL} | bash"
+        fi
         print_dryrun "验证: command -v ${AGENT_BIN}"
         return 0
     fi
 
-    # 方法1: 官方 installer（优先）
-    print_step "使用官方安装脚本..."
-    if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash 2>/dev/null"; then
-        print_success "官方脚本安装成功"
-    else
-        print_warning "官方脚本不可用，尝试 npm..."
+    # 初始化日志
+    echo "===== $(date) =====" > "$LOGFILE"
+    echo "Agent: $AGENT_NAME | China Mode: $CHINA_MODE" >> "$LOGFILE"
+
+    # China 模式: 直接使用 npm 镜像
+    if [ "$CHINA_MODE" = true ]; then
+        print_step "国内网络模式：使用 npm 镜像源安装..."
         if command_exists npm; then
-            run_cmd "npm install -g @anthropic-ai/claude-code@latest 2>/dev/null" && print_success "npm 安装成功" || {
-                print_error "安装失败"
+            if run_cmd "npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"; then
+                print_success "npm 镜像安装成功"
+            else
+                print_error "npm 镜像安装失败"
                 echo ""
-                echo "  排查: 访问 https://vinnim92.github.io/agent-install-guide/docs/support.html"
+                echo "  排查: 查看日志 $LOGFILE"
+                echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
                 exit 1
-            }
+            fi
         else
-            print_error "安装失败，且未找到 npm"
-            echo "  手动安装: 访问 https://claude.ai/download"
-            echo "  排查: https://vinnim92.github.io/agent-install-guide/docs/support.html"
+            print_error "未找到 npm，无法使用国内镜像安装"
+            echo "  请先安装 Node.js: https://nodejs.org"
             exit 1
+        fi
+    else
+        # 方法1: 官方 installer（优先）
+        print_step "使用官方安装脚本..."
+        if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash"; then
+            print_success "官方脚本安装成功"
+        else
+            print_warning "官方脚本不可用，尝试 npm..."
+            if command_exists npm; then
+                run_cmd "npm install -g @anthropic-ai/claude-code@latest" && print_success "npm 安装成功" || {
+                    print_error "安装失败"
+                    echo ""
+                    echo "  排查: 查看日志 $LOGFILE"
+                    echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+                    exit 1
+                }
+            else
+                print_error "安装失败，且未找到 npm"
+                echo "  手动安装: 访问 https://claude.ai/download"
+                echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+                exit 1
+            fi
         fi
     fi
 
@@ -247,12 +310,12 @@ do_install() {
 
     if command_exists "$AGENT_BIN"; then
         print_success "${AGENT_NAME} 安装完成！"
-        $AGENT_BIN --version 2>/dev/null | head -1 | while read -r v; do echo -e "  ${v}"; done
+        $AGENT_BIN --version 2>/dev/null | head -1 | while read -r v; do echo -e "  ${v}" | tee -a "$LOGFILE"; done
     else
         print_error "找不到 ${AGENT_BIN} 命令"
         echo ""
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html"
+        echo "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 1
     fi
 }
@@ -270,7 +333,7 @@ configure_deepseek() {
     echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
     echo -e "  本手册默认采用 ${BOLD}DeepSeek API${NC} 方案。"
-    echo "  DeepSeek 对国内用户更友好：注册方便、价格便宜、无需翻墙。"
+    echo "  DeepSeek 对国内用户更友好：注册方便、价格便宜。"
     echo "  你需要准备自己的 DeepSeek API Key。"
     echo ""
     echo "  获取方式: 打开浏览器访问 platform.deepseek.com"
@@ -312,7 +375,6 @@ configure_deepseek() {
     # 备份以避免重复写入
     if grep -q "ANTHROPIC_BASE_URL.*api.deepseek.com" "$rc_file" 2>/dev/null; then
         print_tip "检测到已有 DeepSeek 配置，将更新 API Key"
-        # 移除旧的 ANTHROPIC_AUTH_TOKEN
         if [ "$(uname -s)" = "Darwin" ]; then
             sed -i '' '/export ANTHROPIC_AUTH_TOKEN=.*deepseek\|# DeepSeek.*ANTHROPIC_AUTH_TOKEN/d' "$rc_file"
             sed -i '' '/export ANTHROPIC_AUTH_TOKEN=sk-/d' "$rc_file"
@@ -366,6 +428,7 @@ for arg in "$@"; do
     case "$arg" in
         --help|-h) show_help ;;
         --dry-run) DRY_RUN=true ;;
+        --china) CHINA_MODE=true ;;
         *) ;;
     esac
 done
@@ -379,6 +442,9 @@ echo -e "${CYAN}==========================================${NC}"
 echo -e "${CYAN}  Claude Code 安装助手${NC}"
 echo -e "${CYAN}==========================================${NC}"
 
+if [ "$CHINA_MODE" = true ]; then
+    echo -e "  ${YELLOW}🌏 国内网络模式 — 跳过官方源，使用 npm 镜像${NC}"
+fi
 if [ "$DRY_RUN" = true ]; then
     echo -e "  ${YELLOW}🔍 dry-run 模式 — 只看不装${NC}"
 fi
@@ -397,4 +463,6 @@ echo -e "  常用命令:"
 echo "    claude             启动交互式对话"
 echo "    claude --version   查看版本"
 echo "    claude doctor      运行诊断"
+echo ""
+echo -e "  安装日志: ${LOGFILE}"
 echo ""

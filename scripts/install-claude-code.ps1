@@ -1,4 +1,4 @@
-﻿# ============================================================
+# ============================================================
 # Claude Code 安装脚本（Windows PowerShell）
 #
 # 支持系统: Windows 10/11
@@ -7,7 +7,7 @@
 # Claude Code 自带运行时，无需单独安装 Node.js
 #
 # 用法:
-#   irm https://vinnim92.github.io/agent-install-guide/i/claude.ps1 | iex
+#   .\install-claude-code.ps1 -China   国内网络模式
 #   .\install-claude-code.ps1 -Help
 #   .\install-claude-code.ps1 -DryRun
 #   $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1
@@ -15,7 +15,8 @@
 
 param(
     [switch]$Help,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$China
 )
 
 try {
@@ -30,6 +31,7 @@ $ErrorActionPreference = "Stop"
 $AgentName = "Claude Code"
 $AgentBin = "claude"
 $OfficialUrl = "https://claude.ai/install.ps1"
+$LogFile = Join-Path $env:TEMP "agent-install-claude-code.log"
 
 # ---- Help ----
 if ($Help) {
@@ -46,20 +48,31 @@ if ($Help) {
     Write-Host ""
     Write-Host "用法:"
     Write-Host "  .\install-claude-code.ps1           正常安装（自动检查环境）"
+    Write-Host "  .\install-claude-code.ps1 -China    国内网络模式（跳过官方源，使用镜像）"
     Write-Host "  .\install-claude-code.ps1 -Help     显示帮助"
     Write-Host "  .\install-claude-code.ps1 -DryRun   排查/预览（只看不装）"
     Write-Host ""
     Write-Host "跳过确认:"
     Write-Host '  $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1'
     Write-Host ""
+    Write-Host "国内网络一键安装:"
+    Write-Host '  $env:AGENT_INSTALL_YES="1"; .\install-claude-code.ps1 -China'
+    Write-Host ""
     Write-Host "安装后启动:"
     Write-Host "  PowerShell 输入: claude"
     Write-Host ""
     Write-Host "安装失败？"
     Write-Host "  打开故障排查页面:"
-    Write-Host "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+    Write-Host "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
     Write-Host ""
     exit 0
+}
+
+# ---- Logging ----
+function Write-Log {
+    param([string]$Message)
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    "[$timestamp] $Message" | Out-File -FilePath $LogFile -Append -Encoding UTF8
 }
 
 # ---- 确认机制 ----
@@ -107,7 +120,52 @@ function Invoke-Npm {
         throw "未找到 npm.cmd。请确认 Node.js 已安装，并重新打开 PowerShell。"
     }
 
-    & $npm @Arguments
+    & $npm @Arguments 2>&1 | Tee-Object -FilePath $LogFile -Append
+}
+
+# ============ 多端点网络检测 ============
+function Test-NetworkEndpoints {
+    if ($DryRun) {
+        Write-DryRun "检查网络连通性（4 个端点）"
+        return
+    }
+
+    Write-Host "  检查网络连通性..." -ForegroundColor Cyan
+    $ok = 0
+    $endpoints = @(
+        "https://registry.npmmirror.com",
+        "https://registry.npmjs.org",
+        "https://api.deepseek.com",
+        "https://github.com"
+    )
+
+    foreach ($ep in $endpoints) {
+        try {
+            $null = Invoke-WebRequest -Uri $ep -TimeoutSec 5 -UseBasicParsing -ErrorAction Stop
+            Write-Host "    [OK] 可访问: $ep" -ForegroundColor Green
+            Write-Log "Network OK: $ep"
+            $ok++
+        } catch {
+            Write-Host "    [!]  无法访问: $ep" -ForegroundColor Yellow
+            Write-Log "Network FAIL: $ep"
+        }
+    }
+
+    if ($ok -eq 0) {
+        Write-Host "    [FAIL] 所有端点均无法访问，请检查网络连接" -ForegroundColor Red
+        Write-Host "    可尝试切换手机热点、关闭/开启代理" -ForegroundColor Yellow
+        if (-not $China) {
+            Write-Host "    或使用国内网络模式: .\install-claude-code.ps1 -China" -ForegroundColor Yellow
+        }
+    } elseif ($ok -le 2) {
+        Write-Host "    [!]  部分端点不可达，安装可能受限" -ForegroundColor Yellow
+        if (-not $China) {
+            Write-Host "    建议使用国内网络模式: .\install-claude-code.ps1 -China" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "    [OK] 网络连通性良好 ($ok/4)" -ForegroundColor Green
+    }
+    Write-Host ""
 }
 
 # ============ 安装前自动检查 ============
@@ -115,6 +173,10 @@ function Start-PreCheck {
     Write-Host ""
     Write-Host "  正在检查你的电脑环境..." -ForegroundColor Cyan
     Write-Host ""
+
+    # 初始化日志
+    "===== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') =====" | Out-File -FilePath $LogFile -Encoding UTF8
+    "Agent: $AgentName | China Mode: $China" | Out-File -FilePath $LogFile -Append -Encoding UTF8
 
     # 1. 系统
     $os = Get-CimInstance Win32_OperatingSystem
@@ -129,9 +191,12 @@ function Start-PreCheck {
         Write-DryRun "检查 winget 是否可用"
     }
 
-    # 3. 是否已安装
+    # 3. 多端点网络检测
+    Test-NetworkEndpoints
+
+    # 4. 是否已安装
     if (Get-Command $AgentBin -ErrorAction SilentlyContinue) {
-        $ver = (& $AgentBin --version 2>$null | Select-Object -First 1) -join ''
+        $ver = (& $AgentBin --version 2>&1 | Select-Object -First 1) -join ''
         if (-not $ver) { $ver = "未知版本" }
         Write-Host "    [OK] $AgentName 已安装 ($ver)" -ForegroundColor Green
         Write-Host ""
@@ -145,8 +210,12 @@ function Start-PreCheck {
         Write-Host "    [→] $AgentName 尚未安装" -ForegroundColor Cyan
     }
 
-    # 4. 安装方式
-    Write-Host "    [i] 将优先使用官方安装方式 ($OfficialUrl)" -ForegroundColor Cyan
+    # 5. 安装方式
+    if ($China) {
+        Write-Host "    [i] 国内网络模式：跳过官方安装器，直接使用 npm 镜像源" -ForegroundColor Cyan
+    } else {
+        Write-Host "    [i] 将优先使用官方安装方式 ($OfficialUrl)" -ForegroundColor Cyan
+    }
     Write-Host "    [OK] $AgentName 自带运行时，无需安装 Node.js" -ForegroundColor Green
 
     Write-Host ""
@@ -155,7 +224,11 @@ function Start-PreCheck {
     Write-Host ""
 
     Write-Host "  接下来将安装: $AgentName" -ForegroundColor White
-    Write-Host "  安装方式: 官方安装脚本" -ForegroundColor White
+    if ($China) {
+        Write-Host "  安装方式: npm 镜像源（国内网络模式）" -ForegroundColor White
+    } else {
+        Write-Host "  安装方式: 官方安装脚本" -ForegroundColor White
+    }
     Write-Host "  推荐配置: DeepSeek API Key（安装后可配置）" -ForegroundColor White
     Write-Host ""
 
@@ -166,7 +239,7 @@ function Start-PreCheck {
 
     if (-not (Confirm-Action "是否继续安装 $AgentName ？")) {
         Write-Host "  已取消安装。有问题请看故障排查:" -ForegroundColor Yellow
-        Write-Host "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+        Write-Host "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 0
     }
 }
@@ -252,46 +325,73 @@ function Start-Install {
     Write-Host ""
 
     if ($DryRun) {
-        Write-DryRun "winget install Anthropic.ClaudeCode"
-        Write-DryRun "Invoke-RestMethod $OfficialUrl | Invoke-Expression"
+        if ($China) {
+            Write-DryRun "npm 镜像: Invoke-Npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com"
+        } else {
+            Write-DryRun "winget install Anthropic.ClaudeCode"
+            Write-DryRun "Invoke-RestMethod $OfficialUrl | Invoke-Expression"
+        }
         Write-DryRun "验证: Get-Command $AgentBin"
         return
     }
 
     $installed = $false
-    $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
-    $hasNpm = Get-NpmCmd
 
-    # 方法1: winget
-    if ($hasWinget -and -not $installed) {
-        Write-Host "  尝试 winget 安装..." -ForegroundColor Cyan
-        winget install Anthropic.ClaudeCode --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>$null
-        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
-        if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-    }
-
-    # 方法2: 官方 PowerShell 脚本
-    if (-not $installed) {
-        Write-Host "  尝试官方脚本安装..." -ForegroundColor Cyan
-        try {
-            Invoke-RestMethod -Uri $OfficialUrl -TimeoutSec 30 | Invoke-Expression 2>$null
-            $localBin = Join-Path $env:USERPROFILE ".local\bin"
-            $env:Path = "$localBin;$env:Path"
-            if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-        } catch {
-            Write-Host "  [!] 官方脚本安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
-            if ($hasNpm) { Write-Host "  [!] 将尝试 npm fallback 安装..." -ForegroundColor Yellow }
+    if ($China) {
+        # 国内模式: 跳过官方安装器，直接使用 npm 镜像
+        $hasNpm = Get-NpmCmd
+        if ($hasNpm) {
+            Write-Host "  国内网络模式：使用 npm 镜像源安装..." -ForegroundColor Cyan
+            try {
+                Invoke-Npm install -g @anthropic-ai/claude-code@latest --registry=https://registry.npmmirror.com
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            } catch {
+                Write-Host "  [!] npm 镜像安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+                Write-Log "npm mirror install failed: $($_.Exception.Message)"
+            }
+        } else {
+            Write-Host "  [FAIL] 未找到 npm，无法使用国内镜像安装" -ForegroundColor Red
+            Write-Host "  请先安装 Node.js: https://nodejs.org" -ForegroundColor Yellow
+            exit 1
         }
-    }
+    } else {
+        # 标准模式: 官方安装器优先
+        $hasWinget = Get-Command winget -ErrorAction SilentlyContinue
+        $hasNpm = Get-NpmCmd
 
-    # 方法3: npm fallback
-    if (-not $installed -and $hasNpm) {
-        Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
-        try {
-            Invoke-Npm install -g @anthropic-ai/claude-code@latest
+        # 方法1: winget
+        if ($hasWinget -and -not $installed) {
+            Write-Host "  尝试 winget 安装..." -ForegroundColor Cyan
+            winget install Anthropic.ClaudeCode --silent --accept-package-agreements --accept-source-agreements --disable-interactivity 2>&1 | Tee-Object -FilePath $LogFile -Append
+            $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
             if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
-        } catch {
-            Write-Host "  [!] npm 安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+
+        # 方法2: 官方 PowerShell 脚本
+        if (-not $installed) {
+            Write-Host "  尝试官方脚本安装..." -ForegroundColor Cyan
+            try {
+                Invoke-RestMethod -Uri $OfficialUrl -TimeoutSec 30 | Invoke-Expression 2>&1 | Tee-Object -FilePath $LogFile -Append
+                $localBin = Join-Path $env:USERPROFILE ".local\bin"
+                $env:Path = "$localBin;$env:Path"
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            } catch {
+                Write-Host "  [!] 官方脚本安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+                Write-Log "Official installer failed: $($_.Exception.Message)"
+                if ($hasNpm) { Write-Host "  [!] 将尝试 npm fallback 安装..." -ForegroundColor Yellow }
+            }
+        }
+
+        # 方法3: npm fallback
+        if (-not $installed -and $hasNpm) {
+            Write-Host "  通过 npm 安装..." -ForegroundColor Cyan
+            try {
+                Invoke-Npm install -g @anthropic-ai/claude-code@latest
+                if (Get-Command $AgentBin -ErrorAction SilentlyContinue) { $installed = $true }
+            } catch {
+                Write-Host "  [!] npm 安装失败: $($_.Exception.Message)" -ForegroundColor Yellow
+                Write-Log "npm install failed: $($_.Exception.Message)"
+            }
         }
     }
 
@@ -302,7 +402,8 @@ function Start-Install {
         Write-Host ""
         Write-Host "  排查建议:" -ForegroundColor Yellow
         Write-Host "  1. 确保网络通畅，可尝试切换手机热点" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 查看安装日志: $LogFile" -ForegroundColor Yellow
+        Write-Host "  3. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -325,7 +426,8 @@ function Start-Verify {
     } else {
         Write-Host "  [FAIL] 找不到 claude 命令" -ForegroundColor Red
         Write-Host "  1. 关闭 PowerShell 窗口，重新打开后再试" -ForegroundColor Yellow
-        Write-Host "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html" -ForegroundColor Yellow
+        Write-Host "  2. 查看安装日志: $LogFile" -ForegroundColor Yellow
+        Write-Host "  3. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html" -ForegroundColor Yellow
         exit 1
     }
 }
@@ -337,6 +439,9 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Claude Code 安装助手 (Windows)" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
+if ($China) {
+    Write-Host "  国内网络模式 — 跳过官方源，使用 npm 镜像" -ForegroundColor Yellow
+}
 if ($DryRun) {
     Write-Host "  [dry-run 模式] 只看不装" -ForegroundColor Yellow
 }
@@ -353,4 +458,6 @@ if ($DryRun) {
     Write-Host "  如需正式安装，请运行:" -ForegroundColor Cyan
     Write-Host "    .\install-claude-code.ps1" -ForegroundColor Cyan
 }
+Write-Host ""
+Write-Host "  安装日志: $LogFile" -ForegroundColor Cyan
 Write-Host ""

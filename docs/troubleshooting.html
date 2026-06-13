@@ -166,8 +166,11 @@ Get-Command openclaw   # OpenClaw</div>
   <ul>
     <li><strong>现象：</strong>运行 <code>bash install-xxx.sh</code> 时提示 <code>Permission denied</code>。</li>
     <li><strong>解决方法：</strong>
-      <div class="cmd-block">chmod +x install-codex.sh
-bash install-codex.sh</div>
+      <div class="cmd-block">chmod +x install-claude-code.sh
+chmod +x install-codex.sh
+chmod +x install-openclaw.sh
+bash install-claude-code.sh</div>
+      把最后一行换成你要安装的 Agent 对应的脚本名。不要一次复制多行。每行是一条独立命令，复制一行粘贴一行。
     </li>
     <li><strong>不要用 sudo：</strong>在 Mac/Linux 上，不要用 <code>sudo bash install-xxx.sh</code>。</li>
   </ul>
@@ -214,6 +217,38 @@ which openclaw    # OpenClaw</div>
     </li>
     <li><strong>如果仍然找不到命令：</strong>重新运行安装脚本即可。</li>
     <li><strong>Mac 额外步骤：</strong>某些 Mac 可能需要先允许终端访问"开发工具"。系统提示时点"允许"即可。</li>
+  </ul>
+</div>
+
+
+<div class="section">
+  <h2>国内网络 — 使用 --china 模式</h2>
+  <ul>
+    <li><strong>如果你在国内且没有 VPN：</strong>安装时使用 <code>--china</code> 参数可以跳过官方安装器，直接通过国内 npm 镜像安装，速度更快更稳定。</li>
+    <li><strong>macOS / Linux：</strong>
+      <div class="cmd-block">bash install-claude-code.sh --china
+bash install-codex.sh --china
+bash install-openclaw.sh --china</div>
+    </li>
+    <li><strong>Windows PowerShell：</strong>
+      <div class="cmd-block">.\install-claude-code.ps1 -China
+.\install-codex.ps1 -China
+.\install-openclaw.ps1 -China</div>
+    </li>
+    <li><strong>一键自动确认模式（推荐）：</strong>
+      <div class="cmd-block"># macOS / Linux
+AGENT_INSTALL_YES=1 bash install-codex.sh --china
+
+# Windows PowerShell
+$env:AGENT_INSTALL_YES="1"; .\install-codex.ps1 -China</div>
+    </li>
+    <li><strong>安装日志：</strong>如果安装失败，查看日志文件：
+      <div class="cmd-block"># macOS / Linux 日志在 HOME 目录
+cat ~/agent-install-codex.log
+
+# Windows 日志在 TEMP 目录
+type %TEMP%\agent-install-codex.log</div>
+    </li>
   </ul>
 </div>
 

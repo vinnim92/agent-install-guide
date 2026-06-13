@@ -6,24 +6,36 @@
 
 ## 一、脚本层
 
-- [ ] 6 个入口脚本语法检查通过 (`bash -n` / PowerShell parser)
+- [ ] 6 个安装脚本语法检查通过 (`bash -n` / PowerShell parser)
 - [ ] `bash scripts/check-scripts.sh` 全部 PASS
-- [ ] 所有 bash 脚本 `--help` 正常输出
+- [ ] 所有 bash 脚本 `--help` 正常输出（含 `--china` 用法）
 - [ ] 所有 bash 脚本 `--dry-run` 正常预览
-- [ ] 所有 PowerShell 脚本 `-Help` 正常输出
+- [ ] 所有 bash 脚本 `--china` + `--dry-run` 正常预览
+- [ ] 所有 PowerShell 脚本 `-Help` 正常输出（含 `-China` 用法）
 - [ ] 所有 PowerShell 脚本 `-DryRun` 正常预览
-- [ ] 官方 installer 为第一优先级（not npm）
+- [ ] 所有 PowerShell 脚本 `-China` + `-DryRun` 正常预览
+- [ ] 官方 installer 为第一优先级（非 China 模式下）
+- [ ] China 模式跳过官方 installer，直接使用 npm 镜像
+- [ ] 所有 npm fallback 使用 `--registry https://registry.npmmirror.com`（单次参数，非全局设置）
 - [ ] 无 `npm config set registry`（使用 `--registry` 单次参数）
 - [ ] 无 `sudo npm install -g`
-- [ ] 无 `@main` 未版本化 URL（全部固定为 `@vX.Y.Z`）
+- [ ] 无 `@main` 未版本化 URL
+- [ ] 网络检测测试 4 个端点（npmmirror.com, npmjs.org, api.deepseek.com, github.com）
+- [ ] Git 依赖仅警告，不 `exit 1`
+- [ ] Node.js 安装引导优先推荐手动下载 MSI/pkg（含 SHA256 校验提示）
+- [ ] Node.js 已满足版本要求时跳过安装
+- [ ] 安装日志写入 `%TEMP%/~/agent-install-{agent}.log`
+- [ ] 无 `2>$null` / `2>/dev/null` 吞错（改为日志重定向）
+- [ ] 所有故障排查链接指向 `troubleshooting.html`（非 `docs/support.html`）
 
 ## 二、文档层
 
-- [ ] README.md 安装命令指向当前版本 tag
-- [ ] `docs/guide.md` 安装命令指向当前版本 tag
-- [ ] `docs/agents/*.md` 安装命令指向当前版本 tag
-- [ ] `docs/*.html` 安装命令指向当前版本 tag
-- [ ] `xianyu-materials/` 版本号已更新
+- [ ] README.md 版本号为 v3.2.4
+- [ ] README.md 包含国内用户 `--china` / `-China` 提示
+- [ ] troubleshooting.html 命令为一行一条（非多行合并）
+- [ ] troubleshooting.html 包含 `--china` 网络模式说明
+- [ ] troubleshooting.html 链接已统一为 `troubleshooting.html`
+- [ ] `docs/i/` 入口文件正常
 
 ## 三、CI 层
 
@@ -33,42 +45,63 @@
 
 ## 四、版本文件
 
-- [ ] `VERSION` 文件内容为当前版本号
-- [ ] `CHANGELOG.md` 已更新当前版本条目
+- [ ] `VERSION` 文件内容为 `v3.2.4`
+- [ ] `CHANGELOG.md` 已更新 v3.2.4 条目
+- [ ] `scripts/lib/utils.sh` RAW_BASE 为 `@v3.2.4`
 - [ ] 版本号遵循 semver（vX.Y.Z）
 
-## 五、Git 操作
+## 五、交付物检查
+
+- [ ] `dist/delivery/AI-Agent-Windows-v3.2.4/` 目录存在且完整
+- [ ] `dist/delivery/AI-Agent-macOS-Linux-v3.2.4/` 目录存在且完整
+- [ ] Windows zip：无 .sh 文件
+- [ ] macOS zip：无 .cmd / .ps1 文件
+- [ ] Windows .cmd 文件为 ASCII-only + CRLF 换行
+- [ ] 中文文件名已替换（README.txt, CHECK-UPDATE.txt）
+- [ ] 3 份 PDF 手册均为 v3.2.4 版本
+
+## 六、Git 操作
 
 - [ ] `git status` 无意外未提交文件
-- [ ] 所有修改已 commit（`git log` 确认）
+- [ ] 所有修改已 commit
 - [ ] `git push origin main` 推送成功
-- [ ] tag 不存在于远程（`git ls-remote --tags origin` 确认）
+- [ ] tag 不存在于远程
 
-## 六、Tag 创建
+## 七、Tag 创建
 
 ```bash
 VERSION=$(cat VERSION)
-git tag -a "${VERSION}" -m "${VERSION}: <简要描述>"
+git tag -a "${VERSION}" -m "v3.2.4: China Hardening"
 git push origin "${VERSION}"
 ```
 
 - [ ] tag 创建在最新 commit 上
 - [ ] tag push 成功
 
-## 七、CDN 验证（tag 后）
+## 八、CDN 验证（tag 后）
 
-- [ ] jsDelivr 刷新: `https://purge.jsdelivr.net/gh/vinnim92/agent-install-guide@${VERSION}/scripts/install-claude-code.sh`
-- [ ] 6 个 bash 脚本 `curl -fsSL <CDN URL> | bash -s -- --help` 正常
-- [ ] 6 个 PowerShell 脚本 CDN 可达（HTTP 200）
+- [ ] jsDelivr 刷新: `https://purge.jsdelivr.net/gh/vinnim92/agent-install-guide@v3.2.4/scripts/install-claude-code.sh`
+- [ ] 6 个安装脚本 CDN 可达（HTTP 200）
 - [ ] CDN 冒烟测试 workflow 通过
 
-## 八、商品上架
+## 九、功能测试（macOS）
 
-- [ ] 闲鱼标题从 `title-candidates.txt` 中选定
-- [ ] 闲鱼描述更新为最新 `description.md`
+- [ ] `bash install-claude-code.sh --china --dry-run` 正常输出
+- [ ] `bash install-codex.sh --china --dry-run` 正常输出
+- [ ] `bash install-openclaw.sh --china --dry-run` 正常输出
+- [ ] `bash install-codex.sh --china` 正常安装 Codex
+- [ ] `AGENT_INSTALL_YES=1 bash install-codex.sh --china` 自动确认安装
+- [ ] 网络不通时显示多端点检测结果和 `--china` 建议
+- [ ] 安装日志写入 `~/agent-install-*.log`
+- [ ] `--help` 输出包含 `--china` 用法
+- [ ] Node.js >= 22 时跳过安装
+
+## 十、商品上架
+
+- [ ] 闲鱼标题选定
+- [ ] 闲鱼描述更新
 - [ ] 闲鱼封面图版本号已更新
-- [ ] 安装命令在商品描述中正确显示
 
 ---
 
-## 当前版本: v3.1.1
+## 当前版本: v3.2.4

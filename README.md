@@ -12,7 +12,7 @@
 
 ### Windows
 
-1. 下载 `AI-Agent-Windows-v3.2.3.zip`
+1. 下载 `AI-Agent-Windows-v3.2.4.zip`
 2. 解压到文件夹（不要在压缩包预览里直接双击）
 3. 打开 `windows` 文件夹
 4. 双击对应 Agent 的 .cmd 文件：
@@ -20,15 +20,19 @@
    - Codex → `install-codex.cmd`
    - OpenClaw → `install-openclaw.cmd`
 
+> **国内用户提示**：如果安装时网络不通，可以在 PowerShell 中使用 `-China` 参数跳过官方源，使用国内镜像安装。详见故障排查页面。
+
 ### macOS / Linux
 
-1. 下载 `AI-Agent-macOS-Linux-v3.2.3.zip`
+1. 下载 `AI-Agent-macOS-Linux-v3.2.4.zip`
 2. 双击解压
 3. 打开终端，输入 `cd `（后面有个空格），把 `mac-linux` 文件夹拖进终端窗口，回车
 4. 运行对应 Agent 的安装脚本：
    - Claude Code → `bash install-claude-code.sh`
    - Codex → `bash install-codex.sh`
    - OpenClaw → `bash install-openclaw.sh`
+
+> **国内用户提示**：如果安装时网络不通，可以添加 `--china` 参数使用国内镜像：`bash install-codex.sh --china`
 
 ---
 

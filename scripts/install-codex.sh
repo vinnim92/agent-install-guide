@@ -3,10 +3,10 @@
 # Codex 安装脚本
 # 支持系统: macOS / Linux
 # 需要: ChatGPT Plus/Pro/Team 账号，或 OpenAI API Key
-# 需要: Node.js >= 22（脚本会自动安装）
+# 需要: Node.js >= 22（脚本会提示安装）
 #
 # 用法:
-#   curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash
+#   bash install-codex.sh --china   国内网络模式
 #   bash install-codex.sh --help
 #   bash install-codex.sh --dry-run
 #   AGENT_INSTALL_YES=1 bash install-codex.sh
@@ -20,17 +20,19 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 DRY_RUN=false
 SKIP_CONFIRM=false
+CHINA_MODE=false
 OS_TYPE=""
 AGENT_NAME="Codex"
 AGENT_BIN="codex"
 OFFICIAL_URL="https://chatgpt.com/codex/install.sh"
+LOGFILE="$HOME/agent-install-codex.log"
 
 # ---------- 输出函数 ----------
-print_step()    { echo -e "${BLUE}[→]${NC} $1"; }
-print_success() { echo -e "    ${GREEN}✅ $1${NC}"; }
-print_error()   { echo -e "    ${RED}❌ $1${NC}"; }
-print_warning() { echo -e "    ${YELLOW}⚠️  $1${NC}"; }
-print_tip()     { echo -e "    ${CYAN}💡 $1${NC}"; }
+print_step()    { echo -e "${BLUE}[→]${NC} $1" | tee -a "$LOGFILE"; }
+print_success() { echo -e "    ${GREEN}✅ $1${NC}" | tee -a "$LOGFILE"; }
+print_error()   { echo -e "    ${RED}❌ $1${NC}" | tee -a "$LOGFILE"; }
+print_warning() { echo -e "    ${YELLOW}⚠️  $1${NC}" | tee -a "$LOGFILE"; }
+print_tip()     { echo -e "    ${CYAN}💡 $1${NC}" | tee -a "$LOGFILE"; }
 print_dryrun()  { echo -e "    ${YELLOW}[预演]${NC} 将执行: $1"; }
 
 command_exists() { command -v "$1" >/dev/null 2>&1; }
@@ -40,7 +42,7 @@ version_gte()   { printf '%s\n%s\n' "$2" "$1" | sort -V -C; }
 confirm() {
     local prompt="$1"
     if [ "$SKIP_CONFIRM" = true ]; then
-        echo -e "    ${CYAN}💡${NC} ${prompt} → 自动确认"
+        echo -e "    ${CYAN}💡${NC} ${prompt} → 自动确认" | tee -a "$LOGFILE"
         return 0
     fi
     local yn
@@ -48,7 +50,7 @@ confirm() {
         read -r -p "$(echo -e "${BLUE}[?]${NC} ${prompt} [Y/n]: ")" yn < /dev/tty
     else
         print_warning "当前环境无法读取键盘输入"
-        print_tip "如果你确认继续，请使用：curl ... | AGENT_INSTALL_YES=1 bash"
+        print_tip "如果你确认继续，请使用：AGENT_INSTALL_YES=1 bash install-codex.sh --china"
         return 1
     fi
     yn=${yn:-y}
@@ -63,7 +65,8 @@ run_cmd() {
         print_dryrun "$*"
         return 0
     else
-        eval "$@"
+        echo "  [RUN] $*" >> "$LOGFILE"
+        eval "$@" 2>>"$LOGFILE"
     fi
 }
 
@@ -77,37 +80,70 @@ show_help() {
     echo "安装: Codex CLI（OpenAI 出品）"
     echo "系统: macOS / Linux"
     echo "需要: ChatGPT Plus/Pro/Team 账号，或 OpenAI API Key"
-    echo "      需要 Node.js >= 22（脚本会自动安装）"
+    echo "      需要 Node.js >= 22"
     echo ""
     echo "用法:"
     echo "  bash install-codex.sh           正常安装（自动检查环境）"
+    echo "  bash install-codex.sh --china   国内网络模式（跳过官方源，使用镜像）"
     echo "  bash install-codex.sh --help    显示帮助"
     echo "  bash install-codex.sh --dry-run 排查/预览（只看不装）"
     echo ""
     echo "跳过确认:"
     echo "  AGENT_INSTALL_YES=1 bash install-codex.sh"
     echo ""
-    echo "推荐一行安装命令:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh | bash"
-    echo ""
-    echo "如需手动确认，请先下载脚本再运行:"
-    echo "  curl -fsSL https://vinnim92.github.io/agent-install-guide/i/codex.sh -o codex.sh"
-    echo "  bash install-codex.sh"
+    echo "国内网络一键安装:"
+    echo "  AGENT_INSTALL_YES=1 bash install-codex.sh --china"
     echo ""
     echo "安装后启动:"
     echo "  终端输入: codex"
     echo ""
     echo "安装失败？"
     echo "  打开故障排查页面:"
-    echo "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+    echo "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
     echo ""
     exit 0
+}
+
+# ---------- 多端点网络检测 ----------
+check_network() {
+    if [ "$DRY_RUN" = true ]; then
+        print_dryrun "检查网络连通性（4 个端点）"
+        return 0
+    fi
+
+    print_step "检查网络连通性..."
+    local ok=0
+
+    for endpoint in "https://registry.npmmirror.com" "https://registry.npmjs.org" "https://api.deepseek.com" "https://github.com"; do
+        if curl -fsSL --connect-timeout 5 "$endpoint" >/dev/null 2>&1; then
+            print_success "可访问: $endpoint"
+            ok=$((ok + 1))
+        else
+            print_warning "无法访问: $endpoint"
+        fi
+    done
+
+    if [ "$ok" -eq 0 ]; then
+        print_error "所有端点均无法访问，请检查网络连接"
+        print_tip "可尝试切换手机热点、关闭/开启代理"
+        if [ "$CHINA_MODE" = false ]; then
+            print_tip "或使用国内网络模式: bash install-codex.sh --china"
+        fi
+    elif [ "$ok" -le 2 ]; then
+        print_warning "部分端点不可达，安装可能受限"
+        if [ "$CHINA_MODE" = false ]; then
+            print_tip "建议使用国内网络模式: bash install-codex.sh --china"
+        fi
+    else
+        print_success "网络连通性良好 ($ok/4)"
+    fi
+    echo ""
 }
 
 # ============ 安装前自动检查 ============
 run_precheck() {
     echo ""
-    echo -e "${CYAN}  正在检查你的电脑环境...${NC}"
+    echo -e "${CYAN}  正在检查你的电脑环境...${NC}" | tee -a "$LOGFILE"
     echo ""
 
     # 1. 操作系统
@@ -122,27 +158,18 @@ run_precheck() {
     esac
     print_success "系统: ${OS_TYPE} · 架构: $(uname -m)"
 
-    # 2. Git
+    # 2. Git（仅警告，不阻断）
     if [ "$DRY_RUN" = true ]; then
         print_dryrun "检查 Git 是否安装"
     elif command_exists git; then
         print_success "Git 已安装"
     else
-        print_error "Git 未安装"
-        echo ""
-        echo "  macOS:  xcode-select --install"
-        echo "  Ubuntu: sudo apt install git"
-        exit 1
+        print_warning "Git 未安装（不影响安装，但后续可能需要）"
+        print_tip "如需安装: macOS 运行 xcode-select --install，Ubuntu 运行 sudo apt install git"
     fi
 
-    # 3. 网络
-    if [ "$DRY_RUN" = true ]; then
-        print_dryrun "检查网络连通性"
-    elif curl -fsSL --connect-timeout 5 https://github.com >/dev/null 2>&1; then
-        print_success "网络连接正常"
-    else
-        print_warning "网络访问受限，安装可能受影响"
-    fi
+    # 3. 多端点网络检测
+    check_network
 
     # 4. Node.js
     if [ "$DRY_RUN" = true ]; then
@@ -151,12 +178,12 @@ run_precheck() {
         local node_ver
         node_ver=$(node -v | sed 's/v//')
         if version_gte "$node_ver" "22.0.0"; then
-            print_success "Node.js v${node_ver} (满足要求)"
+            print_success "Node.js v${node_ver} (满足要求，将跳过安装)"
         else
-            print_warning "Node.js v${node_ver} 版本较低，将自动安装 v22+"
+            print_warning "Node.js v${node_ver} 版本较低，将提示安装 v22+"
         fi
     else
-        print_warning "Node.js 未安装，将自动安装 v22+"
+        print_warning "Node.js 未安装，将提示安装 v22+"
     fi
 
     # 5. 是否已安装
@@ -176,17 +203,21 @@ run_precheck() {
     fi
 
     # 6. 安装方式
-    print_tip "将优先使用官方安装方式（${OFFICIAL_URL}）"
+    if [ "$CHINA_MODE" = true ]; then
+        print_tip "国内网络模式：跳过官方安装器，直接使用 npm 镜像源"
+    else
+        print_tip "将优先使用官方安装方式（${OFFICIAL_URL}）"
+    fi
 
     echo ""
-    echo -e "${GREEN}  ✅ 系统检查完成${NC}"
-    echo -e "${GREEN}  ✅ 网络检查完成${NC}"
-    echo -e "${GREEN}  ✅ 安装准备完成${NC}"
+    echo -e "${GREEN}  ✅ 系统检查完成${NC}" | tee -a "$LOGFILE"
+    echo -e "${GREEN}  ✅ 网络检查完成${NC}" | tee -a "$LOGFILE"
+    echo -e "${GREEN}  ✅ 安装准备完成${NC}" | tee -a "$LOGFILE"
     echo ""
 
     # 7. 总结
     echo -e "  ${BOLD}接下来将安装:${NC} ${AGENT_NAME}"
-    echo -e "  ${BOLD}可能需要:${NC} 自动安装 Node.js（如果需要）"
+    echo -e "  ${BOLD}可能需要:${NC} 安装 Node.js（如果版本不满足要求）"
     echo -e "  ${BOLD}需要准备:${NC} ChatGPT 账号或 OpenAI API Key"
     echo ""
 
@@ -197,7 +228,7 @@ run_precheck() {
 
     if ! confirm "是否继续安装 ${AGENT_NAME}？"; then
         print_tip "已取消安装。有问题请看故障排查:"
-        echo "  https://vinnim92.github.io/agent-install-guide/docs/support.html"
+        echo "  https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 0
     fi
 }
@@ -208,50 +239,66 @@ ensure_nodejs() {
         local node_ver
         node_ver=$(node -v | sed 's/v//')
         if version_gte "$node_ver" "22.0.0"; then
+            print_success "Node.js v${node_ver} 已满足要求，跳过安装"
             return 0
         fi
     fi
 
     echo ""
-    echo -e "${CYAN}  自动安装 Node.js v22+ ...${NC}"
+    echo -e "${CYAN}  Node.js 版本不满足要求（需要 >= 22）${NC}"
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
-        print_dryrun "通过包管理器安装 Node.js"
+        print_dryrun "提示安装 Node.js（推荐手动下载安装包）"
         return 0
     fi
 
-    case "$OS_TYPE" in
-        macOS)
-            if ! command_exists brew; then
-                print_step "安装 Homebrew..."
-                run_cmd "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" 2>/dev/null || true"
-                if [ -f /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
-                if [ -f /usr/local/bin/brew ]; then eval "$(/usr/local/bin/brew shellenv)"; fi
-            fi
-            if command_exists brew; then
-                run_cmd "brew install node@22 2>/dev/null && brew link --overwrite --force node@22 2>/dev/null || true"
-            fi
-            ;;
-        linux)
-            if command_exists apt-get; then
-                run_cmd "curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - 2>/dev/null"
-                run_cmd "sudo apt-get install -y -qq nodejs 2>/dev/null || true"
-            elif command_exists dnf; then
-                run_cmd "curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash - 2>/dev/null"
-                run_cmd "sudo dnf install -y nodejs 2>/dev/null || true"
-            elif command_exists pacman; then
-                run_cmd "sudo pacman -S --noconfirm nodejs npm 2>/dev/null || true"
-            fi
-            ;;
-    esac
+    # 优先引导手动下载安装包（最可靠的方式）
+    echo "  推荐方式: 手动下载 Node.js 安装包"
+    echo "    macOS:  https://nodejs.org (下载 macOS Installer .pkg)"
+    echo "    Linux:  https://nodejs.org (下载 Linux Binaries .tar.xz)"
+    echo ""
+    echo "    SHA256 校验信息可在 https://nodejs.org 查看对应版本的 SHASUMS256.txt"
+    echo ""
 
-    if ! command_exists node; then
-        print_error "Node.js 自动安装失败"
-        echo "  请访问 https://nodejs.org 手动安装后重试"
+    if confirm "是否尝试自动安装 Node.js？(推荐选 N，手动下载更可靠)"; then
+        case "$OS_TYPE" in
+            macOS)
+                if ! command_exists brew; then
+                    print_step "安装 Homebrew..."
+                    run_cmd "/bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\" || true"
+                    if [ -f /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
+                    if [ -f /usr/local/bin/brew ]; then eval "$(/usr/local/bin/brew shellenv)"; fi
+                fi
+                if command_exists brew; then
+                    print_step "通过 Homebrew 安装 Node.js..."
+                    run_cmd "brew install node@22 && brew link --overwrite --force node@22 || true"
+                fi
+                ;;
+            linux)
+                if command_exists apt-get; then
+                    run_cmd "curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -"
+                    run_cmd "sudo apt-get install -y -qq nodejs || true"
+                elif command_exists dnf; then
+                    run_cmd "curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -"
+                    run_cmd "sudo dnf install -y nodejs || true"
+                elif command_exists pacman; then
+                    run_cmd "sudo pacman -S --noconfirm nodejs npm || true"
+                fi
+                ;;
+        esac
+
+        if ! command_exists node; then
+            print_warning "自动安装未成功，请手动安装 Node.js"
+            echo "  下载地址: https://nodejs.org"
+            exit 1
+        fi
+        print_success "Node.js $(node -v) 自动安装成功"
+    else
+        print_tip "请手动安装 Node.js 后重新运行本脚本"
+        echo "  下载地址: https://nodejs.org"
         exit 1
     fi
-    print_success "Node.js $(node -v) 安装成功"
 }
 
 ensure_npm_path() {
@@ -290,74 +337,81 @@ do_install() {
     echo ""
 
     if [ "$DRY_RUN" = true ]; then
-        print_dryrun "官方脚本: curl -fsSL ${OFFICIAL_URL} | bash"
+        if [ "$CHINA_MODE" = true ]; then
+            print_dryrun "npm 镜像: npm install -g @openai/codex --registry=https://registry.npmmirror.com"
+        else
+            print_dryrun "官方脚本: curl -fsSL ${OFFICIAL_URL} | bash"
+            print_dryrun "fallback: npm install -g @openai/codex"
+        fi
         print_dryrun "验证: command -v ${AGENT_BIN}"
         return 0
     fi
 
+    # 初始化日志
+    echo "===== $(date) =====" > "$LOGFILE"
+    echo "Agent: $AGENT_NAME | China Mode: $CHINA_MODE" >> "$LOGFILE"
+
     ensure_nodejs
     fix_npm_permissions
 
-    # 方法1: 官方 installer（优先）
-    print_step "使用官方安装脚本..."
-    if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash 2>/dev/null"; then
-        print_success "官方脚本安装成功"
-    else
-        # 方法2: npm fallback
-        print_warning "官方脚本不可用，使用 npm..."
+    # China 模式: 直接使用 npm 镜像
+    if [ "$CHINA_MODE" = true ]; then
+        print_step "国内网络模式：使用 npm 镜像源安装..."
         if ! command_exists npm; then
-            print_error "npm 不可用"
-            echo "  排查: https://vinnim92.github.io/agent-install-guide/docs/support.html"
+            print_error "npm 不可用，无法继续安装"
+            echo "  排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
             exit 1
         fi
-        local registry_flag=""
-        if ! curl -fsSL --connect-timeout 3 https://registry.npmjs.org/ >/dev/null 2>&1; then
-            print_tip "切换国内镜像"
-            registry_flag="--registry https://registry.npmmirror.com"
-        fi
-        if run_cmd "npm install -g ${registry_flag} @openai/codex 2>/dev/null"; then
-            print_success "npm 安装成功"
+        if run_cmd "npm install -g @openai/codex --registry=https://registry.npmmirror.com"; then
+            print_success "npm 镜像安装成功"
         else
-            print_error "npm 安装失败"
-            echo "  排查: https://vinnim92.github.io/agent-install-guide/docs/support.html"
+            print_error "npm 镜像安装失败"
+            echo ""
+            echo "  排查: 查看日志 $LOGFILE"
+            echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
             exit 1
+        fi
+    else
+        # 方法1: 官方 installer（优先）
+        print_step "使用官方安装脚本..."
+        if run_cmd "curl -fsSL ${OFFICIAL_URL} | bash"; then
+            print_success "官方脚本安装成功"
+        else
+            # 方法2: npm fallback
+            print_warning "官方脚本不可用，使用 npm..."
+            if ! command_exists npm; then
+                print_error "npm 不可用"
+                echo "  排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+                exit 1
+            fi
+            if run_cmd "npm install -g @openai/codex --registry=https://registry.npmjs.org"; then
+                print_success "npm 官方源安装成功"
+            else
+                # 尝试 npmmirror 兜底
+                print_warning "npm 官方源失败，尝试国内镜像..."
+                if run_cmd "npm install -g @openai/codex --registry=https://registry.npmmirror.com"; then
+                    print_success "npmmirror 镜像安装成功"
+                else
+                    print_error "npm 安装失败"
+                    echo "  排查: 查看日志 $LOGFILE"
+                    echo "  故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
+                    exit 1
+                fi
+            fi
         fi
     fi
 
     ensure_npm_path
     if command_exists "$AGENT_BIN"; then
         print_success "${AGENT_NAME} 安装完成！"
-        $AGENT_BIN --version 2>/dev/null | head -1 | while read -r v; do echo -e "  ${v}"; done
+        $AGENT_BIN --version 2>/dev/null | head -1 | while read -r v; do echo -e "  ${v}" | tee -a "$LOGFILE"; done
     else
         print_error "找不到 ${AGENT_BIN} 命令"
         echo "  1. 关掉终端窗口，重新打开后再试"
-        echo "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/docs/support.html"
+        echo "  2. 故障排查: https://vinnim92.github.io/agent-install-guide/troubleshooting.html"
         exit 1
     fi
 }
-
-# ==================== 主流程 ====================
-
-for arg in "$@"; do
-    case "$arg" in
-        --help|-h) show_help ;;
-        --dry-run) DRY_RUN=true ;;
-        *) ;;
-    esac
-done
-
-if [ "${AGENT_INSTALL_YES:-0}" = "1" ]; then
-    SKIP_CONFIRM=true
-fi
-
-echo ""
-echo -e "${CYAN}==========================================${NC}"
-echo -e "${CYAN}  Codex 安装助手${NC}"
-echo -e "${CYAN}==========================================${NC}"
-
-if [ "$DRY_RUN" = true ]; then
-    echo -e "  ${YELLOW}🔍 dry-run 模式 — 只看不装${NC}"
-fi
 
 # ---------- Codex 登录方式选择 ----------
 configure_codex_login() {
@@ -388,6 +442,33 @@ configure_codex_login() {
     echo ""
 }
 
+# ==================== 主流程 ====================
+
+for arg in "$@"; do
+    case "$arg" in
+        --help|-h) show_help ;;
+        --dry-run) DRY_RUN=true ;;
+        --china) CHINA_MODE=true ;;
+        *) ;;
+    esac
+done
+
+if [ "${AGENT_INSTALL_YES:-0}" = "1" ]; then
+    SKIP_CONFIRM=true
+fi
+
+echo ""
+echo -e "${CYAN}==========================================${NC}"
+echo -e "${CYAN}  Codex 安装助手${NC}"
+echo -e "${CYAN}==========================================${NC}"
+
+if [ "$CHINA_MODE" = true ]; then
+    echo -e "  ${YELLOW}🌏 国内网络模式 — 跳过官方源，使用 npm 镜像${NC}"
+fi
+if [ "$DRY_RUN" = true ]; then
+    echo -e "  ${YELLOW}🔍 dry-run 模式 — 只看不装${NC}"
+fi
+
 run_precheck
 do_install
 
@@ -404,4 +485,6 @@ echo "    codex --version      查看版本"
 echo "    codex login          手动登录"
 echo "    codex \"任务描述\"      带初始提示启动"
 echo "    codex exec \"...\"     非交互执行"
+echo ""
+echo -e "  安装日志: ${LOGFILE}"
 echo ""

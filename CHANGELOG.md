@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.2.4 (2026-06-13)
+
+- China mode: `--china` / `-China` flag skips official installer, uses npm mirror directly
+- 4-endpoint network check (npmmirror.com, npmjs.org, api.deepseek.com, github.com)
+- Windows .ps1 npm fallback uses `--registry https://registry.npmmirror.com`
+- Node.js: skip install if >= 22, prioritize manual MSI/pkg download with SHA256 info
+- Git dependency: warn only, don't block (bash scripts)
+- Logging to `%TEMP%/~/agent-install-{agent}.log`, errors preserved (no `2>$null` / `2>/dev/null`)
+- Documentation: one-command-per-line in troubleshooting, unified links, China mode section
+- RELEASE_CHECKLIST.md updated for v3.2.4
+- All 6 install scripts hardened for China network usability
+
+---
+
 ## v3.2.3 (2026-06-13)
 
 - Hardening: .cmd exit code capture (set INSTALL_EXIT, exit /b)
