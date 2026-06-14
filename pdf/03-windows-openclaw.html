@@ -92,15 +92,22 @@
     <li>输入 <code>openclaw --version</code>，能看到版本号</li>
     <li>输入 <code>openclaw</code> 能进入对话界面</li>
   </ul>
-</div>
-
-<div class="section page-break">
-  <h2>为什么这版安装包更稳定？</h2>
-  <div class="card"><h4>✅ 本地脚本包，不依赖远程入口</h4><p>安装脚本已内置在 zip 包中，不需要复制远程命令或访问 GitHub Pages/jsDelivr。</p></div>
-  <div class="card"><h4>✅ 双击 .cmd 启动</h4><p>不需要打开 PowerShell 或复制命令。解压后双击即可安装。</p></div>
+</div><div class="card"><h4>✅ 双击 .cmd 启动</h4><p>不需要打开 PowerShell 或复制命令。解压后双击即可安装。</p></div>
   <div class="card"><h4>✅ Windows npm 执行策略问题已修复</h4><p>脚本会优先调用 npm.cmd，减少 Windows 执行策略导致的安装失败。</p></div>
   <div class="card"><h4>✅ winget 首次使用卡住问题已优化</h4><p>脚本已优化 Windows 软件源确认流程，减少首次安装 Node.js 卡住的情况。</p></div>
 </div>
+
+  <div class="section page-break">
+    <h2>国内网络说明</h2>
+    <p>普通安装脚本会<strong>自动检测网络</strong>，无需手动选择版本：</p>
+    <ol style="padding-left: 24px; line-height: 2.2;">
+      <li>优先使用官方安装器</li>
+      <li>官方不可用时，自动尝试 npm 官方源</li>
+      <li>npm 官方源也不可用时，自动使用国内镜像（npmmirror）</li>
+    </ol>
+    <div class="info-box"><strong>国内用户无需选择单独的版本。</strong>直接双击对应的 .cmd 文件即可，脚本会自动选择最佳安装路径。</div>
+    <div class="tip-box"><strong>高级排障：</strong>如需强制使用国内镜像，可在 PowerShell 中添加 <code>-China</code> 参数（参考故障排查页面）。普通用户不需要关心此参数。</div>
+  </div>
 
 <div class="section">
   <h2>常见问题</h2>
