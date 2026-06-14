@@ -149,12 +149,21 @@
 
 ---
 
-## 8. SHA256
+## 8. SHA256 (updated 2026-06-14 — PDF slimmed, ZIPs rebuilt)
 
 ```
-21afb805f3d48526f9dd635677f86644d2594abbed9712785f8261fba530e00e  AI-Agent-Windows-v3.2.6.zip
-3fe541759454f326ac8e94879f54df9882a074fbbf43e1d5bb0864e52eafa00d  AI-Agent-macOS-Linux-v3.2.6.zip
+c7cadde42a1814b371ef88383e70516dd883b597aea702def6ee48e4a800157d  AI-Agent-Windows-v3.2.6.zip
+bd9bbcbf37bdc914d0609adf01c0968a74365c71eaab751074014ad02bceaa94  AI-Agent-macOS-Linux-v3.2.6.zip
 ```
+
+---
+
+## 8b. PDF Content Audit (2026-06-14)
+
+All 12 forbidden keywords verified absent from 6 PDF HTML templates:
+- 本版为什么更稳定, 更稳定, 更可靠, 版本演进, 相比上一版, 修复了
+- v3.2.4, v3.2.3
+- China 版, install-claude-china, install-codex-china, install-openclaw-china
 
 ---
 
