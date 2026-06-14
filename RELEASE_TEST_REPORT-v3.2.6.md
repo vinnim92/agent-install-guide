@@ -1,11 +1,13 @@
 # Release Test Report — v3.2.6 Emergency Fix
 
-> **Windows caveat**: PowerShell parser check was done via comprehensive Python-based validation (balanced braces, string closure, BOM, encoding). Real `pwsh` parser could not be run — pwsh download from GitHub timed out (~5% after 10 min). All PS1 scripts pass structural validation.
+> **2026-06-14 更新**: Windows 真机测试通过。详见第 10 节。
 
 ## Test Environment
 
 | Item | Value |
 |------|-------|
+| macOS Date | 2026-06-13 |
+| Windows Date | 2026-06-14 |
 | Date | 2026-06-13 |
 | System | macOS 26.5 (25F71) |
 | Arch | Apple Silicon (arm64) |
@@ -160,22 +162,35 @@
 
 | Issue | Impact | Blocks Release? |
 |-------|--------|-----------------|
-| pwsh parser not actually run (no pwsh on macOS, download timed out) | PS1 validated by Python structural analyzer only | No (all structural checks pass) |
-| No real Windows machine test | Cannot verify double-click behavior on Windows | No (same code pattern as v3.2.5, only removed China .cmd + fixed backtick) |
+| pwsh parser not run on macOS (download timed out) | PS1 validated by Python structural analyzer; Windows real-machine test confirmed scripts execute correctly | No |
 | DeepSeek API endpoint unreachable in test env | Only affects API config step, not install | No |
 
 ---
 
-## 10. Release Decision
+## 10. Windows Real Machine Test (2026-06-14)
 
-**Ready to release v3.2.6**
+| Test | Result |
+|------|--------|
+| 双击 install-claude.cmd | PASS — 启动安装，自动 fallback 正常 |
+| 双击 install-codex.cmd | PASS — 启动安装，自动 fallback 正常 |
+| 双击 install-openclaw.cmd | PASS — 启动安装，自动 fallback 正常 |
+| `.\install-claude-code.ps1 -Help` | PASS — 帮助输出正常，无乱码 |
+| `.\install-claude-code.ps1 -DryRun` | PASS — 预览正常，显示 3-tier fallback |
+| `.\install-codex.ps1 -Help` | PASS — 帮助输出正常 |
+| `.\install-codex.ps1 -DryRun` | PASS — 预览正常 |
+| `.\install-openclaw.ps1 -Help` | PASS — 帮助输出正常 |
+| `.\install-openclaw.ps1 -DryRun` | PASS — 预览正常 |
+| 普通入口自动 fallback 到国内镜像 | PASS — 官方→npm→npmmirror 自动探测并 fallback |
+| ZIP 内无 China .cmd | PASS — 仅有 3 个普通 .cmd |
+| .cmd 多行 CRLF | PASS — 所有 .cmd 多行显示正常 |
 
-Critical fixes verified:
-- Entry unification: 3 .cmd only, zero China launchers in beginner package
-- install-claude.cmd correctly calls install-claude-code.ps1
-- All .cmd files: ASCII, CRLF, multi-line
-- All PS1 files: UTF-8 BOM, balanced braces, no broken strings
-- Backtick-escaped $null fixed in codex.ps1 and openclaw.ps1
-- Cross-contamination clean
-- SHA256 generated
-- All version references updated to v3.2.6
+---
+
+## 11. Release Decision
+
+**v3.2.6 真机测试通过，已发布。**
+
+- 小白交付包仅 3 个 .cmd，无 China 版入口
+- 普通入口自动 fallback，国内用户无需手动选择
+- Windows 真机测试全部通过
+- `-China`/`--china` 保留为高级参数，不在小白流程中展示
